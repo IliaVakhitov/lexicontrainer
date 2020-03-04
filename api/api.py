@@ -1,7 +1,14 @@
-from flask import Flask
+from app import create_app, db
+from app.models import Word, Dictionary, LearningIndex, User
 
-app = Flask(__name__)
+app = create_app()
 
-@app.route('/hello')
-def get_hello_string():
-    return {'message': 'Hello, world!'}
+
+@app.shell_context_processor
+def make_shell_context():
+
+    return {'db': db,
+            'User': User,
+            'Word': Word,
+            'LearningIndex': LearningIndex,
+            'Dictionary': Dictionary}
