@@ -1,7 +1,7 @@
 from flask import request
 from sqlalchemy import func
 from werkzeug.urls import url_parse
-from flask_login import current_user, login_required
+from flask_login import current_user, login_required, logout_user,login_user
 from app import db
 from app.models import User, Dictionary, Word, LearningIndex
 from app.auth import bp
@@ -32,17 +32,18 @@ def login():
     login_user(db_user, remember=request_data.get('remember_me'))
 
 
-@bp.route('/logout')
+@bp.route('/logout', methods=['GET', 'POST'])
+@login_required
 def logout():
-    # TODO
-    return {'message': 'Page not available'} 
+    logout_user()
+    return {'message': 'Logout successfull'} 
 
-@bp.route('/register', methods=['GET', 'POST'])
+@bp.route('/register', methods=['POST'])
 def register():
     # TODO
     return {'message': 'Page not available'} 
 
-@bp.route('/user/<username>')
+@bp.route('/user/<username>', methods=['GET'])
 @login_required
 def user(username):
     """

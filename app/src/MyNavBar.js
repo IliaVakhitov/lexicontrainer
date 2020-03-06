@@ -12,8 +12,13 @@ class MyNavBar extends Component {
       this.state = {
         isOpen: false,
       }
+
+      this.logout = this.logout.bind(this);
     }
     
+    logout(event){
+      // TODO  
+    }
     
     render() {
       const toggle = () => this.setState({isOpen: !this.state.isOpen}); 
@@ -53,6 +58,11 @@ class MyNavBar extends Component {
                 <NavItem className="d-flex align-items-center">
                   <NavLink className="font-weight-bold" href="#">
                     Login
+                  </NavLink>
+                </NavItem> 
+                <NavItem className="d-flex align-items-center">
+                  <NavLink className="font-weight-bold" href="#" onClick={this.logout}>
+                    Logout
                   </NavLink>
                 </NavItem>              
               </Nav>
