@@ -52,6 +52,14 @@ class Word(db.Model):
     def __repr__(self):
         return f'<{self.spelling}>'
 
+    def to_dict(self):
+        return {'id': self.id,
+                'spelling': self.spelling,
+                'definition': self.definition,       
+                'dictionary_id': self.dictionary_id,       
+                'learning_index': 0 if self.learning_index is None else self.learning_index.index,       
+                }
+
     def is_synonym(self, word):
         return self.words_synonyms.filter(
             synonyms.c.synonym_id == word.id).count() > 0
@@ -185,6 +193,11 @@ class Dictionary(db.Model):
     def __repr__(self):
         return f'{self.dictionary_name}'
 
+    def to_dict(self):
+        return {'id': self.id,
+                'dictionary_name': self.dictionary_name,
+                'description': self.description
+                }
 
 @login.user_loader
 def load_user(id):

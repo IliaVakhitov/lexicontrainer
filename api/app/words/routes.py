@@ -10,10 +10,21 @@ from flask import jsonify
 
 from app.models import Dictionary, Definitions, LearningIndex
 from app.models import Word
-from app.main import bp
+from app.words import bp
 from app import db
 from appmodel.words_api import WordsApi
 from datetime import datetime
+
+
+@bp.route('/all_words')
+@login_required
+def all_words():
+    dictionaries = Dictionary.query.filter_by(user_id=current_user.id).all()
+    dict_ids = [d.id for d in dictionaries]
+    words_query = Word.query.filter(Word.dictionary_id.in_(dict_ids)).all()
+
+    words = [word.to_dict() for word in words_query]
+    return {'words': words}
 
 
 @bp.route('/word/<int:word_id>')

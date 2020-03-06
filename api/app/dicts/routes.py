@@ -8,11 +8,10 @@ from flask import redirect
 from flask import flash
 from flask import jsonify
 
-from app.models import Dictionary, Definitions, LearningIndex
-from app.models import Word
-from app.main import bp
+from app.dicts import bp
+
+from app.models import Dictionary
 from app import db
-from appmodel.words_api import WordsApi
 from datetime import datetime
 
 
@@ -22,9 +21,13 @@ def dictionaries():
     """
     List of dictionaries of current user
     """
-    
-    dictionaries = Dictionary.query.filter_by(user_id=current_user.id).order_by('dictionary_name')
-    return {'dictionaries': dictionaries}
+
+    dictionaries = Dictionary.query\
+        .filter_by(user_id=current_user.id)\
+        .order_by('dictionary_name')
+
+    dicts = [d.to_dict() for d in dictionaries]
+    return {'dictionaries': dicts}
 
 
 @bp.route('/add_dictionary/', methods=['POST'])

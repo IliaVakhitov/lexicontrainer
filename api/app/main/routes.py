@@ -22,12 +22,13 @@ from datetime import datetime
 # TODO make index do not require login
 # TODO add page with information and link to login
 def index():
-    return render_template('index.html', title='Home')
+    pass
 
 
 @bp.route('/time', methods=['GET'])
 def get_time():
     return {'current_time': datetime.now()}
+
 
 logger = logging.getLogger(__name__)
 

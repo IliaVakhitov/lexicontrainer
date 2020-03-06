@@ -1,16 +1,35 @@
 from flask import request
 from sqlalchemy import func
 from werkzeug.urls import url_parse
-from flask_login import current_user, login_user, logout_user, login_required
+from flask_login import current_user, login_required
 from app import db
 from app.models import User, Dictionary, Word, LearningIndex
 from app.auth import bp
 
+@bp.route('/mock_user', methods=['GET'])
+def mock_user():
+    if not current_user:
+        db_user = User.query.filter_by(username='Test').first_or_404()
+        login_user(db_user, remember=True)
+    return {'current_user': current_user.username}
 
-@bp.route('/login', methods=['GET', 'POST'])
+@bp.route('/get_current_user', methods=['GET'])
+def get_current_user():
+    return {'current_user': None if not current_user else current_user.username}
+
+
+@bp.route('/login', methods=['POST'])
 def login():
-    # TODO
-    return {'message': 'Page not available'} 
+    request_data = request.get_json()
+    username = request_data.get('username')
+    db_user = User.query.filter_by(username=username).first()
+    if db_user is None:
+        return {'error': f'User {username} not found!'}
+
+    if db_user.check_password(request_data.get('password')):
+        return {'error': 'Invalid password!'}
+        
+    login_user(db_user, remember=request_data.get('remember_me'))
 
 
 @bp.route('/logout')
