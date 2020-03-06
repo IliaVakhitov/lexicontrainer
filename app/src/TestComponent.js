@@ -8,7 +8,7 @@ class TestComponent extends Component {
 
     this.state = {
       request: "",
-      requestResult: "No request"  
+      requestResult: "No request" 
     };
 
     this.handleClick = this.handleClick.bind(this);
@@ -26,11 +26,15 @@ class TestComponent extends Component {
     fetch('/'.concat(this.state.request))
       .then(res => res.json())
       .then(
-      (data) => {this.setState({
-        requestResult: data.current_time
-      })},
+      (data) => {
+        console.log(data);
+        this.setState({
+          requestResult: "Success"
+        });
+      },
       (error) => {
-        this.setState({requestResult: error})
+        console.log(error);
+        this.setState({requestResult: 'Error'})
       }
     );
   }

@@ -26,21 +26,29 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # Errors BP
-    from app.errors import bp as errors_bp
-    app.register_blueprint(errors_bp)
-
-    # Aath BP
-    from app.auth import bp as auth_bp
-    app.register_blueprint(auth_bp, url_prefix='/auth')
-
     # Main BP
     from app.main import bp as main_bp
     app.register_blueprint(main_bp)
 
+    # Errors BP
+    from app.errors import bp as errors_bp
+    app.register_blueprint(errors_bp)
+
+    # Auth BP
+    from app.auth import bp as auth_bp
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    
+    # Dictionaries BP
+    from app.dicts import bp as dicts_bp
+    app.register_blueprint(dicts_bp, url_prefix='/dicts')
+
+    # Words BP
+    from app.words import bp as words_bp
+    app.register_blueprint(words_bp, url_prefix='/words')
+
     # Games BP
     from app.games import bp as games_bp
-    app.register_blueprint(games_bp)
+    app.register_blueprint(games_bp, url_prefix='/games')
 
     # Log-files and logger
     if not os.path.exists('logs'):
