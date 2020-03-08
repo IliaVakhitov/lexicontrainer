@@ -8,14 +8,14 @@ from app.auth import bp
 
 @bp.route('/mock_user', methods=['GET'])
 def mock_user():
-    if not current_user:
+    if not current_user.is_authenticated:
         db_user = User.query.filter_by(username='Test').first_or_404()
         login_user(db_user, remember=True)
     return {'current_user': current_user.username}
 
-@bp.route('/get_current_user', methods=['GET'])
-def get_current_user():
-    return {'current_user': None if not current_user else current_user.username}
+@bp.route('/is_authenticated', methods=['GET'])
+def is_authenticated():
+    return {'is_authenticated': current_user.is_authenticated}
 
 
 @bp.route('/login', methods=['POST'])
@@ -30,7 +30,7 @@ def login():
         return {'error': 'Invalid password!'}
         
     login_user(db_user, remember=request_data.get('remember_me'))
-
+    return {'message': 'Login successful'}
 
 @bp.route('/logout', methods=['GET', 'POST'])
 @login_required

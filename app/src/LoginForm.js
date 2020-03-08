@@ -8,6 +8,7 @@ class LoginForm extends Component {
       super(props);
     
       this.state = {
+        isLoggedIn: false,
         username: "",
         password: "",
       }
@@ -21,22 +22,32 @@ class LoginForm extends Component {
   }
   
   handleChangePassword(event) {
-    this.setState({username: event.target.value});
+    this.setState({passsword: event.target.value});
   }
   
   handleSubmit(event) {
-    fetch('/auth/login')
+    event.preventDefault();
+    fetch('/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        'username': this.state.username,
+        'password': this.state.password,
+        'remember_me': false
+      })
+    })
       .then(res => res.json())
       .then(
       (data) => {
         console.log(data);
         this.setState({
-          requestResult: "Success"
+          isLoggedIn: true
         });
       },
       (error) => {
         console.log(error);
-        this.setState({requestResult: 'Error'})
       }
     );
   }
@@ -49,8 +60,7 @@ class LoginForm extends Component {
             <InputGroupAddon addonType="prepend">
               <InputGroupText>Username</InputGroupText>
             </InputGroupAddon>
-            <Input placeholder="username" 
-              value={this.state.username} 
+            <Input placeholder="username"               
               onChange={this.handleChangeUserame}/>
           </InputGroup>
           <br/>
@@ -59,8 +69,7 @@ class LoginForm extends Component {
               <InputGroupText>Password</InputGroupText>
             </InputGroupAddon>
             <Input type="password" 
-              placeholder="password" 
-              value={this.state.username} 
+              placeholder="password"                
               onChange={this.handleChangePassword}/>
           </InputGroup>
           <br/>
