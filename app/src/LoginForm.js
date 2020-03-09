@@ -36,7 +36,7 @@ class LoginForm extends Component {
       credentials: "include",
       headers: myHeaders,
       body: JSON.stringify({
-        'm':'M'
+        'message':'Authorization request'
       })
     })
       .then(res => res.json())
