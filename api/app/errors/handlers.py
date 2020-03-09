@@ -12,14 +12,23 @@ def error_response(status_code, message=None):
 
 @bp.app_errorhandler(400)
 def not_found_error(error):
-    return error_response(error, 'Bad request')
+    return error_response('400', 'Bad request')
+
+
+@bp.app_errorhandler(401)
+def not_found_error(error):
+    return error_response('401', 'Bad auth info')
+
+@bp.app_errorhandler(405)
+def not_found_error(error):
+    return error_response('405', 'Method not allowed')
 
 
 @bp.app_errorhandler(404)
 def not_found_error(error):
-    return error_response(error, 'Page didn\'t found')
+    return error_response('404', 'Page didn\'t found')
 
 
 @bp.app_errorhandler(500)
 def internal_error(error):
-    return error_response(error, 'Error')
+    return error_response('500', 'Error')

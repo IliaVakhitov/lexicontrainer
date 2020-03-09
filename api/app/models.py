@@ -1,5 +1,7 @@
 import json
-from datetime import datetime
+import os
+import base64
+from datetime import datetime, timedelta
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -79,6 +81,8 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     password_hash = db.Column(db.String(128))
+    token = db.Column(db.String(32), index=True, unique=True)
+    token_expiration = db.Column(db.DateTime)
     secret_question = db.Column(db.String(128))
     secret_answer_hash = db.Column(db.String(128))
     dictionaries = db.relationship('Dictionary',
@@ -105,6 +109,27 @@ class User(UserMixin, db.Model):
 
     def check_secret_question(self, secret_answer):
         return check_password_hash(self.secret_answer_hash, secret_answer)
+
+    def get_token(self, token_expires=3600*24):
+        now = datetime.utcnow()
+        if self.token and self.token_expiration > now + timedelta(seconds=600):
+            return self.token
+        self.token = base64.b64encode(os.urandom(24)).decode('utf-8')
+        self.token_expiration = now + timedelta(seconds=token_expires)
+        db.session.add(self)
+        return self.token    
+
+    def revoke_token(self):
+        self.token = None
+        self.token_expiration = datetime.utcnow() - timedelta(seconds=1)
+        db.session.add(self)
+
+    @staticmethod
+    def check_token(token):
+        user = User.query.filter_by(token=token).first()
+        if user is None or user.token is None or user.token_expiration < datetime.now():
+            return None
+        return user    
 
 
 class Statistic(db.Model):

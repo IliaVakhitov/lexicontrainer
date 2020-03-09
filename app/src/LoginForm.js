@@ -12,39 +12,45 @@ class LoginForm extends Component {
         username: "",
         password: "",
       }
-      this.handleChangeUserame = this.handleChangeUserame.bind(this);
+      this.handleChangeUsername = this.handleChangeUsername.bind(this);
       this.handleChangePassword = this.handleChangePassword.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleChangeUserame(event) {
+  handleChangeUsername(event) {
     this.setState({username: event.target.value});
   }
   
   handleChangePassword(event) {
-    this.setState({passsword: event.target.value});
+    this.setState({password: event.target.value});
   }
   
   handleSubmit(event) {
     event.preventDefault();
-    fetch('/auth/login', {
+    // TODO validate form data
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", 'Basic ' + btoa(this.state.username+":"+this.state.password));
+    myHeaders.append("Content-Type", 'application/json');
+    fetch('/auth/token', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      credentials: "include",
+      headers: myHeaders,
       body: JSON.stringify({
-        'username': this.state.username,
-        'password': this.state.password,
-        'remember_me': false
+        'm':'M'
       })
     })
       .then(res => res.json())
       .then(
       (data) => {
         console.log(data);
-        this.setState({
-          isLoggedIn: true
-        });
+        if ('token' in data) {
+          this.setState({
+            isLoggedIn: true,
+            username: "",
+            password: "",
+            token: data.token
+          });
+        }
       },
       (error) => {
         console.log(error);
@@ -60,8 +66,9 @@ class LoginForm extends Component {
             <InputGroupAddon addonType="prepend">
               <InputGroupText>Username</InputGroupText>
             </InputGroupAddon>
-            <Input placeholder="username"               
-              onChange={this.handleChangeUserame}/>
+            <Input placeholder="username"  
+              value={this.state.username}             
+              onChange={this.handleChangeUsername}/>
           </InputGroup>
           <br/>
           <InputGroup>
@@ -69,6 +76,7 @@ class LoginForm extends Component {
               <InputGroupText>Password</InputGroupText>
             </InputGroupAddon>
             <Input type="password" 
+              value={this.state.password}             
               placeholder="password"                
               onChange={this.handleChangePassword}/>
           </InputGroup>

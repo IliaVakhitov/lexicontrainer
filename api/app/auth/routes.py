@@ -1,16 +1,48 @@
 from flask import request
+from flask import g
 from sqlalchemy import func
-from werkzeug.urls import url_parse
+from flask_httpauth import HTTPBasicAuth
 from flask_login import current_user, login_required, logout_user,login_user
 from app import db
 from app.models import User, Dictionary, Word, LearningIndex
 from app.auth import bp
+from app.errors.handlers import error_response
+
+
+auth = HTTPBasicAuth()
+
+
+@auth.verify_password
+def verify_password(username, password):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        return False
+    pwd_check = user.check_password(password)
+    if pwd_check:
+        login_user(user)
+
+    return pwd_check 
+
+
+@auth.error_handler
+def auth_error():
+    return error_response(401)
+
+
+@bp.route('/token', methods=['POST'])
+@auth.login_required
+def get_token():
+    token = current_user.get_token()
+    db.session.commit()
+    return {'token': token}
+
 
 @bp.route('/mock_user', methods=['GET'])
 def mock_user():
     if not current_user.is_authenticated:
         db_user = User.query.filter_by(username='Test').first_or_404()
         login_user(db_user, remember=True)
+        current_user = db_user
     return {'current_user': current_user.username}
 
 @bp.route('/is_authenticated', methods=['GET'])
@@ -35,6 +67,8 @@ def login():
 @bp.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
+    current_user.revoke_token()
+    db.session.commit()
     logout_user()
     return {'message': 'Logout successfull'} 
 
