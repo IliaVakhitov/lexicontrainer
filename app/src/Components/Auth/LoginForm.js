@@ -8,7 +8,6 @@ class LoginForm extends Component {
       super(props);
     
       this.state = {
-        isLoggedIn: false,
         username: "",
         password: "",
       }
@@ -28,6 +27,7 @@ class LoginForm extends Component {
   handleSubmit(event) {
     event.preventDefault();
     // TODO validate form data
+    console.log("logging in");
     var myHeaders = new Headers();
     myHeaders.append("Authorization", 'Basic ' + btoa(this.state.username+":"+this.state.password));
     myHeaders.append("Content-Type", 'application/json');
@@ -43,19 +43,18 @@ class LoginForm extends Component {
       .then(
       (data) => {
         console.log(data);
-        if ('token' in data) {
+        if ('token' in data) {          
           this.setState({
-            isLoggedIn: true,
             username: "",
-            password: "",
-            token: data.token
+            password: ""
           });
+          this.props.onLogin(data.token, data.username);
         }
       },
       (error) => {
         console.log(error);
       }
-    );
+    );      
   }
 
   render() {
@@ -81,7 +80,7 @@ class LoginForm extends Component {
               onChange={this.handleChangePassword}/>
           </InputGroup>
           <br/>
-          <Button>Submit</Button>
+          <Button>Sing in</Button>
         </Form>
       </Container>
     );

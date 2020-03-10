@@ -64,7 +64,7 @@ class MyNavBar extends Component {
                   <NavLink 
                     className="font-weight-bold" 
                     href="#" 
-                    onClick={() => this.props.login()}
+                    //onClick={this.props.login()}
                     >
                     Login
                   </NavLink>

@@ -47,7 +47,8 @@ def auth_error():
 def get_token():
     token = current_user.get_token()
     db.session.commit()
-    return {'token': token}
+    return {'token': token,
+            'username': current_user.username}
 
 
 @bp.route('/mock_user', methods=['GET'])
@@ -63,7 +64,9 @@ def mock_user():
 def is_authenticated():
     is_authenticated = current_user.is_authenticated if current_user else False 
     token = current_user.get_token() if is_authenticated else None 
+    username = current_user.username if is_authenticated else None 
     return {'is_authenticated': is_authenticated,
+            'username': username,
             'token': token}
 
 
