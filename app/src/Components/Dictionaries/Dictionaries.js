@@ -1,16 +1,14 @@
 import React from 'react';
 import { Component } from 'react';
 import { Button, Container } from 'reactstrap';
-import TestComponent from '../../TestComponent';
 
-class Welcome extends Component {
+class Dictionaries extends Component {
   render() {
     return (
       <Container>
-        <h3>Welcome, {this.props.username}!</h3>
-        <TestComponent />
+        <h3>Dictionaries</h3>
       </Container>
       );
   }
 }
-export default Welcome;
+export default Dictionaries;

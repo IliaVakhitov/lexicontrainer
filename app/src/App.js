@@ -1,10 +1,8 @@
 import React from 'react';
 import { Component } from 'react';
-import MyNavBar from './MyNavBar';
-import LoginForm from './Components/Auth/LoginForm';
-import WelcomePage from './Components/Main/WelcomePage';
+import MyNavBar from './Components/Main/MyNavBar';
+import Routes from './Components/Main/Routes';
 import './App.css';
-
 
 class App extends Component {
   
@@ -18,15 +16,11 @@ class App extends Component {
     };
 
     this.login_check = this.login_check.bind(this);
-    this.logout = this.logout.bind(this);
-    this.login = this.login.bind(this);
     this.onLogin = this.onLogin.bind(this);
     this.login_check();
+    
   }
  
-  login(){
-    // Open LoginForm
-  }
 
   onLogin(new_token, new_username){
     this.setState({
@@ -81,23 +75,17 @@ class App extends Component {
     );
   }
 
+  
+
   render() {
     const isLoggedIn = this.state.isLoggedIn
     return (
       <div>
-        <MyNavBar isLoggedIn={isLoggedIn}
-          //login={() => this.login()}   
-          logout={() => this.logout()}/>     
-        { (!this.state.isLoggedIn) ? (
-          <LoginForm 
-            onLogin={this.onLogin}
-            />   
-        ) : (          
-          <WelcomePage username={this.state.username} />
-        )}
+        <MyNavBar isLoggedIn={isLoggedIn}/>     
+        <Routes />;
       </div>
     );
   }
 }
- 
+
 export default App;

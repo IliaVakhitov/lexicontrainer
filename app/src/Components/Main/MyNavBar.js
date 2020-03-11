@@ -1,5 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
+import { NavLink as RRNavLink } from 'react-router-dom';
 import { 
   Collapse, NavbarToggler, Navbar, NavbarBrand, Nav, NavItem, NavLink
 } from 'reactstrap';
@@ -20,24 +21,24 @@ class MyNavBar extends Component {
     return (      
       <Navbar color="light" light expand="md">
         <div className="container">
-          <NavbarBrand href="#">
+          <NavbarBrand tag={RRNavLink} to="/">
             Words learning
           </NavbarBrand>
           <NavbarToggler onClick={toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="mr-auto" navbar>
               <NavItem className="d-flex align-items-center">
-                <NavLink className="font-weight-bold" href="#">
-                  Home
-                </NavLink>
-              </NavItem>
-              <NavItem className="d-flex align-items-center">
-                <NavLink className="font-weight-bold" href="#">
+                <NavLink tag={RRNavLink} className="font-weight-bold" to="/dictionaries">
                   Dictionaries
                 </NavLink>
               </NavItem>
               <NavItem className="d-flex align-items-center">
-                <NavLink className="font-weight-bold" href="#">
+                <NavLink tag={RRNavLink} className="font-weight-bold" to="/words">
+                  Words
+                </NavLink>
+              </NavItem>
+              <NavItem className="d-flex align-items-center">
+                <NavLink tag={RRNavLink} className="font-weight-bold" to="/games">
                   Games
                 </NavLink>
               </NavItem>
@@ -45,15 +46,12 @@ class MyNavBar extends Component {
             { isLoggedIn ? (
               <Nav className="ml-auto" navbar>
                 <NavItem className="d-flex align-items-center">
-                  <NavLink className="font-weight-bold" href="#">
+                  <NavLink tag={RRNavLink} className="font-weight-bold" to="/profile">
                     Profile
                   </NavLink>
                 </NavItem>
                 <NavItem className="d-flex align-items-center">
-                  <NavLink className="font-weight-bold" 
-                    href="#" 
-                    onClick={() => this.props.logout()}
-                    >
+                  <NavLink tag={RRNavLink} className="font-weight-bold" to="/logout">
                     Logout
                   </NavLink>
                 </NavItem>
@@ -61,11 +59,7 @@ class MyNavBar extends Component {
               ) : (
               <Nav className="ml-auto" navbar>
                 <NavItem className="d-flex align-items-center">
-                  <NavLink 
-                    className="font-weight-bold" 
-                    href="#" 
-                    //onClick={this.props.login()}
-                    >
+                  <NavLink tag={RRNavLink} className="font-weight-bold" to="/login">
                     Login
                   </NavLink>
                 </NavItem> 

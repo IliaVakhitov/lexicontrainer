@@ -3,7 +3,7 @@ import { Component } from 'react';
 import { Input, InputGroupAddon, InputGroup, InputGroupText, Container,
   Form, Button } from 'reactstrap';
 
-class LoginForm extends Component {
+class Login extends Component {
   constructor(props) {
       super(props);
     
@@ -87,4 +87,4 @@ class LoginForm extends Component {
   }
 }
 
-export default LoginForm
+export default Login
