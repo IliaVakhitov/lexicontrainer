@@ -17,6 +17,7 @@ class App extends Component {
 
     this.login_check = this.login_check.bind(this);
     this.onLogin = this.onLogin.bind(this);
+    this.logout = this.logout.bind(this);
     this.login_check();
     
   }
@@ -55,7 +56,7 @@ class App extends Component {
       .then(
       (data) => {
         console.log(data);
-        if ('is_authenticated' in data) {
+        if ('is_authenticated' in data && data.is_authenticated) {
           this.setState({
             isLoggedIn: data.is_authenticated,
             username: data.username,
@@ -64,7 +65,7 @@ class App extends Component {
         } else {
           this.setState({
             isLoggedIn: false,
-            username: null,
+            username: 'Guest',
             token: null
           });
         }
@@ -73,16 +74,14 @@ class App extends Component {
         console.log(error);
       }
     );
-  }
-
-  
+  };
 
   render() {
     const isLoggedIn = this.state.isLoggedIn
     return (
       <div>
-        <MyNavBar isLoggedIn={isLoggedIn}/>     
-        <Routes />;
+        <MyNavBar isLoggedIn={isLoggedIn} logout={this.logout}/>     
+        <Routes username={this.state.username} onLogin={() => this.onLogin} />;
       </div>
     );
   }

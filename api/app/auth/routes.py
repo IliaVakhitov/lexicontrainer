@@ -87,9 +87,10 @@ def login():
 
 @bp.route('/logout', methods=['POST'])
 def logout():
-    current_user.revoke_token()
-    db.session.commit()
-    logout_user()
+    if current_user.is_authenticated:
+        current_user.revoke_token()
+        db.session.commit()
+        logout_user()
     return {'message': 'Logout successfull'} 
 
 @bp.route('/register', methods=['POST'])

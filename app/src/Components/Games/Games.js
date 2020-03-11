@@ -8,7 +8,7 @@ class Games extends Component {
       <Container>
         <h3>Define game</h3>
       </Container>
-      );
+    );
   }
 }
 export default Games;

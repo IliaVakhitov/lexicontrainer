@@ -51,7 +51,7 @@ class MyNavBar extends Component {
                   </NavLink>
                 </NavItem>
                 <NavItem className="d-flex align-items-center">
-                  <NavLink tag={RRNavLink} className="font-weight-bold" to="/logout">
+                  <NavLink className="font-weight-bold" href="#" onClick={() => this.props.logout()}>
                     Logout
                   </NavLink>
                 </NavItem>
