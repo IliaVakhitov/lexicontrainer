@@ -7,24 +7,23 @@ class Profile extends Component {
     super(props);
 
     this.state = {
-      username: "",
-      total_dictionaries: "",
-      total_words: "",
-      progress: "",
+      username: '',
+      total_dictionaries: '',
+      total_words: '',
+      progress: '',
     }
 
-    this.user_profile = this.user_profile.bind(this);
     this.user_profile();
   }
 
   user_profile() {
     var myHeaders = new Headers();
-    myHeaders.append("Content-Type", 'application/json');
-    myHeaders.append("Authorization", 'Bearer ' + this.props.token);    
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', 'Bearer ' + this.props.token);    
     fetch('auth/user/',{
       method: 'POST',
       //token: this.props.token,
-      //credentials: "include",
+      //credentials: 'include',
       headers: myHeaders,
       body: JSON.stringify({
         'username': this.props.username
