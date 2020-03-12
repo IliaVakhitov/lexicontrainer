@@ -16,8 +16,10 @@ token_auth = HTTPTokenAuth()
 
 @token_auth.verify_token
 def verify_token(token):
-    current_user = User.check_token(token) if token else None
-    return current_user is not None
+    print(token)    
+    curr_user = User.check_token(token) if token else None
+    print(curr_user)
+    return curr_user is not None
 
 
 @token_auth.error_handler
@@ -99,13 +101,14 @@ def register():
     return {'message': 'Page not available'} 
 
 
-@bp.route('/user/', methods=['GET'])
+@bp.route('/user/', methods=['POST'])
 @token_auth.login_required
 def user():
     """
     Return information about user
     """
-
+    
+    request_data = request.get_json()
     username = request_data.get('username')
     user = User.query.filter_by(username=username).first_or_404()
     dictionaries = Dictionary.query.filter_by(user_id=current_user.id).all()

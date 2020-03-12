@@ -21,7 +21,9 @@ class Routes extends Component {
         <Route path="/games" component={Games} />
         <Route path="/dictionaries" component={Dictionaries} />
         <Route path="/login" render={(props) => <Login {...props} onLogin={this.props.onLogin()} />} />
-        <Route path="/profile" render={(props) => <Profile {...props} username={this.props.username} />} />
+        <Route path="/profile" render={(props) => <Profile {...props} 
+            username={this.props.username} 
+            token={this.props.token}/>} />
       </Switch>
     );
   }

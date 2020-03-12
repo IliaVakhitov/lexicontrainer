@@ -74,14 +74,14 @@ class App extends Component {
         console.log(error);
       }
     );
-  };
+  }
 
   render() {
     const isLoggedIn = this.state.isLoggedIn
     return (
       <div>
         <MyNavBar isLoggedIn={isLoggedIn} logout={this.logout}/>     
-        <Routes username={this.state.username} onLogin={() => this.onLogin} />;
+        <Routes token={this.state.token} username={this.state.username} onLogin={() => this.onLogin} />;
       </div>
     );
   }
