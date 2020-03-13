@@ -26,7 +26,10 @@ class Words extends Component {
       .then(res => res.json())
       .then(
       (data) => {
-        console.log(data);
+        if ('error' in data) {
+          console.log(data);
+          return;
+        }
         this.setState({words: data.words});
       },
       (error) => {

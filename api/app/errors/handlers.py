@@ -3,7 +3,7 @@ from app.errors import bp
 
 
 def error_response(status_code, message=None):
-    payload = {'status_code': status_code}
+    payload = {'error': status_code}
     if message:
         payload['message'] = message
     response = jsonify(payload)

@@ -22,7 +22,9 @@ class Routes extends Component {
             username={this.props.username}  
             token={this.props.token} />}/>
         <Route path='/games' component={Games} />
-        <Route path='/dictionaries' component={Dictionaries} />
+        <Route path='/dictionaries' render={(props) => <Dictionaries 
+            username={this.props.username}  
+            token={this.props.token} />} />
         <Route path='/login' render={(props) => <Login {...props} onLogin={this.props.onLogin()} />} />
         <Route path='/logout' render={(props) => <Logout {...props} onLogout={this.props.onLogout()} />} />
         <Route path='/profile' render={(props) => <Profile {...props} 

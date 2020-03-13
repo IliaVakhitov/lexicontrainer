@@ -40,8 +40,7 @@ class Login extends Component {
       })
     })
       .then(res => res.json())
-      .then((data) => {
-        console.log(data);
+      .then((data) => {        
         if ('token' in data) {          
           this.setState({
             username: '',

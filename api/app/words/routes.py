@@ -15,6 +15,7 @@ from app.words import bp
 from app import db
 from appmodel.words_api import WordsApi
 from datetime import datetime
+from app.errors.handlers import error_response
 
 token_auth = HTTPTokenAuth()
 

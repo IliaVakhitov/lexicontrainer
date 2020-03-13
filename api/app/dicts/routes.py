@@ -7,23 +7,40 @@ from flask import request
 from flask import redirect
 from flask import flash
 from flask import jsonify
+from flask_httpauth import HTTPTokenAuth
+from app.errors.handlers import error_response
 
 from app.dicts import bp
 
-from app.models import Dictionary
+from app.models import User, Dictionary
 from app import db
 from datetime import datetime
 
+token_auth = HTTPTokenAuth()
 
-@bp.route('/dictionaries', methods=['GET'])
-@login_required
+@token_auth.verify_token
+def verify_token(token):
+    curr_user = User.check_token(token) if token else None
+    return curr_user is not None
+
+
+@token_auth.error_handler
+def token_auth_error():
+    return error_response(401)
+
+@bp.route('/dictionaries', methods=['POST'])
+@token_auth.login_required
 def dictionaries():
     """
     List of dictionaries of current user
     """
 
+    request_data = request.get_json()
+    username = request_data.get('username')  
+    user = User.query.filter_by(username=username).first()   
+    
     dictionaries = Dictionary.query\
-        .filter_by(user_id=current_user.id)\
+        .filter_by(user_id=user.id)\
         .order_by('dictionary_name')
 
     dicts = [d.to_dict() for d in dictionaries]
