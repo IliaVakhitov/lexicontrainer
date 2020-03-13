@@ -18,7 +18,9 @@ class Routes extends Component {
     return(
       <Switch>
         <Route exact path='/' render={(props) => <Main {...props} username={this.props.username} />} />
-        <Route path='/words' component={Words} />
+        <Route path='/words' render={(props) => <Words {...props} 
+            username={this.props.username}  
+            token={this.props.token} />}/>
         <Route path='/games' component={Games} />
         <Route path='/dictionaries' component={Dictionaries} />
         <Route path='/login' render={(props) => <Login {...props} onLogin={this.props.onLogin()} />} />

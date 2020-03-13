@@ -22,8 +22,6 @@ class Profile extends Component {
     myHeaders.append('Authorization', 'Bearer ' + this.props.token);    
     fetch('auth/user/',{
       method: 'POST',
-      //token: this.props.token,
-      //credentials: 'include',
       headers: myHeaders,
       body: JSON.stringify({
         'username': this.props.username
@@ -31,7 +29,6 @@ class Profile extends Component {
     })
       .then(res => res.json())
       .then((data) => {
-        console.log(data);
         this.setState({
           total_dictionaries: data.total_dictionaries,
           total_words: data.total_words,

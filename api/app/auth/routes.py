@@ -16,9 +16,7 @@ token_auth = HTTPTokenAuth()
 
 @token_auth.verify_token
 def verify_token(token):
-    print(token)    
     curr_user = User.check_token(token) if token else None
-    print(curr_user)
     return curr_user is not None
 
 
@@ -107,17 +105,20 @@ def user():
     """
     Return information about user
     """
-    
+
     request_data = request.get_json()
     username = request_data.get('username')
     user = User.query.filter_by(username=username).first_or_404()
+    # All user dictionaries
     dictionaries = Dictionary.query.filter_by(user_id=current_user.id).all()
     dict_ids = [d.id for d in dictionaries]
+    # All words from all dictionaries
     words = Word.query.filter(Word.dictionary_id.in_(dict_ids)).all()
     total_words = len(words)
     words_ids = [w.id for w in words]
     words_learned = LearningIndex.query.filter(LearningIndex.word_id.in_(words_ids)).filter_by(index=100).count()
     total_dictionaries = len(dictionaries)
+    # Calculating total progress
     learning_index_list = LearningIndex.query.filter(LearningIndex.word_id.in_(words_ids)).all()
     index_progress = 0
     for li_entry in learning_index_list:

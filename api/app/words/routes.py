@@ -7,21 +7,41 @@ from flask import request
 from flask import redirect
 from flask import flash
 from flask import jsonify
+from flask_httpauth import HTTPTokenAuth
 
-from app.models import Dictionary, Definitions, LearningIndex
+from app.models import User, Dictionary, Definitions, LearningIndex
 from app.models import Word
 from app.words import bp
 from app import db
 from appmodel.words_api import WordsApi
 from datetime import datetime
 
+token_auth = HTTPTokenAuth()
 
-@bp.route('/all_words')
-@login_required
+@token_auth.verify_token
+def verify_token(token):
+    curr_user = User.check_token(token) if token else None
+    return curr_user is not None
+
+
+@token_auth.error_handler
+def token_auth_error():
+    return error_response(401)
+
+@bp.route('/all_words', methods=['POST'])
+@token_auth.login_required
 def all_words():
-    dictionaries = Dictionary.query.filter_by(user_id=current_user.id).all()
+    if not current_user.is_authenticated:
+        return {'words': []}
+
+    request_data = request.get_json()
+    username = request_data.get('username')  
+    user = User.query.filter_by(username=username).first()   
+    dictionaries = Dictionary.query.filter_by(user_id=user.id).all()
     dict_ids = [d.id for d in dictionaries]
-    words_query = Word.query.filter(Word.dictionary_id.in_(dict_ids)).all()
+    words_query = Word.query.\
+        filter(Word.dictionary_id.in_(dict_ids)).\
+        order_by('spelling').all()
 
     words = [word.to_dict() for word in words_query]
     return {'words': words}
@@ -56,7 +76,9 @@ def get_definition():
     result = json.loads(result_query)
     if word_id > 0:
         for definition in result['definitions']:
-            definition_entry = Definitions(word_id=word_id, definition=definition['definition'])
+            definition_entry = Definitions(
+                word_id=word_id, 
+                definition=definition['definition'])
             db.session.add(definition_entry)
         db.session.commit()
     return result
