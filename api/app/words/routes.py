@@ -29,15 +29,12 @@ def verify_token(token):
 def token_auth_error():
     return error_response(401)
 
-@bp.route('/all_words', methods=['POST'])
+@bp.route('/all_words', methods=['GET'])
 @token_auth.login_required
 def all_words():
-    if not current_user.is_authenticated:
-        return {'words': []}
+    
+    user = User.check_request(request)
 
-    request_data = request.get_json()
-    username = request_data.get('username')  
-    user = User.query.filter_by(username=username).first()   
     dictionaries = Dictionary.query.filter_by(user_id=user.id).all()
     dict_ids = [d.id for d in dictionaries]
     words_query = Word.query.\

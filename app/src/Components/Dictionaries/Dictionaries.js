@@ -18,11 +18,8 @@ class Dictionaries extends Component {
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + this.props.token);  
     fetch('/dicts/dictionaries', {
-      method: 'POST',
-      headers: myHeaders,
-      body: JSON.stringify({
-        'username': this.props.username
-      })
+      method: 'GET',
+      headers: myHeaders
     })
       .then(res => res.json())
       .then(

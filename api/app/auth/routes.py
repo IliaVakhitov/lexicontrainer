@@ -99,18 +99,17 @@ def register():
     return {'message': 'Page not available'} 
 
 
-@bp.route('/user/', methods=['POST'])
+@bp.route('/user/', methods=['GET'])
 @token_auth.login_required
 def user():
     """
     Return information about user
     """
 
-    request_data = request.get_json()
-    username = request_data.get('username')
-    user = User.query.filter_by(username=username).first_or_404()
+    user = User.check_request(request)   
+    
     # All user dictionaries
-    dictionaries = Dictionary.query.filter_by(user_id=current_user.id).all()
+    dictionaries = Dictionary.query.filter_by(user_id=user.id).all()
     dict_ids = [d.id for d in dictionaries]
     # All words from all dictionaries
     words = Word.query.filter(Word.dictionary_id.in_(dict_ids)).all()
@@ -124,7 +123,7 @@ def user():
     for li_entry in learning_index_list:
         index_progress += li_entry.index
     progress = round(index_progress / total_words, 2)
-    return {'username': username,
+    return {'username': user.username,
             'total_dictionaries': total_dictionaries,
             'total_words': total_words,
             'words_learned': words_learned,

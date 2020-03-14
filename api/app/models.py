@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import login
 from flask import jsonify
+from app.errors.handlers import error_response
 
 synonyms = db.Table(
     'synonyms',
@@ -129,7 +130,19 @@ class User(UserMixin, db.Model):
         user = User.query.filter_by(token=token).first()
         if user is None or user.token is None or user.token_expiration < datetime.utcnow():
             return None
-        return user    
+        return user   
+    
+    @staticmethod
+    def check_request(request):
+        if not 'Authorization' in request.headers:
+            return error_response(400)
+
+        request_token = request.headers.get('Authorization').replace('Bearer ', '')
+        user = User.check_token(request_token)
+        if user is None:
+            return error_response(401)
+
+        return user
 
 
 class Statistic(db.Model):

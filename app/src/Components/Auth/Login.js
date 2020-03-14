@@ -27,7 +27,6 @@ class Login extends Component {
   handleSubmit(event) {
     event.preventDefault();
     // TODO validate form data
-    console.log('logging in');
     var myHeaders = new Headers();
     myHeaders.append('Authorization', 'Basic ' + btoa(this.state.username+':'+this.state.password));
     myHeaders.append('Content-Type', 'application/json');

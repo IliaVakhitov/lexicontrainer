@@ -41,7 +41,6 @@ class App extends Component {
       .then(res => res.json())
       .then(
       (data) => {
-        console.log(data);
         if ('is_authenticated' in data && data.is_authenticated) {
           this.setState({
             isLoggedIn: data.is_authenticated,

@@ -28,16 +28,14 @@ def verify_token(token):
 def token_auth_error():
     return error_response(401)
 
-@bp.route('/dictionaries', methods=['POST'])
+@bp.route('/dictionaries', methods=['GET'])
 @token_auth.login_required
 def dictionaries():
     """
     List of dictionaries of current user
     """
 
-    request_data = request.get_json()
-    username = request_data.get('username')  
-    user = User.query.filter_by(username=username).first()   
+    user = User.check_request(request) 
     
     dictionaries = Dictionary.query\
         .filter_by(user_id=user.id)\
