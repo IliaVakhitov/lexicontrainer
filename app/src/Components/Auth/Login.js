@@ -1,7 +1,7 @@
 import React from 'react';
 import { Component } from 'react';
 import { Input, InputGroupAddon, InputGroup, InputGroupText, Container,
-  Form, Button } from 'reactstrap';
+  FormGroup, Label, Form, Button } from 'reactstrap';
 
 class Login extends Component {
   constructor(props) {
@@ -10,9 +10,11 @@ class Login extends Component {
       this.state = {
         username: '',
         password: '',
+        remember_me: false
       }
       this.handleChangeUsername = this.handleChangeUsername.bind(this);
       this.handleChangePassword = this.handleChangePassword.bind(this);
+      this.handleOnClickRememberMe = this.handleOnClickRememberMe.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -24,6 +26,10 @@ class Login extends Component {
     this.setState({password: event.target.value});
   }
   
+  handleOnClickRememberMe() {
+    this.setState({remember_me: !this.state.remember_me});
+  }
+
   handleSubmit(event) {
     event.preventDefault();
     // TODO validate form data
@@ -35,7 +41,7 @@ class Login extends Component {
       credentials: 'include',
       headers: myHeaders,
       body: JSON.stringify({
-        'message':'Authorization request'
+        'remember_me':this.state.remember_me
       })
     })
       .then(res => res.json())
@@ -77,6 +83,16 @@ class Login extends Component {
               placeholder='password'                
               onChange={this.handleChangePassword}/>
           </InputGroup>
+          <br/>
+          <FormGroup check>
+            <Label remember_me>
+              <Input 
+                type='checkbox' 
+                value={this.state.remember_me} 
+                onClick={this.handleOnClickRememberMe}/>{' '}
+              Remember me
+            </Label>
+          </FormGroup>
           <br/>
           <Button>Sing in</Button>
         </Form>

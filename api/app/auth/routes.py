@@ -30,11 +30,12 @@ def verify_password(username, password):
     user = User.query.filter_by(username=username).first()
     if user is None:
         return False
-    pwd_check = user.check_password(password)
-    if pwd_check:
-        login_user(user)
+    password_check = user.check_password(password)
+    if password_check:
+        request_data = request.get_json()
+        login_user(user, remember=request_data.get('remember_me'))
 
-    return pwd_check 
+    return password_check 
 
 
 @basic_auth.error_handler
@@ -51,15 +52,6 @@ def get_token():
             'username': current_user.username}
 
 
-@bp.route('/mock_user', methods=['GET'])
-def mock_user():
-    if not current_user.is_authenticated:
-        db_user = User.query.filter_by(username='Test').first_or_404()
-        login_user(db_user, remember=True)
-        current_user = db_user
-    return {'current_user': current_user.username}
-
-
 @bp.route('/is_authenticated', methods=['GET'])
 def is_authenticated():
     is_authenticated = current_user.is_authenticated if current_user else False 
@@ -68,21 +60,6 @@ def is_authenticated():
     return {'is_authenticated': is_authenticated,
             'username': username,
             'token': token}
-
-
-@bp.route('/login', methods=['POST'])
-def login():
-    request_data = request.get_json()
-    username = request_data.get('username')
-    db_user = User.query.filter_by(username=username).first()
-    if db_user is None:
-        return {'error': f'User {username} not found!'}
-
-    if db_user.check_password(request_data.get('password')):
-        return {'error': 'Invalid password!'}
-        
-    login_user(db_user, remember=request_data.get('remember_me'))
-    return {'message': 'Login successful'}
 
 
 @bp.route('/logout', methods=['POST'])
@@ -106,7 +83,7 @@ def user():
     Return information about user
     """
 
-    user = User.check_request(request)   
+    user = User.check_request(request)
     
     # All user dictionaries
     dictionaries = Dictionary.query.filter_by(user_id=user.id).all()

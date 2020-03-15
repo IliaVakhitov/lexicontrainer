@@ -10,6 +10,7 @@ class Profile extends Component {
       username: '',
       total_dictionaries: '',
       total_words: '',
+      words_learned: '',
       progress: '',
     }
 
@@ -29,7 +30,9 @@ class Profile extends Component {
         this.setState({
           total_dictionaries: data.total_dictionaries,
           total_words: data.total_words,
-          progress: data.progress
+          progress: data.progress,
+          words_learned: data.words_learned,
+          username: data.username
         });
       },
       (error) => {
@@ -46,6 +49,7 @@ class Profile extends Component {
         <Container>
           <p>Dictionaries: {this.state.total_dictionaries}</p>
           <p>Total words: {this.state.total_words}</p>
+          <p>Words learned: {this.state.words_learned}</p>
           <p>Progres: {this.state.progress}</p>
         </Container>
       </Container>

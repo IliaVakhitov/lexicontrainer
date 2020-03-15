@@ -16,15 +16,13 @@ class Logout extends Component {
       .then(res => res.json())
       .then(
       (data) => {
-        console.log(data);
         this.props.onLogout();
       },
       (error) => {
         console.log(error);
       }
     ); 
-  }
-  
+  }  
 
   render() {
     return (<Redirect to='/' />);

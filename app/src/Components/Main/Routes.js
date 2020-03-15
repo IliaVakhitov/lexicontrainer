@@ -17,18 +17,26 @@ class Routes extends Component {
   render() {
     return(
       <Switch>
-        <Route exact path='/' render={(props) => <Main {...props} username={this.props.username} />} />
-        <Route path='/words' render={(props) => <Words {...props} 
-            username={this.props.username}  
+        <Route exact path='/' 
+          render={(props) => <Main {...props} 
+            username={this.props.username} />} />
+        <Route path='/words' 
+          render={(props) => <Words {...props} 
             token={this.props.token} />}/>
-        <Route path='/games' component={Games} />
-        <Route path='/dictionaries' render={(props) => <Dictionaries 
-            username={this.props.username}  
+        <Route path='/games' 
+          render={(props) => <Games {... props}
             token={this.props.token} />} />
-        <Route path='/login' render={(props) => <Login {...props} onLogin={this.props.onLogin()} />} />
-        <Route path='/logout' render={(props) => <Logout {...props} onLogout={this.props.onLogout()} />} />
-        <Route path='/profile' render={(props) => <Profile {...props} 
-            username={this.props.username} 
+        <Route path='/dictionaries' 
+          render={(props) => <Dictionaries 
+            token={this.props.token} />} />
+        <Route path='/login' 
+          render={(props) => <Login {...props} 
+            onLogin={this.props.onLogin()} />} />
+        <Route path='/logout' 
+          render={(props) => <Logout {...props} 
+            onLogout={this.props.onLogout()} />} />
+        <Route path='/profile' 
+          render={(props) => <Profile {...props}  
             token={this.props.token}/>} />
       </Switch>
     );
