@@ -8,7 +8,11 @@ class Games extends Component {
   constructor(props){
     super(props);
 
+    this.check_current_game(); 
+
     this.state = {
+      current_game: false,
+      current_game_type: '',
       game_type: 'FindDefinition',
       game_rounds: 10,
       include_learned_words: false,
@@ -24,7 +28,63 @@ class Games extends Component {
     this.setGameRounds = this.setGameRounds.bind(this);
     this.handleOnClickIncludeLearned = this.handleOnClickIncludeLearned.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.remove_game = this.remove_game.bind(this);
+    this.resume_game = this.resume_game.bind(this);
 
+  }
+
+  resume_game() {
+    this.props.history.push('/play');
+  }
+
+  remove_game() {
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', 'Bearer ' + this.props.token);
+    fetch('/games/remove_game', {
+      method: 'DELETE',
+      credentials: 'include',
+      headers: myHeaders
+    })
+      .then(res => res.json())
+      .then((data) => {
+        if( 'result' in data) {
+          this.setState({current_game: false});
+        } else {
+          console.log(data);
+        }
+      },
+      (error) => {
+        console.log(error);
+      }
+    );   
+  }
+
+  check_current_game() {
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', 'Bearer ' + this.props.token);
+    fetch('/games/check_current_game', {
+      method: 'GET',
+      credentials: 'include',
+      headers: myHeaders
+    })
+      .then(res => res.json())
+      .then((data) => {
+        if( 'current_game' in data) {
+          this.setState({current_game: data.current_game});
+          if (data.current_game) {
+            this.setState({
+              current_game_type: data.game_type,
+              progress: data.progress
+            }); 
+          }
+        }
+      },
+      (error) => {
+        console.log(error);
+      }
+    ); 
   }
 
   setGameType(new_game_type) {
@@ -57,28 +117,36 @@ class Games extends Component {
       })
     })
       .then(res => res.json())
-      .then((data) => {        
-        if ('token' in data) {          
-          this.setState({
-            username: '',
-            password: ''
-          });
-          this.props.onLogin(data.token, data.username);
-          this.props.history.push('/');
-        }
+      .then((data) => {
+        this.props.history.push('/play');
       },
       (error) => {
         console.log(error);
       }
-    );      
+    );         
   }
 
   render() {
     const dictionaries = this.state.dictionaries;
+    const current_game = this.state.current_game;
+    let current_game_warning;
+    if (current_game) {
+      current_game_warning = 
+        <div>
+          <p>Found incompleted game. 
+          Game type {this.state.current_game_type}. 
+          Progress {this.state.progress}%.</p>
+          <p>Would you like to continue?</p>
+          <p> 
+            <Button outline color='secondary' onClick={this.resume_game}>Continue</Button>{' '}
+            <Button outline color='danger'onClick={this.remove_game}>Remove</Button></p>
+        </div>
+    };
 
     return (
       <Container>
         <h3>Define game</h3>
+          {current_game_warning}
         <br />
         <Form onSubmit={this.handleSubmit}>
           <FormGroup row>
@@ -105,7 +173,7 @@ class Games extends Component {
                 id='game_rounds'
                 value={this.state.game_rounds} 
                 onChange={this.setGameRounds} 
-                  />
+              />
             </Col>
           </FormGroup> 
           <FormGroup row>

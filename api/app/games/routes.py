@@ -27,13 +27,21 @@ def token_auth_error():
     return error_response(401)
 
 
-@bp.route('/resume_game', methods=['GET'])
+@bp.route('/check_current_game', methods=['GET'])
 @token_auth.login_required
-def resume_game():
-    pass
+def check_current_game():
+    user = User.check_request(request)
+    revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
+    
+    if revision_game_entry is None:
+        return {'current_game' : False} 
+
+    return {'current_game': True,
+            'progress': revision_game_entry.get_progress(),
+            'game_type': revision_game_entry.game_type}
 
 
-@bp.route('/remove_game', methods=['GET'])
+@bp.route('/remove_game', methods=['DELETE'])
 @token_auth.login_required
 def remove_game():
     user = User.check_request(request)
@@ -50,7 +58,6 @@ def remove_game():
 def define_game():
 
     user = User.check_request(request)
-
     revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
     dictionaries = Dictionary.query.filter_by(user_id=user.id).order_by('dictionary_name')
 
@@ -107,25 +114,32 @@ def define_game():
 @bp.route('/next_round', methods=['GET'])
 @token_auth.login_required
 def next_round():
-    revision_game_entry = CurrentGame.query.filter_by(user_id=current_user.id, game_completed=False).first()
+    user = User.check_request(request)
+    revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
     game_ended = revision_game_entry.get_next_round()
     if game_ended:
         return {'redirect': url_for('games.game_statistic')}
 
-    return revision_game_entry.get_current_round()
+    return {'game_type':revision_game_entry.game_type,
+            'progress':revision_game_entry.get_progress,
+            'game_round':revision_game_entry.get_current_round()}
 
 
 @bp.route('/current_round', methods=['GET'])
 @token_auth.login_required
 def current_round():
-    revision_game_entry = CurrentGame.query.filter_by(user_id=current_user.id, game_completed=False).first()
-    return revision_game_entry.get_current_round()
+    user = User.check_request(request)
+    revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
+    return {'game_type':revision_game_entry.game_type,
+            'progress':revision_game_entry.get_progress,
+            'game_round':revision_game_entry.get_current_round()}
 
 
 @bp.route('/get_correct_index', methods=['GET'])
 @token_auth.login_required
 def get_correct_index():
-    revision_game_entry = CurrentGame.query.filter_by(user_id=current_user.id, game_completed=False).first()
+    user = User.check_request(request)
+    revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
     return jsonify({'correct_index': revision_game_entry.get_correct_index(request.form['answer_index']),
                    'progress': revision_game_entry.get_progress()})
 
@@ -135,7 +149,6 @@ def get_correct_index():
 def game_statistic():
 
     user = User.check_request(request)
-
     revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=True).first()
     total_rounds = revision_game_entry.total_rounds
     correct_answers = revision_game_entry.correct_answers

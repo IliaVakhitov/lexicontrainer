@@ -7,6 +7,7 @@ import Profile from '../../Components/Auth/Profile';
 import Dictionaries from '../../Components/Dictionaries/Dictionaries';
 import Words from '../../Components/Words/Words';
 import Games from '../../Components/Games/Games';
+import PlayGame from '../../Components/Games/PlayGame';
 import Main from './Main';
 
 class Routes extends Component {
@@ -25,6 +26,9 @@ class Routes extends Component {
             token={this.props.token} />}/>
         <Route path='/games' 
           render={(props) => <Games {... props}
+            token={this.props.token} />} />
+        <Route path='/play' 
+          render={(props) => <PlayGame {... props}
             token={this.props.token} />} />
         <Route path='/dictionaries' 
           render={(props) => <Dictionaries 

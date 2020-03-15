@@ -45,7 +45,7 @@ class Profile extends Component {
   render() {
     return (
       <Container>
-        <h3>{this.props.username} user information</h3>
+        <h3>{this.state.username} user information</h3>
         <Container>
           <p>Dictionaries: {this.state.total_dictionaries}</p>
           <p>Total words: {this.state.total_words}</p>
