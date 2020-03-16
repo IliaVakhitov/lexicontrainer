@@ -114,7 +114,7 @@ class PlayGame extends Component {
       }
     ); 
   }
-
+  // TODO Find a way to make it simpler
   render() {
     const corr_ind = this.state.correct_index;
     const answer_index = this.state.answer_index;
@@ -122,7 +122,8 @@ class PlayGame extends Component {
      
     const buttons_answers = this.state.answers.map(answer => 
       <p key={this.state.answers.indexOf(answer)}>
-        <Button outline
+        <Button outline={this.state.answers.indexOf(answer) === corr_ind 
+            || this.state.answers.indexOf(answer) === answer_index  ? false : true}
           color={this.state.answers.indexOf(answer) === corr_ind 
             ? 'success' : 
               (this.state.answers.indexOf(answer) === answer_index 

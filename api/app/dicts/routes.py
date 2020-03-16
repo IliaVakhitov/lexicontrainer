@@ -1,17 +1,12 @@
 import json
 import logging
-from flask_login import login_required, current_user
-from flask import render_template
-from flask import url_for
 from flask import request
-from flask import redirect
-from flask import flash
+
 from flask import jsonify
 from flask_httpauth import HTTPTokenAuth
 from app.errors.handlers import error_response
 
 from app.dicts import bp
-
 from app.models import User, Dictionary
 from app import db
 from datetime import datetime
@@ -35,42 +30,59 @@ def dictionaries():
     List of dictionaries of current user
     """
 
-    user = User.check_request(request) 
-    
+    user = User.check_request(request)    
     dictionaries = Dictionary.query\
         .filter_by(user_id=user.id)\
         .order_by('dictionary_name')
 
-    dicts = [d.to_dict() for d in dictionaries]
+    dicts = []
+    for dictionary in dictionaries:
+        dict_entry = dictionary.to_dict()        
+        words = [{'id': w.id, 'spelling': w.spelling} for w in dictionary.words.all()]
+        dict_entry['words'] = words
+        dicts.append(dict_entry)
     return {'dictionaries': dicts}
 
 
 @bp.route('/add_dictionary/', methods=['POST'])
-@login_required
+@token_auth.login_required
 def add_dictionary(dictionary_name):
+    user = User.check_request(request)
     dictionary_entry = Dictionary(
         dictionary_name=dictionary_form.dictionary_name.data.strip(),
         description=dictionary_form.description.data.strip(),
-        user_id=current_user.id)
+        user_id=user.id)
     db.session.add(dictionary_entry)
     db.session.commit()
     logger.info(f'Dictionary {dictionary_entry.dictionary_name} saved')
     return redirect(url_for('main.edit_dictionary', dictionary_id=dictionary_entry.id))
 
 
+@bp.route('/delete_dictionary/', methods=['DELETE'])
+@token_auth.login_required
+def delete_dictionary(dictionary_name):
+    pass
 
+
+@bp.route('/update_dictionary/', methods=['POST'])
+@token_auth.login_required
+def update_dictionary(dictionary_name):
+    pass
+
+"""
 @bp.route('/dictionary/<int:dictionary_id>')
-@login_required
+@token_auth.login_required
 def dictionary(dictionary_id):
+    user = User.check_request(request)
     dictionary_entry = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
-    return render_template('main/dictionary.html',
-                           title=dictionary_entry.dictionary_name,
-                           dictionary=dictionary_entry)
+    return {'title':dictionary_entry.dictionary_name,
+            'dictionary': dictionary_entry.to_dict()}
 
 
 @bp.route('/edit/dictionary/<int:dictionary_id>', methods=['GET', 'POST'])
-@login_required
+@token_auth.login_required
 def edit_dictionary(dictionary_id):
+    user = User.check_request(request)
     dictionary_entry = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
     dictionary_form = EditDictionaryForm(dictionary_entry.dictionary_name, dictionary_entry.description)
 
@@ -98,10 +110,10 @@ def edit_dictionary(dictionary_id):
                            title=dictionary_entry.dictionary_name,
                            dictionary=dictionary_entry,
                            form=dictionary_form)
+"""
 
-
-@bp.route('/check_dictionary_name', methods=['POST'])
+@bp.route('/check_dictionary_name', methods=['GET'])
 def check_dictionary_name():
-    dictionary_name = request.form['dictionary_name']
+    dictionary_name = request.get_json().get('dictionary_name')
     dictionary_entry = Dictionary.query.filter_by(dictionary_name=dictionary_name).first()
-    return jsonify({'name_available': dictionary_entry is None})
+    return {'name_available': dictionary_entry is None}

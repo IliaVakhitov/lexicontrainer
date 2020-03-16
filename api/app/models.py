@@ -60,8 +60,7 @@ class Word(db.Model):
                 'spelling': self.spelling,
                 'definition': self.definition,       
                 'dictionary_id': self.dictionary_id,       
-                'learning_index': 0 if self.learning_index is None else self.learning_index.index,       
-                }
+                'learning_index': 0 if self.learning_index is None else self.learning_index.index}
 
     def is_synonym(self, word):
         return self.words_synonyms.filter(
@@ -240,8 +239,7 @@ class Dictionary(db.Model):
     def to_dict(self):
         return {'id': self.id,
                 'dictionary_name': self.dictionary_name,
-                'description': self.description
-                }
+                'description': self.description}
 
 @login.user_loader
 def load_user(id):

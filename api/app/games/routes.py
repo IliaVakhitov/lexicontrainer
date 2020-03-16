@@ -69,7 +69,7 @@ def define_game():
     # Game parameters from page
     request_data = request.get_json()
     game_type = GameType[request_data.get('game_type').strip()]
-    word_limit = request_data.get('game_rounds')
+    word_limit = int(request_data.get('game_rounds'))
     not_include_learned_words = request_data.get('include_learned_words')
 
     # If need to filter dictionaries
@@ -90,10 +90,10 @@ def define_game():
             filter(LearningIndex.index < 100)
 
     # Getting random order and limit is defined
-    words_query = words_query.order_by(func.random()).limit(word_limit).all()
+    words_query = words_query.order_by(func.random()).all()
 
     # Generate game from given list of words
-    revision_game = GameGenerator.generate_game(words_query, game_type)
+    revision_game = GameGenerator.generate_game(words_query, game_type, word_limit)
     if revision_game is None:
         logger.info('Could not create game!')
         flash('Could not create game! Not enough words to create game! Try to add dictionaries!')
