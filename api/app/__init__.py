@@ -2,6 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 from flask import Flask
+from flask_cors import CORS
 from config import Config
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
@@ -21,6 +22,8 @@ login.login_message = 'Please log in to access this page.'
 def create_app(config_class=Config):
     # Creating app
     app = Flask(__name__)
+    CORS(app)
+    
     app.config.from_object(config_class)
     login.init_app(app)
     db.init_app(app)

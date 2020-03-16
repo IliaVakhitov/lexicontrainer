@@ -8,7 +8,9 @@ import Dictionaries from '../../Components/Dictionaries/Dictionaries';
 import Words from '../../Components/Words/Words';
 import Games from '../../Components/Games/Games';
 import PlayGame from '../../Components/Games/PlayGame';
+import Statistic from '../../Components/Games/Statistic';
 import Main from './Main';
+
 
 class Routes extends Component {
   constructor(props) {
@@ -26,6 +28,9 @@ class Routes extends Component {
             token={this.props.token} />}/>
         <Route path='/games' 
           render={(props) => <Games {... props}
+            token={this.props.token} />} />
+        <Route path='/statistic' 
+          render={(props) => <Statistic {... props}
             token={this.props.token} />} />
         <Route path='/play' 
           render={(props) => <PlayGame {... props}

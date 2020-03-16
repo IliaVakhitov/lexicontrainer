@@ -1,10 +1,11 @@
+import json
 from typing import List, Dict
 
 
 class GameRound:
     """
     Contains word and 4 different translations to guess
-    Correct answer and correct answer`s index [1-4] for fast check
+    Correct answer and correct answer`s index for fast check
     """
 
     def __init__(self, dict_data: Dict):

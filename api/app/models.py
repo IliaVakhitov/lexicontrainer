@@ -187,7 +187,7 @@ class CurrentGame(db.Model):
         return int(self.current_round / self.total_rounds * 100)
 
     def get_correct_index(self, answer_index: int) -> int:
-        current_round = self.get_current_round()
+        current_round = self.get_current_round(False)
         learning_index = LearningIndex.query.filter_by(id=current_round['learning_index_id']).first()
         if learning_index is None:
             learning_index = LearningIndex(word_id=current_round['word_id'], index=0)
@@ -204,7 +204,7 @@ class CurrentGame(db.Model):
         db.session.commit()
         return int(current_round['correct_index'])
 
-    def get_current_round(self):
+    def get_current_round(self, only_answers: True):
         if self is None:
             return None
         if self.game_data is None:
@@ -212,8 +212,14 @@ class CurrentGame(db.Model):
         if self.game_completed:
             return None
         json_rounds = json.loads(self.game_data)
-
-        return json.loads(json_rounds['game_rounds'][self.current_round])
+        current_round = json.loads(json_rounds['game_rounds'][self.current_round])
+        if only_answers: 
+            return {'value': current_round['value'],
+                    'answers': current_round['answers']
+                    }
+        else:
+            return current_round
+            
 
 
 class Dictionary(db.Model):

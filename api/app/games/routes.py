@@ -118,11 +118,11 @@ def next_round():
     revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
     game_ended = revision_game_entry.get_next_round()
     if game_ended:
-        return {'redirect': url_for('games.game_statistic')}
+        return {'redirect': '/statistic'}
 
     return {'game_type':revision_game_entry.game_type,
-            'progress':revision_game_entry.get_progress,
-            'game_round':revision_game_entry.get_current_round()}
+            'progress':revision_game_entry.get_progress(),
+            'game_round':revision_game_entry.get_current_round(False)}
 
 
 @bp.route('/current_round', methods=['GET'])
@@ -131,25 +131,33 @@ def current_round():
     user = User.check_request(request)
     revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
     return {'game_type':revision_game_entry.game_type,
-            'progress':revision_game_entry.get_progress,
-            'game_round':revision_game_entry.get_current_round()}
+            'progress':revision_game_entry.get_progress(),
+            'game_round':revision_game_entry.get_current_round(False)}
 
 
-@bp.route('/get_correct_index', methods=['GET'])
+@bp.route('/check_answer', methods=['POST'])
 @token_auth.login_required
-def get_correct_index():
+def check_answer():
     user = User.check_request(request)
+    answer_index = request_data = request.get_json().get('answer_index')
     revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
-    return jsonify({'correct_index': revision_game_entry.get_correct_index(request.form['answer_index']),
-                   'progress': revision_game_entry.get_progress()})
+    return {'correct_index': revision_game_entry.get_correct_index(answer_index),
+            'progress': revision_game_entry.get_progress()}
 
 
-@bp.route('/game_statistic/', methods=['GET'])
+@bp.route('/statistic/', methods=['GET'])
 @token_auth.login_required
-def game_statistic():
+def statistic():
 
     user = User.check_request(request)
     revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=True).first()
+    if revision_game_entry is None:
+        revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
+        if revision_game_entry is None:
+            return {'redirect': '/games'}
+        else:
+            return {'redirect': '/play'}
+
     total_rounds = revision_game_entry.total_rounds
     correct_answers = revision_game_entry.correct_answers
 
@@ -163,15 +171,9 @@ def game_statistic():
     db.session.delete(revision_game_entry)
     db.session.commit()
 
-
     return {'total_rounds': total_rounds,
-            'correct_answers': correct_answers}
-
-
-@bp.route('/play_game/', methods=['GET'])
-@token_auth.login_required
-def play_game():
-    pass
+            'correct_answers': correct_answers,
+            'game_type': revision_game_entry.game_type}
     
 
 logger = logging.getLogger(__name__)
