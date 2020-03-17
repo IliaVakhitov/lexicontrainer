@@ -44,18 +44,21 @@ def dictionaries():
     return {'dictionaries': dicts}
 
 
-@bp.route('/add_dictionary/', methods=['POST'])
+@bp.route('/add_dictionary', methods=['POST'])
 @token_auth.login_required
-def add_dictionary(dictionary_name):
+def add_dictionary():
     user = User.check_request(request)
+    dictionary_name = request.get_json().get('dictionary_name').strip()
+    dictionary_description = request.get_json().get('dictionary_description').strip()
     dictionary_entry = Dictionary(
-        dictionary_name=dictionary_form.dictionary_name.data.strip(),
-        description=dictionary_form.description.data.strip(),
+        dictionary_name=dictionary_name,
+        description=dictionary_description,
         user_id=user.id)
     db.session.add(dictionary_entry)
     db.session.commit()
-    logger.info(f'Dictionary {dictionary_entry.dictionary_name} saved')
-    return redirect(url_for('main.edit_dictionary', dictionary_id=dictionary_entry.id))
+    # logger.info(f'Dictionary {dictionary_entry.dictionary_name} saved')
+
+    return {'result': 'Dictionary added successfully'}
 
 
 @bp.route('/delete_dictionary/', methods=['DELETE'])

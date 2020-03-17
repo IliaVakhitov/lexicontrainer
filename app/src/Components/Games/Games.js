@@ -192,7 +192,7 @@ class Games extends Component {
           </FormGroup>            
           <FormGroup row>
             <Col>
-              <Button>Start</Button>
+              <Button color='success'>Start</Button>
             </Col>
           </FormGroup>      
         </Form>
