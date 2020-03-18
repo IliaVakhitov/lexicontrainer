@@ -48,8 +48,9 @@ def dictionaries():
 @token_auth.login_required
 def add_dictionary():
     user = User.check_request(request)
-    dictionary_name = request.get_json().get('dictionary_name').strip()
-    dictionary_description = request.get_json().get('dictionary_description').strip()
+    request_data = request.get_json()
+    dictionary_name = request_data.get('dictionary_name').strip()
+    dictionary_description = request_data.get('dictionary_description').strip()
     dictionary_entry = Dictionary(
         dictionary_name=dictionary_name,
         description=dictionary_description,
@@ -63,23 +64,34 @@ def add_dictionary():
 
 @bp.route('/delete_dictionary', methods=['DELETE'])
 @token_auth.login_required
-def delete_dictionary(dictionary_name):
+def delete_dictionary():
     user = User.check_request(request)
-    pass
+    dictionary_id = request.get_json().get('id')
+    dictionary_entry = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
+    db.session.commit()
+    db.session.delete(dictionary_entry)
+    db.session.commit()
 
+    return {'result': 'Dictionary deleted successfully'}
 
 @bp.route('/update_dictionary', methods=['POST'])
 @token_auth.login_required
-def update_dictionary(dictionary_name):
+def update_dictionary():
     user = User.check_request(request)
-    pass
+    request_data = request.get_json()
+    dictionary_id = request_data.get('id')
+    dictionary_entry = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
+    dictionary_entry.dictionary_name = request_data.get('name').strip()
+    dictionary_entry.description = request_data.get('description').strip()
+    db.session.commit()
 
+    return {'result': 'Dictionary updated successfully'}
 
 @bp.route('/dictionary', methods=['GET'])
 @token_auth.login_required
 def dictionary():
     user = User.check_request(request)
-    dictionary_id = request.headers.get('dictionary_id')
+    dictionary_id = request.headers.get('id')
     dictionary = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
     dict_entry = dictionary.to_dict()        
     words = [{

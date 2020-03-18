@@ -50,7 +50,7 @@ class Profile extends Component {
           <p>Dictionaries: {this.state.total_dictionaries}</p>
           <p>Total words: {this.state.total_words}</p>
           <p>Words learned: {this.state.words_learned}</p>
-          <p>Progres: {this.state.progress}</p>
+          <p>Progres: {this.state.progress}%</p>
         </Container>
       </Container>
       );

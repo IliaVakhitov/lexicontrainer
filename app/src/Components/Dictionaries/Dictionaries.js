@@ -21,19 +21,19 @@ class Dictionaries extends Component {
 
     this.all_dictionaries();
     this.get_words_list = this.get_words_list.bind(this);
-    this.setNewDictionaryName = this.setNewDictionaryName.bind(this);
-    this.setNewDictionaryDescription = this.setNewDictionaryDescription.bind(this);
+    this.set_new_dictionary_name = this.set_new_dictionary_name.bind(this);
+    this.set_new_dictionary_description = this.set_new_dictionary_description.bind(this);
     this.save_dictionary = this.save_dictionary.bind(this);
     this.add_dictionary = this.add_dictionary.bind(this);
     this.open_dictionary = this.open_dictionary.bind(this);
     this.cancel_edit = this.cancel_edit.bind(this);
   }
 
-  setNewDictionaryName(event) {
+  set_new_dictionary_name(event) {
     this.setState({new_dictionary_name: event.target.value});
   }
 
-  setNewDictionaryDescription(event) {
+  set_new_dictionary_description(event) {
     this.setState({new_dictionary_description: event.target.value});
   }
 
@@ -148,7 +148,9 @@ class Dictionaries extends Component {
           <CardBody>
             <CardTitle>{dictionary.description}</CardTitle>
             <CardText>Progress: TODO</CardText>  
-            <Button outline id={'words_togger'.concat(dictionary.id)} color='secondary' outline>Words</Button>
+            <Button outline 
+              id={'words_togger'.concat(dictionary.id)} 
+              color='info'>Words</Button>
           </CardBody>              
         </Card>      
         <UncontrolledCollapse toggler={'#words_togger'.concat(dictionary.id)}>
@@ -173,21 +175,19 @@ class Dictionaries extends Component {
         </p>
         <Collapse isOpen={this.state.add_dictionary}>
           <Card className='w-50'>
-            <CardHeader>
-              <InputGroup>
-                <InputGroupAddon addonType='prepend'>
+          <CardBody>
+              <InputGroup className='my-2'>
+                <InputGroupAddon  addonType='prepend'>
                   <InputGroupText>Name</InputGroupText>
-                </InputGroupAddon>
+                </InputGroupAddon>                
                 <Input 
                   type='text' 
                   value={this.state.new_dictionary_name} 
                   placeholder='Type name for new dictionary'
-                  onChange={this.setNewDictionaryName}
+                  onChange={this.set_new_dictionary_name}
                 />
-              </InputGroup>
-            </CardHeader>
-            <CardBody>
-              <InputGroup>
+              </InputGroup>          
+              <InputGroup className='my-2'>
                 <InputGroupAddon addonType='prepend'>
                   <InputGroupText>Description</InputGroupText>
                 </InputGroupAddon>
@@ -195,20 +195,18 @@ class Dictionaries extends Component {
                   type='text' 
                   value={this.state.new_dictionary_description} 
                   placeholder='Type description for new dictionary'
-                  onChange={this.setNewDictionaryDescription}
+                  onChange={this.set_new_dictionary_description}
                 />
               </InputGroup>
-            </CardBody>
-            <CardFooter>
               <Button outline 
                 color='success' 
                 className='mx-1 my-1'
                 onClick={this.save_dictionary}>Save</Button>
               <Button outline 
-                color='danger' 
+                color='secondary' 
                 className='mx-1 my-1'
                 onClick={this.cancel_edit}>Cancel</Button>
-            </CardFooter>
+            </CardBody>
           </Card>
         </Collapse>
         <ListGroup horizontal='lg'>
