@@ -5,6 +5,7 @@ import { Container, CardFooter, Input,
 import { Card, CardHeader, CardBody, Button,
   ListGroup, ListGroupItem, Collapse,
   UncontrolledCollapse, CardTitle, CardText } from 'reactstrap'
+import { withRouter } from 'react-router-dom';
 
 class Dictionaries extends Component {
 
@@ -24,6 +25,7 @@ class Dictionaries extends Component {
     this.setNewDictionaryDescription = this.setNewDictionaryDescription.bind(this);
     this.save_dictionary = this.save_dictionary.bind(this);
     this.add_dictionary = this.add_dictionary.bind(this);
+    this.open_dictionary = this.open_dictionary.bind(this);
     this.cancel_edit = this.cancel_edit.bind(this);
   }
 
@@ -103,8 +105,18 @@ class Dictionaries extends Component {
       }
     );   
   }
-  
+
+  open_dictionary(dictionary_id) {
+    this.props.history.push({
+      pathname:'/dictionary', 
+      state: { dictionary_id: dictionary_id }
+    });
+  }
+
   get_words_list(words) {
+    if (words.length == 0) {
+      return (<div>Nothing there! You can add new word!</div>);
+    }
     const words_list = words.map(word => 
       <Button 
         key={word.id}
@@ -128,7 +140,10 @@ class Dictionaries extends Component {
       <ListGroupItem key={dictionary.id} className='w-50'>
         <Card>
           <CardHeader>
-            <Button color='' outline size='md' className='w-100'>{dictionary.dictionary_name}</Button>
+            <Button color='' outline 
+              size='md' 
+              className='w-100'
+              onClick={() => this.open_dictionary(dictionary.id)}>{dictionary.dictionary_name}</Button>
           </CardHeader>
           <CardBody>
             <CardTitle>{dictionary.description}</CardTitle>
@@ -160,7 +175,7 @@ class Dictionaries extends Component {
           <Card className='w-50'>
             <CardHeader>
               <InputGroup>
-                <InputGroupAddon addonType='pretend'>
+                <InputGroupAddon addonType='prepend'>
                   <InputGroupText>Name</InputGroupText>
                 </InputGroupAddon>
                 <Input 
@@ -173,7 +188,7 @@ class Dictionaries extends Component {
             </CardHeader>
             <CardBody>
               <InputGroup>
-                <InputGroupAddon addonType='pretend'>
+                <InputGroupAddon addonType='prepend'>
                   <InputGroupText>Description</InputGroupText>
                 </InputGroupAddon>
                 <Input 
@@ -203,4 +218,4 @@ class Dictionaries extends Component {
       );
   }
 }
-export default Dictionaries;
+export default withRouter(Dictionaries);

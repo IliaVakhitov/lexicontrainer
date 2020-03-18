@@ -61,26 +61,38 @@ def add_dictionary():
     return {'result': 'Dictionary added successfully'}
 
 
-@bp.route('/delete_dictionary/', methods=['DELETE'])
+@bp.route('/delete_dictionary', methods=['DELETE'])
 @token_auth.login_required
 def delete_dictionary(dictionary_name):
+    user = User.check_request(request)
     pass
 
 
-@bp.route('/update_dictionary/', methods=['POST'])
+@bp.route('/update_dictionary', methods=['POST'])
 @token_auth.login_required
 def update_dictionary(dictionary_name):
+    user = User.check_request(request)
     pass
 
-"""
-@bp.route('/dictionary/<int:dictionary_id>')
-@token_auth.login_required
-def dictionary(dictionary_id):
-    user = User.check_request(request)
-    dictionary_entry = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
-    return {'title':dictionary_entry.dictionary_name,
-            'dictionary': dictionary_entry.to_dict()}
 
+@bp.route('/dictionary', methods=['GET'])
+@token_auth.login_required
+def dictionary():
+    user = User.check_request(request)
+    dictionary_id = request.headers.get('dictionary_id')
+    dictionary = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
+    dict_entry = dictionary.to_dict()        
+    words = [{
+        'id': w.id, 
+        'spelling': w.spelling,
+        'definition': w.definition
+        } for w in dictionary.words.all()]
+
+    dict_entry['words'] = words
+    
+    return dict_entry
+
+"""
 
 @bp.route('/edit/dictionary/<int:dictionary_id>', methods=['GET', 'POST'])
 @token_auth.login_required

@@ -5,6 +5,7 @@ import Login from '../../Components/Auth/Login';
 import Logout from '../../Components/Auth/Logout';
 import Profile from '../../Components/Auth/Profile';
 import Dictionaries from '../../Components/Dictionaries/Dictionaries';
+import Dictionary from '../../Components/Dictionaries/Dictionary';
 import Words from '../../Components/Words/Words';
 import Games from '../../Components/Games/Games';
 import PlayGame from '../../Components/Games/PlayGame';
@@ -37,6 +38,9 @@ class Routes extends Component {
             token={this.props.token} />} />
         <Route path='/dictionaries' 
           render={(props) => <Dictionaries 
+            token={this.props.token} />} />
+        <Route path='/dictionary' 
+          render={(props) => <Dictionary 
             token={this.props.token} />} />
         <Route path='/login' 
           render={(props) => <Login {...props} 

@@ -3,6 +3,7 @@ import { Component } from 'react';
 import { Input, Label, Col, 
   FormGroup, Form, ButtonGroup, Button, Container } from 'reactstrap';
 import Select from 'react-select';
+import { withRouter } from 'react-router-dom';
 
 class Games extends Component {
   constructor(props){
