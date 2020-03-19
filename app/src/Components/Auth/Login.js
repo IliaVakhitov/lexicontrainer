@@ -12,20 +12,15 @@ class Login extends Component {
         password: '',
         remember_me: false
       }
-      this.handleChangeUsername = this.handleChangeUsername.bind(this);
-      this.handleChangePassword = this.handleChangePassword.bind(this);
+      this.update_state = this.update_state.bind(this);
       this.handleOnClickRememberMe = this.handleOnClickRememberMe.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleChangeUsername(event) {
-    this.setState({username: event.target.value});
+  update_state(event) {
+    this.setState({[event.target.name]: event.target.value});
   }
-  
-  handleChangePassword(event) {
-    this.setState({password: event.target.value});
-  }
-  
+
   handleOnClickRememberMe() {
     this.setState({remember_me: !this.state.remember_me});
   }
@@ -70,8 +65,9 @@ class Login extends Component {
               <InputGroupText>Username</InputGroupText>
             </InputGroupAddon>
             <Input placeholder='username'  
-              value={this.state.username}             
-              onChange={this.handleChangeUsername}/>
+              value={this.state.username} 
+              name='username'            
+              onChange={this.update_state}/>
           </InputGroup>
           <br/>
           <InputGroup>
@@ -79,9 +75,10 @@ class Login extends Component {
               <InputGroupText>Password</InputGroupText>
             </InputGroupAddon>
             <Input type='password' 
-              value={this.state.password}             
+              value={this.state.password} 
+              name='password'                        
               placeholder='password'                
-              onChange={this.handleChangePassword}/>
+              onChange={this.update_state}/>
           </InputGroup>
           <br/>
           <FormGroup check>

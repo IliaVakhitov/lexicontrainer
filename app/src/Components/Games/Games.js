@@ -26,7 +26,7 @@ class Games extends Component {
     };
 
     this.setGameType = this.setGameType.bind(this);
-    this.setGameRounds = this.setGameRounds.bind(this);
+    this.update_state = this.update_state.bind(this);
     this.handleOnClickIncludeLearned = this.handleOnClickIncludeLearned.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.remove_game = this.remove_game.bind(this);
@@ -92,8 +92,8 @@ class Games extends Component {
     this.setState({game_type: new_game_type});
   }
 
-  setGameRounds(event) {
-    this.setState({game_rounds: event.target.value});
+  update_state(event) {
+    this.setState({[event.target.name]: event.target.value});
   }
 
   handleOnClickIncludeLearned() {
@@ -173,7 +173,7 @@ class Games extends Component {
                 name='game_rounds'
                 id='game_rounds'
                 value={this.state.game_rounds} 
-                onChange={this.setGameRounds} 
+                onChange={this.update_state} 
               />
             </Col>
           </FormGroup> 
