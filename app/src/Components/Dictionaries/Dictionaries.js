@@ -21,12 +21,15 @@ class Dictionaries extends Component {
 
     this.all_dictionaries();
     this.get_words_list = this.get_words_list.bind(this);
-    this.set_new_dictionary_name = this.set_new_dictionary_name.bind(this);
-    this.set_new_dictionary_description = this.set_new_dictionary_description.bind(this);
+    this.update_state = this.update_state.bind(this);
     this.save_dictionary = this.save_dictionary.bind(this);
     this.add_dictionary = this.add_dictionary.bind(this);
     this.open_dictionary = this.open_dictionary.bind(this);
     this.cancel_edit = this.cancel_edit.bind(this);
+  }
+
+  update_state(event) {
+    this.setState({[event.target.name]: event.target.value});
   }
 
   set_new_dictionary_name(event) {
@@ -183,8 +186,9 @@ class Dictionaries extends Component {
                 <Input 
                   type='text' 
                   value={this.state.new_dictionary_name} 
+                  name='new_dictionary_name'
                   placeholder='Type name for new dictionary'
-                  onChange={this.set_new_dictionary_name}
+                  onChange={this.update_state}
                 />
               </InputGroup>          
               <InputGroup className='my-2'>
@@ -192,10 +196,11 @@ class Dictionaries extends Component {
                   <InputGroupText>Description</InputGroupText>
                 </InputGroupAddon>
                 <Input 
-                  type='text' 
+                  type='text'
+                  name='new_dictionary_description' 
                   value={this.state.new_dictionary_description} 
                   placeholder='Type description for new dictionary'
-                  onChange={this.set_new_dictionary_description}
+                  onChange={this.update_state}
                 />
               </InputGroup>
               <Button outline 

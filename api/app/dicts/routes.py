@@ -7,7 +7,7 @@ from flask_httpauth import HTTPTokenAuth
 from app.errors.handlers import error_response
 
 from app.dicts import bp
-from app.models import User, Dictionary
+from app.models import User, Dictionary, Word
 from app import db
 from datetime import datetime
 
@@ -66,7 +66,7 @@ def add_dictionary():
 @token_auth.login_required
 def delete_dictionary():
     user = User.check_request(request)
-    dictionary_id = request.get_json().get('id')
+    dictionary_id = request.get_json().get('dictionary_id')
     dictionary_entry = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
     db.session.commit()
     db.session.delete(dictionary_entry)
@@ -79,10 +79,21 @@ def delete_dictionary():
 def update_dictionary():
     user = User.check_request(request)
     request_data = request.get_json()
-    dictionary_id = request_data.get('id')
+    words = request_data.get('words')
+    dictionary_id = request_data.get('dictionary_id')
     dictionary_entry = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
-    dictionary_entry.dictionary_name = request_data.get('name').strip()
+    dictionary_entry.dictionary_name = request_data.get('dictionary_name').strip()
     dictionary_entry.description = request_data.get('description').strip()
+    for word in words:
+        word_entry = Word.query.filter_by(id=word['id']).first()
+        if word_entry is None:
+            continue
+        if word_entry.spelling != word['spelling']:
+            word_entry.spelling = word['spelling']
+        if word_entry.definition != word['definition']:
+            word_entry.definition = word['definition']
+        if word_entry.learning_index is not None:
+            word_entry.learning_index.index = 0
     db.session.commit()
 
     return {'result': 'Dictionary updated successfully'}
@@ -91,7 +102,7 @@ def update_dictionary():
 @token_auth.login_required
 def dictionary():
     user = User.check_request(request)
-    dictionary_id = request.headers.get('id')
+    dictionary_id = request.headers.get('dictionary_id')
     dictionary = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
     dict_entry = dictionary.to_dict()        
     words = [{

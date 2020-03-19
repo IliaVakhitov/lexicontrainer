@@ -45,8 +45,8 @@ def all_words():
     return {'words': words}
 
 
-@bp.route('/word/<int:word_id>')
-@login_required
+@bp.route('/word')
+@token_auth.login_required
 def word(word_id):
     word_entry = Word.query.filter_by(id=word_id).first_or_404()
     return render_template('main/word.html',
@@ -55,6 +55,7 @@ def word(word_id):
 
 
 @bp.route('/get_definition', methods=['POST'])
+@token_auth.login_required
 def get_definition():
     # Check definitions table for current word
     word_id = int(request.form['word_id'])
@@ -112,16 +113,21 @@ def delete_word():
     return {'success': True}
 
 
-@bp.route('/save_word', methods=['POST'])
-def save_word():
-    word_entry = Word.query.filter_by(id=request.form['word_id']).first_or_404()
-    word_entry.spelling = request.form['spelling'].strip()
-    word_entry.definition = request.form['definition'].strip()
+@bp.route('/update_word', methods=['POST'])
+@token_auth.login_required
+def update_word():
+    user = User.check_request(request)
+    request_data = request.get_json()
+    print(request_data.get('spelling'))
+    print(request_data.get('definition'))
+    word_entry = Word.query.filter_by(id=request_data.get('word_id')).first_or_404()
+    word_entry.spelling = request_data.get('spelling').strip()
+    word_entry.definition = request_data.get('definition').strip()
     if word_entry.learning_index is None:
         learning_index = LearningIndex(word_id=word_entry.id, index=0)
         db.session.add(learning_index)
     else:
         word_entry.learning_index.index = 0
-    db.session.commit()
+    #db.session.commit()
 
-    return jsonify({'success': True})
+    return {'success': True}
