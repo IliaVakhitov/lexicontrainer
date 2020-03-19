@@ -94,17 +94,22 @@ def add_word():
     db.session.add(new_word)
     db.session.commit()
 
-    return jsonify({'new_word_id': new_word.id})
+    return {'new_word_id': new_word.id}
 
 
-@bp.route('/delete_word', methods=['POST'])
+@bp.route('/delete_word', methods=['DELETE'])
+@token_auth.login_required
 def delete_word():
-    word_entry = Word.query.filter_by(id=request.form['word_id']).first_or_404()
-    db.session.delete(word_entry.learning_index)
+    user = User.check_request(request)
+    request_data = request.get_json()
+    
+    word_entry = Word.query.filter_by(id=request_data.get('word_id')).first_or_404()
+    if word_entry.learning_index is not None:
+        db.session.delete(word_entry.learning_index)
     db.session.delete(word_entry)
     db.session.commit()
 
-    return jsonify({'success': True})
+    return {'success': True}
 
 
 @bp.route('/save_word', methods=['POST'])

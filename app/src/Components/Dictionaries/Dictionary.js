@@ -26,6 +26,32 @@ class Dictionary extends Component {
     this.add_new_word = this.add_new_word.bind(this);
   }
 
+  delete_word(word_id) {
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', 'Bearer ' + this.props.token);  
+    fetch('/words/delete_word', {
+      method: 'DELETE',
+      headers: myHeaders,
+      body: JSON.stringify({
+        'word_id': word_id
+      })
+    })
+      .then(res => res.json())
+      .then(
+      (data) => {
+        if ('error' in data) {
+          console.log(data);
+          return;
+        }        
+        this.dictionary();
+      },
+      (error) => {
+        console.log(error);
+      }
+    );   
+  }
+
   add_new_word() {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -133,7 +159,9 @@ class Dictionary extends Component {
         <td>{i++}</td>
         <td><Input value={word.spelling} /></td>
         <td><Input value={word.definition} /></td>
-        <td><Button outline color='danger'>{String.fromCharCode(0x2015)}</Button></td>
+        <td><Button outline 
+          onClick={() => this.delete_word(word.id)}
+          color='danger'>{String.fromCharCode(0x2015)}</Button></td>
       </tr>
       );
     return (
@@ -168,6 +196,7 @@ class Dictionary extends Component {
             onChange={this.set_description}
           />
         </InputGroup>
+        <br />
         <h4>Words</h4>
         <Table borderless responsive>
           <thead className='thead-light'>

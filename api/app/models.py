@@ -231,7 +231,7 @@ class Dictionary(db.Model):
     words = db.relationship('Word', cascade="all,delete",
                             backref='Dictionary',
                             lazy='dynamic',
-                            order_by="Word.id")
+                            order_by="Word.spelling")
 
     def __repr__(self):
         return f'{self.dictionary_name}'
