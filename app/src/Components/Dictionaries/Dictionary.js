@@ -14,26 +14,56 @@ class Dictionary extends Component {
       id: this.props.location.state.dictionary_id,
       name: '',
       description: '',
-      words: []
+      words: [],
+      new_word_spelling: '',
+      new_word_definition: ''
     };
 
     this.dictionary();
     this.save_dictionary = this.save_dictionary.bind(this);
-    this.set_dictionary_name = this.set_dictionary_name.bind(this);
-    this.set_description = this.set_description.bind(this);
+    this.update_state = this.update_state.bind(this);
     this.cancel_edit = this.cancel_edit.bind(this);
+    this.add_new_word = this.add_new_word.bind(this);
+  }
+
+  add_new_word() {
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', 'Bearer ' + this.props.token);  
+    fetch('/words/add_word', {
+      method: 'POST',
+      headers: myHeaders,
+      body: JSON.stringify({
+        'dictionary_id': this.state.id,  
+        'spelling': this.state.new_word_spelling,  
+        'definition': this.state.new_word_definition  
+      })
+    })
+      .then(res => res.json())
+      .then(
+      (data) => {
+        if ('error' in data) {
+          console.log(data);
+          return;
+        }        
+        this.setState({
+          new_word_spelling: '',
+          new_word_definition: ''  
+        });
+        this.dictionary();
+      },
+      (error) => {
+        console.log(error);
+      }
+    ); 
   }
 
   cancel_edit() {
       this.props.history.push('/dictionaries');
   }
 
-  set_dictionary_name(event) {
-    this.setState({name: event.target.value});
-  }
-
-  set_description(event) {
-    this.setState({description: event.target.value});
+  update_state(event) {
+    this.setState({[event.target.name]: event.target.value});
   }
 
   save_dictionary() {
@@ -103,6 +133,7 @@ class Dictionary extends Component {
         <td>{i++}</td>
         <td><Input value={word.spelling} /></td>
         <td><Input value={word.definition} /></td>
+        <td><Button outline color='danger'>{String.fromCharCode(0x2015)}</Button></td>
       </tr>
       );
     return (
@@ -141,21 +172,31 @@ class Dictionary extends Component {
         <Table borderless responsive>
           <thead className='thead-light'>
             <tr>
-              <th width={'10%'}>#</th>
-              <th width={'30%'}>Spelling</th>
-              <th width={'60%'}>Definition</th>
+              <th width={'5%'}>#</th>
+              <th width={'25%'}>Spelling</th>
+              <th width={'62%'}>Definition</th>
+              <th width={'8%'}>Action</th>
             </tr>
           </thead>
           <tbody>
-          <td>New word</td>
+          <td>New</td>
           <td>
-            <Input value={this.state.new_word_spelling} 
+            <Input 
+              name='new_word_spelling'
+              onChange={this.update_state}
+              value={this.state.new_word_spelling} 
               placeholder='Type word or phrase '/>
           </td>
           <td>
-            <Input value={this.state.new_word_definition} 
-            placeholder='Defition of new word'/>
+            <Input 
+              name='new_word_definition'
+              onChange={this.update_state}
+              value={this.state.new_word_definition} 
+              placeholder='Defition of new word'/>
           </td>
+          <td>
+            <Button outline color='success'
+              onClick={this.add_new_word}>+</Button></td>
             {words_list}
           </tbody>
         </Table>

@@ -83,11 +83,14 @@ def get_definition():
 
 
 @bp.route('/add_word', methods=['POST'])
+@token_auth.login_required
 def add_word():
+    user = User.check_request(request)
+    request_data = request.get_json()
     new_word = Word(
-        spelling=request.form['spelling'].strip(),
-        definition=request.form['definition'].strip(),
-        dictionary_id=request.form['dictionary_id'])
+        spelling=request_data.get('spelling').strip(),
+        definition=request_data.get('definition').strip(),
+        dictionary_id=request_data.get('dictionary_id'))
     db.session.add(new_word)
     db.session.commit()
 
