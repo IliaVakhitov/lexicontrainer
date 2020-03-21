@@ -202,4 +202,4 @@ class Games extends Component {
   }
 }
 
-export default Games;
+export default withRouter(Games);

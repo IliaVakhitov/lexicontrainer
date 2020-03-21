@@ -4,9 +4,7 @@ import { Container } from 'reactstrap';
 import TestComponent from '../../TestComponent';
 
 class Main extends Component {
-  constructor(props){
-    super(props);
-  }
+  
   render() {
     return (
       <Container>
@@ -16,4 +14,5 @@ class Main extends Component {
     );
   }
 }
+
 export default Main;

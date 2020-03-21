@@ -92,8 +92,10 @@ class Login extends Component {
           </InputGroup>
           <br/>
           <FormGroup check>
-            <Label remember_me>
+            <Label for='remember_me'>
               <Input 
+                name='remeber_me'
+                id='remeber_me'
                 type='checkbox' 
                 value={this.state.remember_me} 
                 onClick={this.handleOnClickRememberMe}/>{' '}

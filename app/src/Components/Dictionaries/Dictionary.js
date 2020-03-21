@@ -33,9 +33,9 @@ class Dictionary extends Component {
   }
 
   dictionary() {
-    if (this.state.id === NaN) {
-      console.log(this.state.id);
-      //this.props.history.push('/dictionaries');
+    if (isNaN(this.state.id)) {
+      console.log('Incorrect dictionary id '.concat(this.state.id));
+      this.props.history.push('/dictionaries');
     }
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');

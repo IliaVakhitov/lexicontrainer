@@ -14,10 +14,7 @@ import Main from './Main';
 
 
 class Routes extends Component {
-  constructor(props) {
-    super(props);
-  }
-
+  
   render() {
     return(
       <Switch>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { Container, CardFooter, Input, 
+import { Container, Input, 
   InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
 import { Card, CardHeader, CardBody, Button,
   ListGroup, ListGroupItem, Collapse,
@@ -117,7 +117,7 @@ class Dictionaries extends Component {
   }
 
   get_words_list(words) {
-    if (words.length == 0) {
+    if (words.length === 0) {
       return (<div>Nothing there! You can add new word!</div>);
     }
     const words_list = words.map(word => 
