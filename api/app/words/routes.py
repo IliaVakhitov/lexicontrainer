@@ -118,8 +118,6 @@ def delete_word():
 def update_word():
     user = User.check_request(request)
     request_data = request.get_json()
-    print(request_data.get('spelling'))
-    print(request_data.get('definition'))
     word_entry = Word.query.filter_by(id=request_data.get('word_id')).first_or_404()
     word_entry.spelling = request_data.get('spelling').strip()
     word_entry.definition = request_data.get('definition').strip()
@@ -128,6 +126,6 @@ def update_word():
         db.session.add(learning_index)
     else:
         word_entry.learning_index.index = 0
-    #db.session.commit()
+    db.session.commit()
 
     return {'success': True}

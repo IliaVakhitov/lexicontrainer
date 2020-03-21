@@ -15,6 +15,7 @@ class Dictionary extends Component {
       dictionary_name: '',
       description: '',
       words: [],
+      updated_words: [],
       new_word_spelling: '',
       new_word_definition: ''
     };
@@ -25,6 +26,10 @@ class Dictionary extends Component {
     this.cancel_edit = this.cancel_edit.bind(this);
     this.add_new_word = this.add_new_word.bind(this);
     this.update_word = this.update_word.bind(this);
+    this.save_word = this.save_word.bind(this);
+    setInterval(() => {
+      this.save_words();
+    }, 3000);
   }
 
   dictionary() {
@@ -120,10 +125,49 @@ class Dictionary extends Component {
 
   update_word(index, event) {
     let new_words = this.state.words;
+    let updated_words = this.state.updated_words;
+    updated_words.push(index);
     new_words[index][event.target.name] = event.target.value;
     this.setState({
-      words: new_words
+      words: new_words,
+      updated_words: updated_words
     });
+  }
+
+  save_words() {
+    let updated_words = this.state.updated_words;
+    while (updated_words.length>0) {
+      this.save_word(updated_words.pop());
+    }
+  }
+
+  save_word(index) {
+    const word = this.state.words[index];
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', 'Bearer ' + this.props.token);  
+    fetch('/words/update_word', {
+      method: 'POST',
+      headers: myHeaders,
+      body: JSON.stringify({
+        'word_id': word.id,  
+        'spelling': word.spelling,  
+        'definition': word.definition  
+      })
+    })
+      .then(res => res.json())
+      .then(
+      (data) => {
+        if ('error' in data) {
+          console.log(data);
+          return;
+        }        
+        this.dictionary();
+      },
+      (error) => {
+        console.log(error);
+      }
+    );  
   }
 
   save_dictionary() {
@@ -233,8 +277,8 @@ class Dictionary extends Component {
             <tr>
               <th width={'5%'}>#</th>
               <th width={'25%'}>Spelling</th>
-              <th width={'62%'}>Definition</th>
-              <th width={'8%'}>Action</th>
+              <th width={'60%'}>Definition</th>
+              <th width={'10%'}>Action</th>
             </tr>
           </thead>
           <tbody>
