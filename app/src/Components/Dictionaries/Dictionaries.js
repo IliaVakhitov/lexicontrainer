@@ -43,7 +43,7 @@ class Dictionaries extends Component {
   save_dictionary() {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + this.props.token);  
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
     fetch('/dicts/add_dictionary', {
       method: 'POST',
       headers: myHeaders,
@@ -89,7 +89,7 @@ class Dictionaries extends Component {
   all_dictionaries() {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + this.props.token);  
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
     fetch('/dicts/dictionaries', {
       method: 'GET',
       headers: myHeaders

@@ -28,7 +28,7 @@ class PlayGame extends Component {
   check_answer(answer_index) {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + this.props.token);
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
     fetch('/games/check_answer', {
       method: 'POST',
       credentials: 'include',
@@ -57,7 +57,7 @@ class PlayGame extends Component {
   current_round() {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + this.props.token);
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
     fetch('/games/current_round', {
       method: 'GET',
       headers: myHeaders
@@ -86,7 +86,7 @@ class PlayGame extends Component {
   next_round() {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + this.props.token);
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
     fetch('/games/next_round', {
       method: 'GET',
       headers: myHeaders

@@ -11,29 +11,27 @@ class App extends Component {
     
     this.state = {
       isLoggedIn: false,
-      username: 'Guest',
-      token: null
+      username: 'Guest'
     };
 
     this.onLogout = this.onLogout.bind(this);
-    this.onLogin = this.onLogin.bind(this);
-    this.login_check();
-    
+    this.onLogin = this.onLogin.bind(this);   
   }
  
+  componentDidMount() {
+    this.login_check();
+  }
 
-  onLogin(new_token, new_username) {
+  onLogin(new_username) {
     this.setState({
       isLoggedIn: true,
-      username: new_username,
-      token: new_token});
+      username: new_username});
   }
 
   onLogout() {
     this.setState({
       isLoggedIn: false,
-      username: 'Guest',
-      token: null});
+      username: 'Guest'});
   }
 
   login_check() {
@@ -44,15 +42,15 @@ class App extends Component {
         if ('is_authenticated' in data && data.is_authenticated) {
           this.setState({
             isLoggedIn: data.is_authenticated,
-            username: data.username,
-            token: data.token
+            username: data.username
           });
+          localStorage.setItem('token', data.token);
         } else {
           this.setState({
             isLoggedIn: false,
-            username: 'Guest',
-            token: null
+            username: 'Guest'
           });
+          this.props.history.push('/login');
         }
       },
       (error) => {
@@ -62,11 +60,10 @@ class App extends Component {
   }
 
   render() {
-    const isLoggedIn = this.state.isLoggedIn
     return (
       <div>
-        <MyNavBar isLoggedIn={isLoggedIn}/>     
-        <Routes token={this.state.token} 
+        <MyNavBar isLoggedIn={this.state.isLoggedIn}/>     
+        <Routes 
           username={this.state.username} 
           onLogout={() => this.onLogout} 
           onLogin={() => this.onLogin} />;

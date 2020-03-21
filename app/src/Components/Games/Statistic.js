@@ -19,7 +19,7 @@ class Statistic extends Component {
   get_statistic() {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + this.props.token);
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
     fetch('/games/statistic', {
       method: 'GET',
       headers: myHeaders

@@ -41,7 +41,7 @@ class Games extends Component {
   remove_game() {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + this.props.token);
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
     fetch('/games/remove_game', {
       method: 'DELETE',
       credentials: 'include',
@@ -64,7 +64,7 @@ class Games extends Component {
   check_current_game() {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + this.props.token);
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
     fetch('/games/check_current_game', {
       method: 'GET',
       credentials: 'include',
@@ -105,7 +105,7 @@ class Games extends Component {
     // TODO validate form data
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + this.props.token);
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
     fetch('/games/define_game', {
       method: 'POST',
       credentials: 'include',

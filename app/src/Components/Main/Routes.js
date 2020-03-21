@@ -26,22 +26,22 @@ class Routes extends Component {
             username={this.props.username} />} />
         <Route path='/words' 
           render={(props) => <Words {...props} 
-            token={this.props.token} />}/>
+          isLoggedIn={this.props.isLoggedIn} />}/>
         <Route path='/games' 
           render={(props) => <Games {... props}
-            token={this.props.token} />} />
+            isLoggedIn={this.props.isLoggedIn} />} />
         <Route path='/statistic' 
           render={(props) => <Statistic {... props}
-            token={this.props.token} />} />
+            isLoggedIn={this.props.isLoggedIn} />} />
         <Route path='/play' 
           render={(props) => <PlayGame {... props}
-            token={this.props.token} />} />
+            isLoggedIn={this.props.isLoggedIn} />} />
         <Route path='/dictionaries' 
           render={(props) => <Dictionaries 
-            token={this.props.token} />} />
+            isLoggedIn={this.props.isLoggedIn} />} />
         <Route path='/dictionary' 
           render={(props) => <Dictionary 
-            token={this.props.token} />} />
+            isLoggedIn={this.props.isLoggedIn} />} />
         <Route path='/login' 
           render={(props) => <Login {...props} 
             onLogin={this.props.onLogin()} />} />
@@ -50,7 +50,7 @@ class Routes extends Component {
             onLogout={this.props.onLogout()} />} />
         <Route path='/profile' 
           render={(props) => <Profile {...props}  
-            token={this.props.token}/>} />
+            username={this.props.username}/>} />
       </Switch>
     );
   }

@@ -15,7 +15,7 @@ class Words extends Component {
   all_words() {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + this.props.token);  
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
     fetch('/words/all_words', {
       method: 'GET',
       headers: myHeaders

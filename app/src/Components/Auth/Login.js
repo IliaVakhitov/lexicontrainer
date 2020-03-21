@@ -36,19 +36,24 @@ class Login extends Component {
       credentials: 'include',
       headers: myHeaders,
       body: JSON.stringify({
-        'remember_me':this.state.remember_me
+        'remember_me': this.state.remember_me
       })
     })
       .then(res => res.json())
       .then((data) => {        
-        if ('token' in data) {          
-          this.setState({
-            username: '',
-            password: ''
-          });
-          this.props.onLogin(data.token, data.username);
-          this.props.history.push('/');
-        }
+        if ('error' in data) {
+          console.log(data);
+          this.props.history.push('/login');
+          return;
+        }     
+        localStorage.setItem('token', data.token);
+        this.setState({
+          username: '',
+          password: ''
+        });
+        this.props.onLogin(data.username);
+        this.props.history.push('/');
+        
       },
       (error) => {
         console.log(error);

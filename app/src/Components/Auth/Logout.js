@@ -16,6 +16,7 @@ class Logout extends Component {
       .then(res => res.json())
       .then(
       (data) => {
+        localStorage.removeItem('token');
         this.props.onLogout();
       },
       (error) => {

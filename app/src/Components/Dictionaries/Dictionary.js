@@ -39,7 +39,7 @@ class Dictionary extends Component {
     }
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + this.props.token);  
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
     myHeaders.append('dictionary_id', this.state.dictionary_id);  
     fetch('/dicts/dictionary', {
       method: 'GET',
@@ -68,7 +68,7 @@ class Dictionary extends Component {
   delete_word(word_id) {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + this.props.token);  
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
     fetch('/words/delete_word', {
       method: 'DELETE',
       headers: myHeaders,
@@ -94,7 +94,7 @@ class Dictionary extends Component {
   add_new_word() {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + this.props.token);  
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
     fetch('/words/add_word', {
       method: 'POST',
       headers: myHeaders,
@@ -145,7 +145,7 @@ class Dictionary extends Component {
     const word = this.state.words[index];
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + this.props.token);  
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
     fetch('/words/update_word', {
       method: 'POST',
       headers: myHeaders,
@@ -173,7 +173,7 @@ class Dictionary extends Component {
   save_dictionary() {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + this.props.token);  
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
     fetch('/dicts/update_dictionary', {
       method: 'POST',
       headers: myHeaders,

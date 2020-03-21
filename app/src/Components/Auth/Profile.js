@@ -14,13 +14,16 @@ class Profile extends Component {
       progress: '',
     }
 
+    
+  }
+  componentDidMount() {
     this.user_profile();
   }
-
+  
   user_profile() {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + this.props.token);    
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));    
     fetch('auth/user/',{
       method: 'GET',
       headers: myHeaders
