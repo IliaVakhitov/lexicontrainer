@@ -21,6 +21,12 @@ class App extends Component {
   componentDidMount() {
     this.login_check();
   }
+  
+  componentWillUnmount() {
+    if (localStorage.getItem('rememberMe') !== 'true') {
+      localStorage.removeItem('token');
+    }
+  }
 
   onLogin(new_username) {
     this.setState({
@@ -32,6 +38,8 @@ class App extends Component {
     this.setState({
       isLoggedIn: false,
       username: 'Guest'});
+    localStorage.removeItem('token');
+    localStorage.removeItem('rememberMe');
   }
 
   login_check() {
@@ -50,7 +58,6 @@ class App extends Component {
             isLoggedIn: false,
             username: 'Guest'
           });
-          this.props.history.push('/login');
         }
       },
       (error) => {

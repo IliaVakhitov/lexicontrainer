@@ -3,6 +3,8 @@ import { Component } from 'react';
 import { Input, InputGroupAddon, InputGroup, InputGroupText, Container,
   FormGroup, Label, Form, Button } from 'reactstrap';
 
+import { withRouter } from 'react-router-dom';
+
 class Login extends Component {
   constructor(props) {
       super(props);
@@ -45,12 +47,15 @@ class Login extends Component {
           console.log(data);
           this.props.history.push('/login');
           return;
-        }     
-        localStorage.setItem('token', data.token);
+        } 
         this.setState({
           username: '',
           password: ''
-        });
+        });    
+        localStorage.setItem('token', data.token);
+        if (this.state.remember_me) {
+          localStorage.setItem('rememberMe', 'true');
+        }        
         this.props.onLogin(data.username);
         this.props.history.push('/');
         
@@ -103,4 +108,4 @@ class Login extends Component {
   }
 }
 
-export default Login
+export default withRouter(Login);
