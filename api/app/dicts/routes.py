@@ -15,7 +15,6 @@ token_auth = HTTPTokenAuth()
 
 @token_auth.verify_token
 def verify_token(token):
-    print(request.headers)
     curr_user = User.check_token(token) if token else None
     return curr_user is not None
 

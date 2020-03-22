@@ -57,26 +57,29 @@ def word(word_id):
 @bp.route('/get_definition', methods=['POST'])
 @token_auth.login_required
 def get_definition():
+    user = User.check_request(request)
+    request_data = request.get_json()
+
     # Check definitions table for current word
-    word_id = int(request.form['word_id'])
-    definitions = Definitions.query.filter_by(word_id=word_id).all()
+    spelling = request_data.get('spelling')
+    definitions = Definitions.query.filter_by(spelling=spelling).all()
     if definitions:
         result = {'definitions': []}
         for definition_entry in definitions:
             result['definitions'].append({'definition': definition_entry.definition})
-        return jsonify(result)
+        return result
 
     # Get definitions from online dictionary
-    result_query = WordsApi.get_definitions(request.form['spelling'])
+    result_query = WordsApi.get_definitions(spelling)
     if not result_query:
-        return jsonify({'error': True})
+        return {'error': True}
 
     # Save definitions in table for future requests
     result = json.loads(result_query)
     if word_id > 0:
         for definition in result['definitions']:
             definition_entry = Definitions(
-                word_id=word_id, 
+                spelling=spelling, 
                 definition=definition['definition'])
             db.session.add(definition_entry)
         db.session.commit()
