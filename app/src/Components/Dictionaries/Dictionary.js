@@ -2,7 +2,8 @@ import React from 'react';
 import { Component } from 'react';
 import { Container, Input } from 'reactstrap';
 import { InputGroup, InputGroupAddon, InputGroupText, Button,
- Table } from 'reactstrap';
+  InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, 
+  Table } from 'reactstrap';
 
 import { withRouter } from 'react-router-dom';
 
@@ -17,26 +18,39 @@ class Dictionary extends Component {
       words: [],
       updated_words: [],
       new_word_spelling: '',
-      new_word_definition: ''
+      new_word_definition: '',
+      getButtonVisible: []
     };
 
-    this.dictionary();
     this.save_dictionary = this.save_dictionary.bind(this);
     this.update_state = this.update_state.bind(this);
     this.cancel_edit = this.cancel_edit.bind(this);
     this.add_new_word = this.add_new_word.bind(this);
     this.update_word = this.update_word.bind(this);
     this.save_word = this.save_word.bind(this);
-    setInterval(() => {
+    this.changeGetButtonVisible = this.changeGetButtonVisible.bind(this);
+    this.isGetButtonVisible = this.isGetButtonVisible.bind(this);
+  }
+  
+  componentDidMount() {
+    this.dictionary();
+    this.myInterval = setInterval(() => {
       this.save_words();
     }, 3000);
+
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.myInterval);
   }
 
   dictionary() {
-    if (isNaN(this.state.id)) {
-      console.log('Incorrect dictionary id '.concat(this.state.id));
+  
+    if (isNaN(this.state.dictionary_id)) {
+      console.log('Incorrect dictionary id '.concat(this.state.dictionary_id));
       this.props.history.push('/dictionaries');
     }
+    
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
@@ -51,11 +65,20 @@ class Dictionary extends Component {
         if ('error' in data) {
           console.log(data);
           return;
-        }    
+        } 
+        let getButtonVisible = [];
+        // First element for new word
+        getButtonVisible.push(false);
+        // Add words.length element
+        // to get data pass index+1 to array
+        for (var i=0; i<data.words.length; i++) {
+          getButtonVisible.push(false);
+        }
         this.setState({
           dictionary_name: data.dictionary_name,
           description: data.description,
-          words: data.words
+          words: data.words,
+          getButtonVisible: getButtonVisible
         });
         
       },
@@ -124,6 +147,11 @@ class Dictionary extends Component {
   }
 
   update_word(index, event) {
+    const words_len = this.state.words.length;
+    if (index >= words_len) {
+      console.log('Incorrect index ${index} of ${words_len}.');
+      return;
+    }
     let new_words = this.state.words;
     let updated_words = this.state.updated_words;
     updated_words.push(index);
@@ -137,7 +165,8 @@ class Dictionary extends Component {
   save_words() {
     let updated_words = this.state.updated_words;
     while (updated_words.length>0) {
-      this.save_word(updated_words.pop());
+      const index = updated_words.pop();
+      this.save_word(index);
     }
   }
 
@@ -207,6 +236,24 @@ class Dictionary extends Component {
     this.setState({[event.target.name]: event.target.value});
   } 
 
+  changeGetButtonVisible(index) {
+    let getButtonVisible = this.state.getButtonVisible;
+    if (index > getButtonVisible.length) {
+      return;
+    }
+    getButtonVisible.fill(false)
+    getButtonVisible[index] = true;
+    this.setState({getButtonVisible: getButtonVisible});
+  }
+
+  isGetButtonVisible(index) {
+    const getButtonVisible = this.state.getButtonVisible;
+    if (index > getButtonVisible.length) {
+      return false;
+    }
+    return getButtonVisible[index];
+  }
+
   render() {
     let i = 1;
     const words_list = this.state.words.map(word =>
@@ -222,13 +269,26 @@ class Dictionary extends Component {
           />
         </td>
         <td>
-          <Input 
-            value={word.definition}
-            name='definition'
-            onChange={(event) => this.update_word(
-              this.state.words.indexOf(word), event
+          <InputGroup>
+            {this.isGetButtonVisible(this.state.words.indexOf(word)+1) && (
+              <InputGroupButtonDropdown               
+                addonType='prepend'>
+                <Button outline>Get</Button>
+                <DropdownToggle split outline />
+                <DropdownMenu>         
+                  <DropdownItem>Some definition</DropdownItem>         
+                </DropdownMenu>
+              </InputGroupButtonDropdown>                  
             )}
-          />
+            <Input 
+              value={word.definition}
+              name='definition'
+              onFocus={() => this.changeGetButtonVisible(this.state.words.indexOf(word)+1)}
+              onChange={(event) => this.update_word(
+                this.state.words.indexOf(word), event
+              )}
+            />
+          </InputGroup>
         </td>
         <td>
           <Button outline 
@@ -251,8 +311,8 @@ class Dictionary extends Component {
             className='mx-1 my-1'>Cancel</Button>
         </div>
         <InputGroup className='my-2'>
-          <InputGroupAddon addonType='prepend'>
-            <InputGroupText>Name</InputGroupText>
+          <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
+            <InputGroupText className='w-100'>Name</InputGroupText>
           </InputGroupAddon>
           <Input
             type='text'
@@ -261,8 +321,8 @@ class Dictionary extends Component {
           />
         </InputGroup>
         <InputGroup className='my-2'>
-          <InputGroupAddon addonType='prepend'>
-            <InputGroupText>Description</InputGroupText>
+          <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
+            <InputGroupText className='w-100'>Description</InputGroupText>
           </InputGroupAddon>        
           <Input
             type='text'
@@ -289,14 +349,29 @@ class Dictionary extends Component {
                   name='new_word_spelling'
                   onChange={this.update_state}
                   value={this.state.new_word_spelling} 
-                  placeholder='Type word or phrase '/>
+                  placeholder='Type word or phrase '
+                />
               </td>
               <td>
+              <InputGroup>
+                {this.isGetButtonVisible(0) &&  
+                  <InputGroupButtonDropdown                   
+                    addonType='prepend'>
+                    <Button outline>Get</Button>
+                    <DropdownToggle split outline />
+                    <DropdownMenu>         
+                      <DropdownItem>Some definition</DropdownItem>         
+                    </DropdownMenu>
+                  </InputGroupButtonDropdown>
+                }
                 <Input 
                   name='new_word_definition'
+                  onFocus={() => this.changeGetButtonVisible(0)}
                   onChange={this.update_state}
                   value={this.state.new_word_definition} 
-                  placeholder='Defition of new word'/>
+                  placeholder='Defition of new word'
+                />
+              </InputGroup>
               </td>
               <td>
                 <Button outline color='success'

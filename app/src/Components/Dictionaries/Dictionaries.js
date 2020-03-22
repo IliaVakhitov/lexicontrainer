@@ -177,11 +177,11 @@ class Dictionaries extends Component {
           </Button>
         </p>
         <Collapse isOpen={this.state.add_dictionary}>
-          <Card className='w-50'>
+          <Card className='w-100'>
           <CardBody>
               <InputGroup className='my-2'>
-                <InputGroupAddon  addonType='prepend'>
-                  <InputGroupText>Name</InputGroupText>
+                <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
+                  <InputGroupText className='w-100'>Name</InputGroupText>
                 </InputGroupAddon>                
                 <Input 
                   type='text' 
@@ -192,8 +192,8 @@ class Dictionaries extends Component {
                 />
               </InputGroup>          
               <InputGroup className='my-2'>
-                <InputGroupAddon addonType='prepend'>
-                  <InputGroupText>Description</InputGroupText>
+                <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
+                  <InputGroupText className='w-100'>Description</InputGroupText>
                 </InputGroupAddon>
                 <Input 
                   type='text'
