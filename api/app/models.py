@@ -30,6 +30,7 @@ class Definitions(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     word_id = db.Column(db.Integer, db.ForeignKey('words.id'))
+    spelling = db.Column(db.String(250), index=True)
     definition = db.Column(db.String(550))
 
 
