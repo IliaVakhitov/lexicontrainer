@@ -14,33 +14,25 @@ class Dictionaries extends Component {
 
     this.state = {
       dictionaries: [], 
-      new_dictionary_name:'',
-      new_dictionary_description:'',
-      add_dictionary: false
+      newDictionaryName:'',
+      newDictionaryDescription:'',
+      addDictionary: false
     };
 
-    this.all_dictionaries();
-    this.get_words_list = this.get_words_list.bind(this);
-    this.update_state = this.update_state.bind(this);
-    this.save_dictionary = this.save_dictionary.bind(this);
-    this.add_dictionary = this.add_dictionary.bind(this);
-    this.open_dictionary = this.open_dictionary.bind(this);
-    this.cancel_edit = this.cancel_edit.bind(this);
+    this.allDictionaries();
+    this.getWordsList = this.getWordsList.bind(this);
+    this.updateState = this.updateState.bind(this);
+    this.saveDictionary = this.saveDictionary.bind(this);
+    this.addDictionary = this.addDictionary.bind(this);
+    this.openDictionary = this.openDictionary.bind(this);
+    this.cancelEdit = this.cancelEdit.bind(this);
   }
 
-  update_state(event) {
+  updateState(event) {
     this.setState({[event.target.name]: event.target.value});
   }
 
-  set_new_dictionary_name(event) {
-    this.setState({new_dictionary_name: event.target.value});
-  }
-
-  set_new_dictionary_description(event) {
-    this.setState({new_dictionary_description: event.target.value});
-  }
-
-  save_dictionary() {
+  saveDictionary() {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
@@ -48,8 +40,8 @@ class Dictionaries extends Component {
       method: 'POST',
       headers: myHeaders,
       body: JSON.stringify({
-        dictionary_name: this.state.new_dictionary_name,  
-        dictionary_description: this.state.new_dictionary_description,  
+        dictionary_name: this.state.newDictionaryName,  
+        dictionary_description: this.state.newDictionaryDescription,  
       })
     })
       .then(res => res.json())
@@ -60,11 +52,11 @@ class Dictionaries extends Component {
           return;
         }        
         this.setState({
-          new_dictionary_name:'',
-          new_dictionary_description:'',
-          add_dictionary: false
+          newDictionaryName:'',
+          newDictionaryDescription:'',
+          addDictionary: false
         });
-        this.all_dictionaries();
+        this.allDictionaries();
       },
       (error) => {
         console.log(error);
@@ -72,21 +64,21 @@ class Dictionaries extends Component {
     ); 
   }
 
-  cancel_edit() {
+  cancelEdit() {
     this.setState({
-      new_dictionary_name:'',
-      new_dictionary_description:'',
-      add_dictionary: false
+      newDictionaryName:'',
+      newDictionaryDescription:'',
+      addDictionary: false
     });  
   }
 
-  add_dictionary() {
+  addDictionary() {
     this.setState({
-      add_dictionary: !this.state.add_dictionary
+      addDictionary: !this.state.addDictionary
     });
   }
 
-  all_dictionaries() {
+  allDictionaries() {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
@@ -109,18 +101,18 @@ class Dictionaries extends Component {
     );   
   }
 
-  open_dictionary(dictionary_id) {
+  openDictionary(id) {
     this.props.history.push({
       pathname:'/dictionary', 
-      state: { dictionary_id: dictionary_id }
+      state: { id: id }
     });
   }
 
-  get_words_list(words) {
+  getWordsList(words) {
     if (words.length === 0) {
       return (<div>Nothing there! You can add new word!</div>);
     }
-    const words_list = words.map(word => 
+    const wordsList = words.map(word => 
       <Button 
         key={word.id}
         className='mx-1 my-1'  
@@ -131,7 +123,7 @@ class Dictionaries extends Component {
     );
     return (
       <div>
-        {words_list}        
+        {wordsList}        
       </div>
       
     );
@@ -139,14 +131,14 @@ class Dictionaries extends Component {
 
   render() {
     
-    const dictionaries_list = this.state.dictionaries.map(dictionary => 
+    const dictionariesList = this.state.dictionaries.map(dictionary => 
       <ListGroupItem key={dictionary.id} className='w-50'>
         <Card>
           <CardHeader>
             <Button color='' outline 
               size='md' 
               className='w-100'
-              onClick={() => this.open_dictionary(dictionary.id)}>{dictionary.dictionary_name}</Button>
+              onClick={() => this.openDictionary(dictionary.id)}>{dictionary.dictionary_name}</Button>
           </CardHeader>
           <CardBody>
             <CardTitle>{dictionary.description}</CardTitle>
@@ -159,7 +151,7 @@ class Dictionaries extends Component {
         <UncontrolledCollapse toggler={'#words_togger'.concat(dictionary.id)}>
           <Card>
             <CardBody>
-              {this.get_words_list(dictionary.words)}
+              {this.getWordsList(dictionary.words)}
             </CardBody>
           </Card>
         </UncontrolledCollapse>        
@@ -172,11 +164,11 @@ class Dictionaries extends Component {
         <p>
           <Button outline 
             color='primary' 
-            onClick={this.add_dictionary}>
+            onClick={this.addDictionary}>
               Add new
           </Button>
         </p>
-        <Collapse isOpen={this.state.add_dictionary}>
+        <Collapse isOpen={this.state.addDictionary}>
           <Card className='w-100'>
           <CardBody>
               <InputGroup className='my-2'>
@@ -185,10 +177,10 @@ class Dictionaries extends Component {
                 </InputGroupAddon>                
                 <Input 
                   type='text' 
-                  value={this.state.new_dictionary_name} 
-                  name='new_dictionary_name'
+                  value={this.state.newDictionaryName} 
+                  name='newDictionaryName'
                   placeholder='Type name for new dictionary'
-                  onChange={this.update_state}
+                  onChange={this.updateState}
                 />
               </InputGroup>          
               <InputGroup className='my-2'>
@@ -197,25 +189,25 @@ class Dictionaries extends Component {
                 </InputGroupAddon>
                 <Input 
                   type='text'
-                  name='new_dictionary_description' 
-                  value={this.state.new_dictionary_description} 
+                  name='newDictionaryDescription' 
+                  value={this.state.newDictionaryDescription} 
                   placeholder='Type description for new dictionary'
-                  onChange={this.update_state}
+                  onChange={this.updateState}
                 />
               </InputGroup>
               <Button outline 
                 color='success' 
                 className='mx-1 my-1'
-                onClick={this.save_dictionary}>Save</Button>
+                onClick={this.saveDictionary}>Save</Button>
               <Button outline 
                 color='secondary' 
                 className='mx-1 my-1'
-                onClick={this.cancel_edit}>Cancel</Button>
+                onClick={this.cancelEdit}>Cancel</Button>
             </CardBody>
           </Card>
         </Collapse>
         <ListGroup horizontal='lg'>
-          {dictionaries_list}          
+          {dictionariesList}          
         </ListGroup>
       </Container>
       );
