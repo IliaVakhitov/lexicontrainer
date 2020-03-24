@@ -12,19 +12,19 @@ class Login extends Component {
       this.state = {
         username: '',
         password: '',
-        remember_me: false
+        rememberMe: false
       }
-      this.update_state = this.update_state.bind(this);
+      this.updateState = this.updateState.bind(this);
       this.handleOnClickRememberMe = this.handleOnClickRememberMe.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  update_state(event) {
+  updateState(event) {
     this.setState({[event.target.name]: event.target.value});
   }
 
   handleOnClickRememberMe() {
-    this.setState({remember_me: !this.state.remember_me});
+    this.setState({rememberMe: !this.state.rememberMe});
   }
 
   handleSubmit(event) {
@@ -36,10 +36,7 @@ class Login extends Component {
     fetch('/auth/token', {
       method: 'POST',
       credentials: 'include',
-      headers: myHeaders,
-      body: JSON.stringify({
-        'remember_me': this.state.remember_me
-      })
+      headers: myHeaders
     })
       .then(res => res.json())
       .then((data) => {        
@@ -53,7 +50,7 @@ class Login extends Component {
           password: ''
         });    
         localStorage.setItem('token', data.token);
-        if (this.state.remember_me) {
+        if (this.state.rememberMe) {
           localStorage.setItem('rememberMe', 'true');
         }        
         this.props.onLogin(data.username);
@@ -77,7 +74,7 @@ class Login extends Component {
             <Input placeholder='username'  
               value={this.state.username} 
               name='username'            
-              onChange={this.update_state}/>
+              onChange={this.updateState}/>
           </InputGroup>
           <br/>
           <InputGroup>
@@ -88,16 +85,16 @@ class Login extends Component {
               value={this.state.password} 
               name='password'                        
               placeholder='password'                
-              onChange={this.update_state}/>
+              onChange={this.updateState}/>
           </InputGroup>
           <br/>
           <FormGroup check>
-            <Label for='remember_me'>
+            <Label for='rememberMe'>
               <Input 
                 name='remeber_me'
                 id='remeber_me'
                 type='checkbox' 
-                value={this.state.remember_me} 
+                value={this.state.rememberMe} 
                 onClick={this.handleOnClickRememberMe}/>{' '}
               Remember me
             </Label>

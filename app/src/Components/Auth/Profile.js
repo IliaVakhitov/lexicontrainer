@@ -8,9 +8,9 @@ class Profile extends Component {
 
     this.state = {
       username: '',
-      total_dictionaries: '',
-      total_words: '',
-      words_learned: '',
+      totalDictionaries: '',
+      totalWords: '',
+      wordsLearned: '',
       progress: '',
     }
 
@@ -24,17 +24,17 @@ class Profile extends Component {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));    
-    fetch('auth/user/',{
+    fetch('auth/user',{
       method: 'GET',
       headers: myHeaders
     })
       .then(res => res.json())
       .then((data) => {
         this.setState({
-          total_dictionaries: data.total_dictionaries,
-          total_words: data.total_words,
+          totalDictionaries: data.totalDictionaries,
+          totalWords: data.totalWords,
           progress: data.progress,
-          words_learned: data.words_learned,
+          wordsLearned: data.wordsLearned,
           username: data.username
         });
       },
@@ -50,9 +50,9 @@ class Profile extends Component {
       <Container>
         <h3>{this.state.username} user information</h3>
         <Container>
-          <p>Dictionaries: {this.state.total_dictionaries}</p>
-          <p>Total words: {this.state.total_words}</p>
-          <p>Words learned: {this.state.words_learned}</p>
+          <p>Dictionaries: {this.state.totalDictionaries}</p>
+          <p>Total words: {this.state.totalWords}</p>
+          <p>Words learned: {this.state.wordsLearned}</p>
           <p>Progres: {this.state.progress}%</p>
         </Container>
       </Container>

@@ -11,7 +11,7 @@ class App extends Component {
     
     this.state = {
       isLoggedIn: false,
-      username: 'Guest'
+      username: ''
     };
 
     this.onLogout = this.onLogout.bind(this);
@@ -24,7 +24,7 @@ class App extends Component {
   
   componentWillUnmount() {
     if (localStorage.getItem('rememberMe') !== 'true') {
-      localStorage.removeItem('token');
+      localStorage.clear();
     }
   }
 
@@ -35,25 +35,42 @@ class App extends Component {
   }
 
   onLogout() {
+    localStorage.clear();
     this.setState({
       isLoggedIn: false,
       username: 'Guest'});
-    localStorage.removeItem('token');
-    localStorage.removeItem('rememberMe');
   }
 
   login_check() {
-    fetch('/auth/is_authenticated')
+    const token = localStorage.getItem('token');
+    if (token === null) {
+      this.setState({
+        isLoggedIn: false,
+        username: 'Guest'
+      });
+      return;  
+    }
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', 'Bearer ' + token);    
+    fetch('auth/is_authenticated',{
+      method: 'GET',
+      headers: myHeaders
+    })
       .then(res => res.json())
       .then(
       (data) => {
+        if ('error' in data) {
+          console.log(data);
+          return;
+        } 
         if ('is_authenticated' in data && data.is_authenticated) {
           this.setState({
             isLoggedIn: data.is_authenticated,
             username: data.username
-          });
-          localStorage.setItem('token', data.token);
+          });          
         } else {
+          localStorage.removeItem('token')
           this.setState({
             isLoggedIn: false,
             username: 'Guest'

@@ -6,9 +6,12 @@ import TestComponent from '../../TestComponent';
 class Main extends Component {
   
   render() {
+    const username = this.props.username;
+    const welcomeString = username !== '' ? 'Welcome, ' + username + '!' : 'Welcome!';
+
     return (
       <Container>
-        <h3>Welcome, {this.props.username}!</h3>
+        <h3>{welcomeString}</h3>
         <TestComponent />
       </Container>
     );
