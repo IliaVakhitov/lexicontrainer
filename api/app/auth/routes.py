@@ -31,10 +31,7 @@ def verify_password(username, password):
     if user is None:
         return False
     password_check = user.check_password(password)
-    if password_check:
-        request_data = request.get_json()
-        login_user(user, remember=request_data.get('remember_me'))
-
+    
     return password_check 
 
 
@@ -54,12 +51,11 @@ def get_token():
 
 @bp.route('/is_authenticated', methods=['GET'])
 def is_authenticated():
-    is_authenticated = current_user.is_authenticated if current_user else False 
-    token = current_user.get_token() if is_authenticated else None 
-    username = current_user.username if is_authenticated else None 
+    user = User.check_request(request)
+    is_authenticated = user is not None
+    username = user.username if is_authenticated else None 
     return {'is_authenticated': is_authenticated,
-            'username': username,
-            'token': token}
+            'username': username}
 
 
 @bp.route('/logout', methods=['POST'])
@@ -76,7 +72,7 @@ def register():
     return {'message': 'Page not available'} 
 
 
-@bp.route('/user/', methods=['GET'])
+@bp.route('/user', methods=['GET'])
 @token_auth.login_required
 def user():
     """

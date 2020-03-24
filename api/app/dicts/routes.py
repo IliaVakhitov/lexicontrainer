@@ -88,12 +88,12 @@ def update_dictionary():
         word_entry = Word.query.filter_by(id=word['id']).first()
         if word_entry is None:
             continue
-        if word_entry.spelling != word['spelling']:
+        if word_entry.spelling != word['spelling']\
+            or word_entry.definition != word['definition']:
             word_entry.spelling = word['spelling']
-        if word_entry.definition != word['definition']:
             word_entry.definition = word['definition']
-        if word_entry.learning_index is not None:
-            word_entry.learning_index.index = 0
+            if word_entry.learning_index is not None:
+                word_entry.learning_index.index = 0
     db.session.commit()
 
     return {'result': 'Dictionary updated successfully'}
