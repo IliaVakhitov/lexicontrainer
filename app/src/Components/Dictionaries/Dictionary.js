@@ -301,17 +301,14 @@ class Dictionary extends Component {
       return;
     }
     const word = this.state.words[index];
-    let definitions = this.state.definitions;
     let splitButtonOpen = this.state.splitButtonOpen;
-    //if (definitions[index].length > 0) {
-      splitButtonOpen[index] = !splitButtonOpen[index];
-      // TODO get list for dropdown menu
-      this.setState({splitButtonOpen: splitButtonOpen});
-    //}
-     
+    this.getDefinitionsAPI(word.spelling, index);
+    splitButtonOpen[index] = !splitButtonOpen[index];
+    this.setState({splitButtonOpen: splitButtonOpen});
+         
   }
 
-  getDefinitionsAPI(spelling) {
+  getDefinitionsAPI(spelling, index) {
     
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -329,14 +326,61 @@ class Dictionary extends Component {
         if ('error' in data) {
           console.log(data);
           return;
-        }        
-        console.log(data);
+        }       
+        if ('message' in data) {
+          console.log(data);
+          return; 
+        }
+        let stateDefinitions = this.state.definitions;
+        stateDefinitions[index] = data.definitions;
+        this.setState({definitions: stateDefinitions});
       },
       (error) => {
         console.log(error);
       }
     );
     
+  }
+
+  setDefinition(index, definition) {
+    if (!definition) {
+      console.log('Empty definition');
+      return;
+    }
+
+    let words = this.state.words;
+    let getButtonVisible = this.state.getButtonVisible;
+    
+    if (index >= words.length  
+        || index >= getButtonVisible.length
+        || index < 0) {
+      console.log('Incorrect index ' + index);
+      return;
+    } 
+    
+    words[index].definition = definition;
+    getButtonVisible[index] = false;
+    this.setState({
+      words: words,
+      getButtonVisible: getButtonVisible
+    });
+  }
+
+  getDefinitionsList(index) {
+    let i = 1;
+    const definitions = this.state.definitions;
+    if (index >= definitions.length || index < 0) {
+      console.log('Incorrect index ' + index);
+      return;
+    }
+    if (!definitions[index] || definitions[index].length === 0) {
+      return <DropdownItem key={i++}>Couldn't get online definition</DropdownItem>
+    }
+    return definitions[index].map(definition =>
+      <DropdownItem key={i++}
+        onClick={() => this.setDefinition(index, definition.definition)}
+        >{definition.definition}</DropdownItem>
+    );
   }
 
   getWordsList() {
@@ -369,7 +413,7 @@ class Dictionary extends Component {
                   Get
                 </DropdownToggle>
                 <DropdownMenu>         
-                  <DropdownItem>Some definition</DropdownItem>         
+                  {this.getDefinitionsList(this.state.words.indexOf(word))}         
                 </DropdownMenu>
               </InputGroupButtonDropdown>                 
             )}

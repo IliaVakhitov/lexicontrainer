@@ -42,11 +42,6 @@ class Word(db.Model):
     definition = db.Column(db.String(550))
     dictionary_id = db.Column(db.Integer, db.ForeignKey('dictionaries.id'))
     learning_index = db.relationship('LearningIndex', cascade="all,delete", uselist=False, back_populates='word')
-    definitions = db.relationship('Definitions',
-                                  cascade="all,delete",
-                                  backref='Word',
-                                  lazy='dynamic',
-                                  order_by="Definitions.id")
     words_synonyms = db.relationship(
         'Word', secondary=synonyms,
         primaryjoin=(synonyms.c.word_id == id),

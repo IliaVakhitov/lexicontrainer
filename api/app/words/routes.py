@@ -62,6 +62,9 @@ def get_definition():
 
     # Check definitions table for current word
     spelling = request_data.get('spelling')
+    if not spelling:
+        return {'error': 'No spelling in request'}
+
     definitions = Definitions.query.filter_by(spelling=spelling).all()
     if definitions:
         result = {'definitions': []}
@@ -72,17 +75,16 @@ def get_definition():
     # Get definitions from online dictionary
     result_query = WordsApi.get_definitions(spelling)
     if not result_query:
-        return {'error': True}
+        return {'message': 'Error in requesting words api'}
 
     # Save definitions in table for future requests
     result = json.loads(result_query)
-    if word_id > 0:
-        for definition in result['definitions']:
-            definition_entry = Definitions(
-                spelling=spelling, 
-                definition=definition['definition'])
-            db.session.add(definition_entry)
-        db.session.commit()
+    for definition in result['definitions']:
+        definition_entry = Definitions(
+            spelling=spelling, 
+            definition=definition['definition'])
+        db.session.add(definition_entry)
+    db.session.commit()
     return result
 
 
