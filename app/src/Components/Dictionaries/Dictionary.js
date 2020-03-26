@@ -1,11 +1,12 @@
 import React from 'react';
 import { Component } from 'react';
-import { Container, Input } from 'reactstrap';
-import { InputGroup, InputGroupAddon, InputGroupText, Button,
+import { Container, Input, InputGroup, InputGroupAddon, InputGroupText, Button,
   InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, 
-  Card, CardBody,Table } from 'reactstrap';
+  Table } from 'reactstrap';
 
 import { withRouter } from 'react-router-dom';
+
+import NewWord from '../../Components/Words/NewWord';
 
 class Dictionary extends Component {
   constructor(props) {
@@ -19,26 +20,19 @@ class Dictionary extends Component {
       updatedWords: [],
       getButtonVisible: [],
       splitButtonOpen: [],
-      definitions: [],
-      newWordSpelling: '',
-      newWordDefinition: '',
-      newWordGetButtonVisible: false,
-      newWordSplitButtonOpen: false
+      definitions: []
     };
 
     this.saveDictionary = this.saveDictionary.bind(this);
     this.cancelEdit = this.cancelEdit.bind(this);
-    this.addNewWord = this.addNewWord.bind(this);
     this.updateWord = this.updateWord.bind(this);
     this.saveWord = this.saveWord.bind(this);
     this.changeGetButtonVisible = this.changeGetButtonVisible.bind(this);
     this.isGetButtonVisible = this.isGetButtonVisible.bind(this);
     this.getDefinitions = this.getDefinitions.bind(this);
     this.updateState = this.updateState.bind(this);
-    this.changeNWSplitBtnOpen = this.changeNWSplitBtnOpen.bind(this);
-    this.changeNWGetBtnVisible = this.changeNWGetBtnVisible.bind(this);
-    this.getNewWordDefition = this.getNewWordDefition.bind(this);
     this.getWordsList = this.getWordsList.bind(this);
+    this.dictionary = this.dictionary.bind(this);
   }
   
   componentDidMount() {
@@ -55,14 +49,6 @@ class Dictionary extends Component {
 
   updateState(event) {
     this.setState({[event.target.name]: event.target.value});
-  }
-
-  changeNWGetBtnVisible() {
-    this.setState({newWordGetButtonVisible: !this.state.newWordGetButtonVisible});
-  }
-
-  changeNWSplitBtnOpen() {
-    this.setState({newWordSplitButtonOpen: !this.state.newWordSplitButtonOpen});
   }
 
   dictionary() {
@@ -90,7 +76,6 @@ class Dictionary extends Component {
         let getButtonVisible = [];
         let splitButtonOpen = [];
         let definitions = [];
-        // First element for new word
         for (var i=0; i<data.words.length; i++) {
           getButtonVisible.push(false);
           splitButtonOpen.push(false);
@@ -136,38 +121,6 @@ class Dictionary extends Component {
         console.log(error);
       }
     );   
-  }
-
-  addNewWord() {
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/words/add_word', {
-      method: 'POST',
-      headers: myHeaders,
-      body: JSON.stringify({
-        'dictionary_id': this.state.id,  
-        'spelling': this.state.newWordSpelling,  
-        'definition': this.state.newWordDefinition
-      })
-    })
-      .then(res => res.json())
-      .then(
-      (data) => {
-        if ('error' in data) {
-          console.log(data);
-          return;
-        }        
-        this.dictionary();
-        this.setState({
-          newWordSpelling: '',
-          newWordDefinition: '',
-        });
-      },
-      (error) => {
-        console.log(error);
-      }
-    ); 
   }
 
   updateWord(index, event) {
@@ -260,7 +213,7 @@ class Dictionary extends Component {
       this.props.history.push('/dictionaries');
   }
 
-  changeGetButtonVisible(index) {
+  changeGetButtonVisible(index, isVisible) {
     
     let getButtonVisible = this.state.getButtonVisible;
     if (index >= getButtonVisible.length || index < 0) {
@@ -268,7 +221,7 @@ class Dictionary extends Component {
       return;
     }
     getButtonVisible.fill(false)
-    getButtonVisible[index] = true;
+    getButtonVisible[index] = isVisible;
     this.setState({getButtonVisible: getButtonVisible});
   }
 
@@ -288,10 +241,6 @@ class Dictionary extends Component {
       return false;
     }
     return splitButtonOpen[index];
-  }
-
-  getNewWordDefition() {
-    this.setState({newWordSplitButtonOpen: !this.state.newWordSplitButtonOpen});
   }
 
   getDefinitions(index) {
@@ -387,7 +336,11 @@ class Dictionary extends Component {
     let i = 1;
     const words = this.state.words;
     return words.map(word =>
-      <tr key={word.id}>
+      <tr key={word.id} 
+        onFocus={() => this.changeGetButtonVisible(
+          this.state.words.indexOf(word), true
+        )}
+        >
         <td>{i++}</td>
         <td>
           <Input 
@@ -419,10 +372,7 @@ class Dictionary extends Component {
             )}
             <Input 
               value={word.definition}
-              name='definition'
-              onFocus={() => this.changeGetButtonVisible(
-                this.state.words.indexOf(word)
-              )}
+              name='definition'              
               onChange={(event) => this.updateWord(
                 this.state.words.indexOf(word), event
               )}
@@ -476,51 +426,9 @@ class Dictionary extends Component {
           />
         </InputGroup>
         <br />
-        <Card>
-          <CardBody>
-            <h5>New word</h5>
-            <InputGroup className='my-2'>
-              <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
-                <InputGroupText className='w-100'>Spelling</InputGroupText>
-              </InputGroupAddon>        
-                <Input 
-                  value={this.state.newWordSpelling}
-                  name='newWordSpelling'
-                  onChange={this.updateState} 
-                  placeholder='Type word or phrase '
-                />
-            </InputGroup>            
-            <InputGroup className='my-2'>
-              <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
-                <InputGroupText className='w-100'>Definition</InputGroupText>
-              </InputGroupAddon>        
-              {this.state.newWordGetButtonVisible &&  
-                <InputGroupButtonDropdown                   
-                  addonType='prepend'
-                  isOpen={this.state.newWordSplitButtonOpen} 
-                  toggle={this.getNewWordDefition}>
-                  <DropdownToggle caret outline>
-                    Get
-                  </DropdownToggle>
-                  <DropdownMenu>         
-                    <DropdownItem>Some definition</DropdownItem>         
-                  </DropdownMenu>
-                </InputGroupButtonDropdown>
-              }
-              <Input 
-                name='newWordDefinition'
-                onChange={this.updateState} 
-                onFocus={this.changeNWGetBtnVisible}
-                value={this.state.newWordDefinition}
-                placeholder='Defition of new word'
-              />
-            </InputGroup>     
-            <Button outline color='success'
-              onClick={this.addNewWord}
-            >Add
-            </Button>        
-          </CardBody>       
-        </Card>
+        <NewWord 
+          dictionaryId={this.state.id} 
+          addNewWord={this.dictionary}/>
         <h4>Words</h4>
         <Table borderless responsive>
           <thead className='thead-light'>
