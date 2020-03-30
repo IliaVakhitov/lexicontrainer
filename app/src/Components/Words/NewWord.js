@@ -1,37 +1,39 @@
 import React from 'react';
-import { Component } from "react";
+import { Component } from 'react';
 import { Input,InputGroup, InputGroupAddon, InputGroupText, Button,
   InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, 
   Card, CardBody } from 'reactstrap';
+
+import { getDefinitionAPI } from './Word'
 
 class NewWord extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      newWordSpelling: '',
-      newWordDefinition: '',
-      newWordDefinitions: [],
-      newWordGetButtonVisible: false,
-      newWordSplitButtonOpen: false
+      spelling: '',
+      definition: '',
+      definitions: [],
+      getVisible: false,
+      splitOpen: false
     };
 
     this.addNewWord = this.addNewWord.bind(this);
     this.updateState = this.updateState.bind(this);
-    this.changeNWSplitBtnOpen = this.changeNWSplitBtnOpen.bind(this);
-    this.changeNWGetBtnVisible = this.changeNWGetBtnVisible.bind(this);
-    this.getNewWordDefitions = this.getNewWordDefitions.bind(this);
-    
+    this.setGetVisible = this.setGetVisible.bind(this);
+    this.getDefinitions = this.getDefinitions.bind(this);    
   }
-
-
 
   updateState(event) {
     this.setState({[event.target.name]: event.target.value});
   }
 
-  changeNWGetBtnVisible(isVisible) {
-    this.setState({newWordGetButtonVisible: isVisible});
+  setGetVisible(isVisible) {
+    this.setState({getVisible: isVisible});
+  }
+
+  getDefinitions() {
+    this.setState({splitOpen: !this.state.splitOpen});
   }
 
   addNewWord() {
@@ -43,8 +45,8 @@ class NewWord extends Component {
       headers: myHeaders,
       body: JSON.stringify({
         'dictionary_id': this.props.dictionaryId,  
-        'spelling': this.state.newWordSpelling,  
-        'definition': this.state.newWordDefinition
+        'spelling': this.state.spelling,  
+        'definition': this.state.definition
       })
     })
       .then(res => res.json())
@@ -55,10 +57,10 @@ class NewWord extends Component {
           return;
         }        
         this.setState({
-          newWordSpelling: '',
-          newWordDefinition: '',
+          spelling: '',
+          definition: '',
         });
-        this.props.addNewWord();
+        this.props.onAddingNewWord();
       },
       (error) => {
         console.log(error);
@@ -66,20 +68,11 @@ class NewWord extends Component {
     ); 
   }
 
-  changeNWSplitBtnOpen() {
-    this.setState({newWordSplitButtonOpen: !this.state.newWordSplitButtonOpen});
-  }
-
-  getNewWordDefitions() {
-
-    this.setState({newWordSplitButtonOpen: !this.state.newWordSplitButtonOpen});
-  }
-
   render() {
     return (
       <Card 
-        onFocus={() => this.changeNWGetBtnVisible(true)}
-        onBlur={() => this.changeNWGetBtnVisible(false)}>
+        onFocus={() => this.setGetVisible(true)}
+        >
         <CardBody>
           <h5>New word</h5>
           <InputGroup className='my-2'>
@@ -87,8 +80,8 @@ class NewWord extends Component {
               <InputGroupText className='w-100'>Spelling</InputGroupText>
             </InputGroupAddon>        
               <Input 
-                value={this.state.newWordSpelling}
-                name='newWordSpelling'
+                value={this.state.spelling}
+                name='spelling'
                 onChange={this.updateState} 
                 placeholder='Type word or phrase '
               />
@@ -97,11 +90,11 @@ class NewWord extends Component {
             <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
               <InputGroupText className='w-100'>Definition</InputGroupText>
             </InputGroupAddon>        
-            {this.state.newWordGetButtonVisible &&  
+            {this.state.getVisible &&  
               <InputGroupButtonDropdown                   
                 addonType='prepend'
-                isOpen={this.state.newWordSplitButtonOpen} 
-                toggle={this.getNewWordDefitions}>
+                isOpen={this.state.splitOpen} 
+                toggle={this.getDefinitions}>
                 <DropdownToggle caret outline>
                   Get
                 </DropdownToggle>
@@ -111,9 +104,9 @@ class NewWord extends Component {
               </InputGroupButtonDropdown>
             }
             <Input 
-              name='newWordDefinition'
+              name='definition'
               onChange={this.updateState}                 
-              value={this.state.newWordDefinition}
+              value={this.state.definition}
               placeholder='Defition of new word'
             />
           </InputGroup>     

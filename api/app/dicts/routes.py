@@ -79,21 +79,10 @@ def delete_dictionary():
 def update_dictionary():
     user = User.check_request(request)
     request_data = request.get_json()
-    words = request_data.get('words')
     dictionary_id = request_data.get('dictionary_id')
     dictionary_entry = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
     dictionary_entry.dictionary_name = request_data.get('dictionary_name').strip()
     dictionary_entry.description = request_data.get('description').strip()
-    for word in words:
-        word_entry = Word.query.filter_by(id=word['id']).first()
-        if word_entry is None:
-            continue
-        if word_entry.spelling != word['spelling']\
-            or word_entry.definition != word['definition']:
-            word_entry.spelling = word['spelling']
-            word_entry.definition = word['definition']
-            if word_entry.learning_index is not None:
-                word_entry.learning_index.index = 0
     db.session.commit()
 
     return {'result': 'Dictionary updated successfully'}
