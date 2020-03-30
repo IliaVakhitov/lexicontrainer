@@ -29,7 +29,6 @@ class Definitions(db.Model):
     __tablename__ = 'definitions'
 
     id = db.Column(db.Integer, primary_key=True)
-    word_id = db.Column(db.Integer, db.ForeignKey('words.id'))
     spelling = db.Column(db.String(250), index=True)
     definition = db.Column(db.String(550))
 
@@ -41,7 +40,11 @@ class Word(db.Model):
     spelling = db.Column(db.String(128))
     definition = db.Column(db.String(550))
     dictionary_id = db.Column(db.Integer, db.ForeignKey('dictionaries.id'))
-    learning_index = db.relationship('LearningIndex', cascade="all,delete", uselist=False, back_populates='word')
+    learning_index = db.relationship(
+        'LearningIndex', 
+        cascade="all,delete", 
+        uselist=False, 
+        back_populates='word')
     words_synonyms = db.relationship(
         'Word', secondary=synonyms,
         primaryjoin=(synonyms.c.word_id == id),

@@ -1,16 +1,9 @@
 import json
 import logging
-from flask_login import login_required, current_user
-from flask import render_template
-from flask import url_for
 from flask import request
-from flask import redirect
-from flask import flash
-from flask import jsonify
 from flask_httpauth import HTTPTokenAuth
 
-from app.models import User, Dictionary, Definitions, LearningIndex
-from app.models import Word
+from app.models import Word, User, Dictionary, Definitions, LearningIndex
 from app.words import bp
 from app import db
 from appmodel.words_api import WordsApi
@@ -134,3 +127,15 @@ def update_word():
     db.session.commit()
 
     return {'success': True}
+
+
+# Additional functions 
+#@bp.route('/update_defitions_table', methods=['GET'])
+def update_defitions_table():
+    definitions = db.session.query(Definitions, Word).\
+        filter(Definitions.word_id == Word.id).all()
+    for definition in definitions:
+        definition[0].spelling = definition[1].spelling
+    db.session.commit()
+    return {'result': 'success'}
+

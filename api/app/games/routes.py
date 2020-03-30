@@ -31,7 +31,8 @@ def token_auth_error():
 @token_auth.login_required
 def check_current_game():
     user = User.check_request(request)
-    revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
+    revision_game_entry = CurrentGame.query.filter_by(
+        user_id=user.id, game_completed=False).first()
     
     if revision_game_entry is None:
         return {'current_game' : False} 
@@ -45,7 +46,8 @@ def check_current_game():
 @token_auth.login_required
 def remove_game():
     user = User.check_request(request)
-    revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
+    revision_game_entry = CurrentGame.query.filter_by(
+        user_id=user.id, game_completed=False).first()
     
     if revision_game_entry is not None:
         db.session.delete(revision_game_entry)
@@ -58,8 +60,10 @@ def remove_game():
 def define_game():
 
     user = User.check_request(request)
-    revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
-    dictionaries = Dictionary.query.filter_by(user_id=user.id).order_by('dictionary_name')
+    revision_game_entry = CurrentGame.query.filter_by(
+        user_id=user.id, game_completed=False).first()
+    dictionaries = Dictionary.query.filter_by(
+        user_id=user.id).order_by('dictionary_name')
 
     # Remove previous game
     if revision_game_entry is not None:
