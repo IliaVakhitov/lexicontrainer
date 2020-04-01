@@ -7,7 +7,8 @@ import { Container, Input, InputGroup, InputGroupAddon, InputGroupText, Button,
 import { withRouter } from 'react-router-dom';
 
 import NewWord from '../../Components/Words/NewWord';
-import Word from '../../Components/Words/Word';
+import WordsTable from '../../Components/Words/WordsTable';
+
 
 class Dictionary extends Component {
   constructor(props) {
@@ -23,7 +24,6 @@ class Dictionary extends Component {
     this.saveDictionary = this.saveDictionary.bind(this);
     this.cancelEdit = this.cancelEdit.bind(this);
     this.updateState = this.updateState.bind(this);
-    this.getWordsList = this.getWordsList.bind(this);
     this.dictionary = this.dictionary.bind(this);
   }
   
@@ -34,6 +34,7 @@ class Dictionary extends Component {
   updateState(event) {
     this.setState({[event.target.name]: event.target.value});
   }
+
 
   dictionary() {
   
@@ -67,6 +68,7 @@ class Dictionary extends Component {
         console.log(error);
       }
     );
+    
   }
 
   saveDictionary() {
@@ -101,21 +103,10 @@ class Dictionary extends Component {
     this.props.history.push('/dictionaries');
   }
 
-  getWordsList() {
-    let i = 1;
-    const words = this.state.words;
-    return words.map(word =>
-      <Word 
-        key={i}
-        i={i++} 
-        index={this.state.words.indexOf(word)} 
-        onDeletingWord={this.dictionary}
-        word={word} />
-      );
-  }
+  
 
   render() {
-    
+     
     return (
       <Container>
         <div>
@@ -153,22 +144,12 @@ class Dictionary extends Component {
         <br />
         <NewWord 
           dictionaryId={this.state.id} 
-          onAddingNewWord={this.dictionary}/>
-        <h4>Words</h4>
-        <Table borderless responsive>
-          <thead className='thead-light'>
-            <tr>
-              <th width={'5%'}>#</th>
-              <th width={'25%'}>Spelling</th>
-              <th width={'60%'}>Definition</th>
-              <th width={'10%'}>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.getWordsList()}
-          </tbody>
-        </Table>
-      </Container>
+          addNewWord={this.dictionary}/>
+        <WordsTable 
+          words={this.state.words} 
+          onDeleteWord={this.dictionary}
+        />
+        </Container>
     );
   }
 }
