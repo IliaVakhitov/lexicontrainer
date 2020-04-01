@@ -9,8 +9,6 @@ class Word extends Component {
     super(props);
 
     this.state = {
-      word: this.props.word,
-      id: this.props.word.id,
       spelling: '',
       definition: '',
       saved: true,
@@ -25,13 +23,21 @@ class Word extends Component {
     this.updateState = this.updateState.bind(this);
     this.deleteWord = this.deleteWord.bind(this);
     this.setDefinition = this.setDefinition.bind(this);
+    this.hideGetButton = this.hideGetButton.bind(this);
   
+  }
+
+  componentWillReceiveProps(newProps) {
+    this.setState({
+      spelling: newProps.word.spelling,
+      definition: newProps.word.definition
+    });
   }
 
   componentDidMount() {
     this.setState({
-      spelling: this.state.word.spelling,
-      definition: this.state.word.definition
+      spelling: this.props.word.spelling,
+      definition: this.props.word.definition
     });
     this.myInterval = setInterval(() => {
       this.saveWord();
@@ -67,19 +73,27 @@ class Word extends Component {
           console.log(data);
           return;
         }        
-        this.props.onDeletingWord();
+        this.props.onDeleteWord();         
       },
       (error) => {
         console.log(error);
       }
     );   
+    
+  }
+
+  hideGetButton() {
+    //Set the timer and hide button in a seconds
+    setTimeout(function() { 
+        this.setState({getVisible: false}) 
+    }.bind(this), 1000);
   }
 
   setGetVisible(isVisible) {
     this.setState({getVisible: isVisible});
   }
 
-  getDefinitions() {
+  getDefinitions() {    
     if (!this.state.spelling) {
       console.log('Spelling is empty');
       // TODO Show popover
@@ -161,7 +175,7 @@ class Word extends Component {
       method: 'POST',
       headers: myHeaders,
       body: JSON.stringify({
-        'word_id': this.state.id,  
+        'word_id': this.props.word.id,  
         'spelling': this.state.spelling,  
         'definition': this.state.definition  
       })
@@ -184,9 +198,7 @@ class Word extends Component {
   render() {
     const i = this.props.i;
     return ( 
-      <tr 
-        onFocus={() => this.setGetVisible(true)}
-        >
+      <tr onFocus={() => this.setGetVisible(true)}>
         <td>{i}</td>
         <td>
           <Input 
@@ -214,12 +226,13 @@ class Word extends Component {
               value={this.state.definition}
               name='definition'              
               onChange={this.updateState}
+              onBlur={this.hideGetButton}
             />
           </InputGroup>
         </td>
         <td>
           <Button outline 
-            onClick={() => this.deleteWord(this.state.id)}
+            onClick={() => this.deleteWord(this.props.word.id)}
             color='danger'>{String.fromCharCode(0x2015)}
           </Button>
         </td>
