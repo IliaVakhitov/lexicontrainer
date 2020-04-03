@@ -1,8 +1,10 @@
 import React from 'react';
 import { Component } from "react";
-import { Input,InputGroup, Button,
+import { Input, Button,
   InputGroupButtonDropdown, DropdownToggle, 
-  DropdownMenu, DropdownItem } from 'reactstrap';
+  InputGroup, InputGroupAddon, InputGroupText,
+  DropdownMenu, DropdownItem, Card, CardBody,
+  Popover, PopoverBody, Collapse } from 'reactstrap';
 
 class Word extends Component {
   constructor(props) {
@@ -14,24 +16,21 @@ class Word extends Component {
       saved: true,
       definitions: [],
       getVisible: false,
-      splitOpen: false
+      splitOpen: false,
+      spellingPopover: false,
+      definitionPopover:false,
+      collapseOpen: false,
+      requestingDefitions: false
     };
 
-    this.setGetVisible = this.setGetVisible.bind(this);
     this.getDefinitionsList = this.getDefinitionsList.bind(this);
     this.getDefinitions = this.getDefinitions.bind(this);
     this.updateState = this.updateState.bind(this);
     this.deleteWord = this.deleteWord.bind(this);
     this.setDefinition = this.setDefinition.bind(this);
-    this.hideGetButton = this.hideGetButton.bind(this);
+    this.cardChangeFocus = this.cardChangeFocus.bind(this);
+    this.stayFocused = this.stayFocused.bind(this);
   
-  }
-
-  componentWillReceiveProps(newProps) {
-    this.setState({
-      spelling: newProps.word.spelling,
-      definition: newProps.word.definition
-    });
   }
 
   componentDidMount() {
@@ -51,7 +50,16 @@ class Word extends Component {
   updateState(event) {
     this.setState({
       [event.target.name]: event.target.value,
-      saved: false
+      saved: false,
+      spellingPopover: false,
+      definitionPopover:false
+    });
+  }
+
+  cardChangeFocus(show) {
+    this.setState({
+      collapseOpen: show || this.state.requestingDefitions,
+      getVisible: show || this.state.requestingDefitions,
     });
   }
 
@@ -82,27 +90,28 @@ class Word extends Component {
     
   }
 
-  hideGetButton() {
-    //Set the timer and hide button in a seconds
-    setTimeout(function() { 
-        this.setState({getVisible: false}) 
-    }.bind(this), 1000);
-  }
-
-  setGetVisible(isVisible) {
-    this.setState({getVisible: isVisible});
+  stayFocused() {
+    this.setState({
+      requestingDefitions: true   
+    });
   }
 
   getDefinitions() {    
     if (!this.state.spelling) {
       console.log('Spelling is empty');
-      // TODO Show popover
     }
+    
     if (!this.state.splitOpen) {
       this.getDefinitionsAPI(this.state.spelling);
-      this.setState({splitOpen: true});
+      this.setState({
+        splitOpen: true,
+        getVisible: true
+      });
     } else {
-      this.setState({splitOpen: false});
+      this.setState({
+        splitOpen: false,
+        requestingDefitions: false
+      });
     }        
   }
 
@@ -129,13 +138,15 @@ class Word extends Component {
           console.log(data);
           return; 
         }
-        this.setState({definitions: data.definitions});
+        this.setState({
+          definitions: data.definitions,
+          requestingDefitions: false
+        });
       },
       (error) => {
         console.log(error);
       }
-    );
-    
+    );    
   }
 
   setDefinition(definition) {
@@ -146,26 +157,35 @@ class Word extends Component {
     this.setState({
       definition: definition,
       getVisible: false,
-      saved: false
+      saved: false,
+      requestingDefitions: false
     });
   }
 
   getDefinitionsList() {
     let i = 1;
     const definitions = this.state.definitions;
-    
     if (!definitions || definitions.length === 0) {
       return <DropdownItem key={i++}>Couldn't get online definition</DropdownItem>
     }
     return definitions.map(definition =>
       <DropdownItem key={i++}
-        onClick={() => this.setDefinition(definition.definition)}
-        >{definition.definition}</DropdownItem>
+        onClick={() => this.setDefinition(definition.definition)}>
+        {definition.definition}
+      </DropdownItem>
     );
   }
 
   saveWord() {
     if (this.state.saved === true) {
+      return;
+    }
+    if (!this.state.spelling) {
+      this.setState({spellingPopover: true});
+      return;
+    }
+    if (!this.state.definition) {
+      this.setState({definitionPopover: true});
       return;
     }
     var myHeaders = new Headers();
@@ -196,22 +216,37 @@ class Word extends Component {
   }
 
   render() {
-    const i = this.props.i;
     return ( 
-      <tr onFocus={() => this.setGetVisible(true)}>
-        <td>{i}</td>
-        <td>
-          <Input 
-            value={this.state.spelling}
-            name='spelling' 
-            onChange={this.updateState}
-          />
-        </td>
-        <td>
-          <InputGroup>
+      <Card 
+        onFocus={() => this.cardChangeFocus(true)}        
+        onBlur={() => this.cardChangeFocus(false)}>
+        <CardBody>
+          <InputGroup className='my-2'>
+            <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
+              <InputGroupText className='w-100'>Spelling</InputGroupText>
+            </InputGroupAddon>          
+            <Input 
+              value={this.state.spelling}
+              name='spelling' 
+              id='spelling' 
+              onChange={this.updateState}/>
+          </InputGroup>
+          <Popover
+            placement='top'
+            isOpen={this.state.spellingPopover}
+            target='spelling'>
+            <PopoverBody>
+              Please, fill out this field!
+            </PopoverBody>
+          </Popover>
+          <InputGroup className='my-2'>
+            <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
+              <InputGroupText className='w-100'>Definition</InputGroupText>
+            </InputGroupAddon>            
             {this.state.getVisible && (
               <InputGroupButtonDropdown                   
                 addonType='prepend'
+                onMouseDown={this.stayFocused}
                 isOpen={this.state.splitOpen}
                 toggle={this.getDefinitions}>
                 <DropdownToggle caret outline>
@@ -225,18 +260,30 @@ class Word extends Component {
             <Input 
               value={this.state.definition}
               name='definition'              
+              id='definition'              
               onChange={this.updateState}
-              onBlur={this.hideGetButton}
+              
             />
+            <Popover
+              placement='bottom'
+              isOpen={this.state.definitionPopover}
+              target='definition'>
+              <PopoverBody>
+                Please, fill out this field!
+              </PopoverBody>
+            </Popover> 
           </InputGroup>
-        </td>
-        <td>
-          <Button outline 
-            onClick={() => this.deleteWord(this.props.word.id)}
-            color='danger'>{String.fromCharCode(0x2015)}
-          </Button>
-        </td>
-      </tr>
+          <Collapse isOpen={this.state.collapseOpen}> 
+            <Button 
+              className='float-right'
+              outline 
+              onClick={() => this.deleteWord(this.props.word.id)}
+              color='danger'>
+                Delete
+            </Button>
+          </Collapse>
+        </CardBody>
+      </Card>
     );
   }
 }
