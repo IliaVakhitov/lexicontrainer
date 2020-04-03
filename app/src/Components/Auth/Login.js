@@ -36,7 +36,10 @@ class Login extends Component {
     fetch('/auth/token', {
       method: 'POST',
       credentials: 'include',
-      headers: myHeaders
+      headers: myHeaders,
+      body: JSON.stringify({
+        username: this.state.username
+      })
     })
       .then(res => res.json())
       .then((data) => {        

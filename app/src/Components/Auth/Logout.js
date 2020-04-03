@@ -11,8 +11,14 @@ class Logout extends Component {
 
   logout() {
     console.log('logging out');
-    fetch('/auth/logout',
-      {method: 'POST'})
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));    
+   
+    fetch('/auth/logout',{
+      method: 'POST',
+      headers: myHeaders
+    })
       .then(res => res.json())
       .then(
       (data) => {
