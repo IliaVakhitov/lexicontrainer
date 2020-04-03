@@ -43,28 +43,32 @@ def auth_error():
 @bp.route('/token', methods=['POST'])
 @basic_auth.login_required
 def get_token():
-    token = current_user.get_token()
+    username = request.get_json().get('username')
+    curr_user = User.query.filter_by(username=username).first()
+    token = curr_user.get_token()
     db.session.commit()
     return {'token': token,
-            'username': current_user.username}
+            'username': curr_user.username}
 
 
 @bp.route('/is_authenticated', methods=['GET'])
 def is_authenticated():
-    user = User.check_request(request)
-    is_authenticated = user is not None
-    username = user.username if is_authenticated else None 
+    curr_user = User.check_request(request)
+    is_authenticated = curr_user is not None
+    username = curr_user.username if is_authenticated else None 
     return {'is_authenticated': is_authenticated,
             'username': username}
 
 
 @bp.route('/logout', methods=['POST'])
 def logout():
+    curr_user = User.check_request(request)
     if current_user.is_authenticated:
         current_user.revoke_token()
         db.session.commit()
         logout_user()
     return {'message': 'Logout successfull'} 
+
 
 @bp.route('/register', methods=['POST'])
 def register():
@@ -84,12 +88,16 @@ def user():
     # All user dictionaries
     dictionaries = Dictionary.query.filter_by(user_id=user.id).all()
     dict_ids = [d.id for d in dictionaries]
+
     # All words from all dictionaries
     words = Word.query.filter(Word.dictionary_id.in_(dict_ids)).all()
     total_words = len(words)
     words_ids = [w.id for w in words]
-    words_learned = LearningIndex.query.filter(LearningIndex.word_id.in_(words_ids)).filter_by(index=100).count()
+    words_learned = LearningIndex.query.\
+        filter(LearningIndex.word_id.in_(words_ids)).\
+        filter_by(index=100).count()
     total_dictionaries = len(dictionaries)
+
     # Calculating total progress
     learning_index_list = LearningIndex.query.filter(LearningIndex.word_id.in_(words_ids)).all()
     index_progress = 0
@@ -97,7 +105,7 @@ def user():
         index_progress += li_entry.index
     progress = round(index_progress / total_words, 2)
     return {'username': user.username,
-            'total_dictionaries': total_dictionaries,
-            'total_words': total_words,
+            'dictionaries': total_dictionaries,
+            'words': total_words,
             'words_learned': words_learned,
             'progress': progress}

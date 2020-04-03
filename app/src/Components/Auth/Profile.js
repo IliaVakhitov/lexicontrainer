@@ -8,8 +8,8 @@ class Profile extends Component {
 
     this.state = {
       username: '',
-      totalDictionaries: '',
-      totalWords: '',
+      dictionaries: '',
+      words: '',
       wordsLearned: '',
       progress: '',
     }
@@ -31,10 +31,10 @@ class Profile extends Component {
       .then(res => res.json())
       .then((data) => {
         this.setState({
-          totalDictionaries: data.totalDictionaries,
-          totalWords: data.totalWords,
+          dictionaries: data.dictionaries,
+          words: data.words,
           progress: data.progress,
-          wordsLearned: data.wordsLearned,
+          wordsLearned: data.words_learned,
           username: data.username
         });
       },
@@ -50,8 +50,8 @@ class Profile extends Component {
       <Container>
         <h3>{this.state.username} user information</h3>
         <Container>
-          <p>Dictionaries: {this.state.totalDictionaries}</p>
-          <p>Total words: {this.state.totalWords}</p>
+          <p>Dictionaries: {this.state.dictionaries}</p>
+          <p>Total words: {this.state.words}</p>
           <p>Words learned: {this.state.wordsLearned}</p>
           <p>Progres: {this.state.progress}%</p>
         </Container>
