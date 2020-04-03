@@ -1,8 +1,8 @@
 import React from 'react';
 import { Component } from 'react';
 import { Container, Input, 
-  InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
-import { Card, CardHeader, CardBody, Button,
+  InputGroup, InputGroupAddon, InputGroupText,
+  Popover, PopoverBody, Card, CardHeader, CardBody, Button,
   ListGroup, ListGroupItem, Collapse,
   UncontrolledCollapse, CardTitle, CardText } from 'reactstrap'
 import { withRouter } from 'react-router-dom';
@@ -16,7 +16,8 @@ class Dictionaries extends Component {
       dictionaries: [], 
       newDictionaryName:'',
       newDictionaryDescription:'',
-      addDictionary: false
+      addDictionary: false,
+      namePopover: false,
     };
 
     this.allDictionaries();
@@ -26,13 +27,21 @@ class Dictionaries extends Component {
     this.addDictionary = this.addDictionary.bind(this);
     this.openDictionary = this.openDictionary.bind(this);
     this.cancelEdit = this.cancelEdit.bind(this);
+    this.getDictionaiesList = this.getDictionaiesList.bind(this);
   }
 
   updateState(event) {
-    this.setState({[event.target.name]: event.target.value});
+    this.setState({
+      [event.target.name]: event.target.value,
+      namePopover: false
+    });
   }
 
   saveDictionary() {
+    if (!this.state.newDictionaryName) {
+      this.setState({namePopover: true});
+      return;
+    }
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
@@ -68,7 +77,8 @@ class Dictionaries extends Component {
     this.setState({
       newDictionaryName:'',
       newDictionaryDescription:'',
-      addDictionary: false
+      addDictionary: false,
+      namePopover: false
     });  
   }
 
@@ -129,34 +139,62 @@ class Dictionaries extends Component {
     );
   }
 
-  render() {
-    
-    const dictionariesList = this.state.dictionaries.map(dictionary => 
-      <ListGroupItem key={dictionary.id} className='w-50'>
+  getDictionary(dict) {
+    return(
+      <ListGroupItem 
+        key={dict.id} 
+        className='w-50'>
         <Card>
           <CardHeader>
             <Button color='' outline 
               size='md' 
               className='w-100'
-              onClick={() => this.openDictionary(dictionary.id)}>{dictionary.dictionary_name}</Button>
+              onClick={() => this.openDictionary(dict.id)}>
+              {dict.dictionary_name}
+            </Button>
           </CardHeader>
           <CardBody>
-            <CardTitle>{dictionary.description}</CardTitle>
+            <CardTitle>{dict.description}</CardTitle>
             <CardText>Progress: TODO</CardText>  
             <Button outline 
-              id={'words_togger'.concat(dictionary.id)} 
+              id={'words_togger'.concat(dict.id)} 
               color='info'>Words</Button>
+            <p/>
+            <UncontrolledCollapse toggler={'#words_togger'.concat(dict.id)}>
+              {this.getWordsList(dict.words)}          
+            </UncontrolledCollapse> 
           </CardBody>              
         </Card>      
-        <UncontrolledCollapse toggler={'#words_togger'.concat(dictionary.id)}>
-          <Card>
-            <CardBody>
-              {this.getWordsList(dictionary.words)}
-            </CardBody>
-          </Card>
-        </UncontrolledCollapse>        
-      </ListGroupItem>
+              
+      </ListGroupItem> 
     );
+  }
+  getDictionaiesList() {
+    let dictionaries = this.state.dictionaries.slice();
+    let dictComp = [];
+    while (dictionaries.length > 0) {
+      let dictList = [];
+      for(var i = 0; i < 3 && dictionaries.length > 0; i++){
+        dictList.push(dictionaries.shift());
+      }
+      const dictionariesList = dictList.map(dictionary => 
+        this.getDictionary(dictionary)  
+      );
+      dictComp.push(
+        <ListGroup horizontal='lg'>
+          {dictionariesList}          
+        </ListGroup>
+      );
+    }     
+    return (
+      <div>
+        {dictComp}
+      </div>
+       
+    );
+  }
+
+  render() {
 
     return (
       <Container>
@@ -170,7 +208,7 @@ class Dictionaries extends Component {
         </p>
         <Collapse isOpen={this.state.addDictionary}>
           <Card className='w-100'>
-          <CardBody>
+            <CardBody>
               <InputGroup className='my-2'>
                 <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
                   <InputGroupText className='w-100'>Name</InputGroupText>
@@ -179,9 +217,18 @@ class Dictionaries extends Component {
                   type='text' 
                   value={this.state.newDictionaryName} 
                   name='newDictionaryName'
+                  id='newDictionaryName'
                   placeholder='Type name for new dictionary'
                   onChange={this.updateState}
                 />
+                <Popover
+                  placement='top'
+                  isOpen={this.state.namePopover}
+                  target='newDictionaryName'>
+                  <PopoverBody>
+                    Please, fill out this field!
+                  </PopoverBody>
+                </Popover>
               </InputGroup>          
               <InputGroup className='my-2'>
                 <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
@@ -198,17 +245,19 @@ class Dictionaries extends Component {
               <Button outline 
                 color='success' 
                 className='mx-1 my-1'
-                onClick={this.saveDictionary}>Save</Button>
+                onClick={this.saveDictionary}>
+                Save
+              </Button>
               <Button outline 
                 color='secondary' 
                 className='mx-1 my-1'
-                onClick={this.cancelEdit}>Cancel</Button>
+                onClick={this.cancelEdit}>
+                Cancel
+              </Button>
             </CardBody>
           </Card>
         </Collapse>
-        <ListGroup horizontal='lg'>
-          {dictionariesList}          
-        </ListGroup>
+        {this.getDictionaiesList()}
       </Container>
       );
   }
