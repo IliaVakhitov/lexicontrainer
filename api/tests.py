@@ -12,6 +12,7 @@ from appmodel.revision_game import RevisionGame
 from config import Config
 from app.words.routes import update_defitions_table
 
+
 class TestConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite://'

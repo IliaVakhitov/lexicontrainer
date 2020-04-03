@@ -2,12 +2,13 @@ import json
 import os
 import base64
 from datetime import datetime, timedelta
-from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from app import login
-from flask import jsonify
+
 from app.errors.handlers import error_response
+from app import db
+from app import login
+
 
 synonyms = db.Table(
     'synonyms',

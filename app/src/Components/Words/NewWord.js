@@ -180,7 +180,7 @@ class NewWord extends Component {
         onBlur={() => this.cardChangeFocus(false)}
         >
         <CardBody>
-          <Button outline color='success'
+          <Button outline color='primary'
             onClick={this.addNewWord}>
             Add new word
           </Button> 
