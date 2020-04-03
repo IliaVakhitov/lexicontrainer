@@ -1,8 +1,8 @@
 import React from 'react';
 import { Component } from 'react';
-import { Container, Input, InputGroup, InputGroupAddon, InputGroupText, Button,
-  InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, 
-  Table } from 'reactstrap';
+import { Container, Input, InputGroup, 
+  InputGroupAddon, InputGroupText, Button,
+Popover, PopoverBody} from 'reactstrap';
 
 import { withRouter } from 'react-router-dom';
 
@@ -32,7 +32,10 @@ class Dictionary extends Component {
   }
 
   updateState(event) {
-    this.setState({[event.target.name]: event.target.value});
+    this.setState({
+      [event.target.name]: event.target.value,
+      namePopover: false
+    });
   }
 
 
@@ -61,7 +64,8 @@ class Dictionary extends Component {
         this.setState({
           name: data.dictionary_name,
           description: data.description,
-          words: data.words
+          words: data.words,
+          namePopover: false
         });        
       },
       (error) => {
@@ -72,6 +76,10 @@ class Dictionary extends Component {
   }
 
   saveDictionary() {
+    if (!this.state.name) {
+      this.setState({namePopover: true});
+      return;
+    }
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
@@ -126,9 +134,18 @@ class Dictionary extends Component {
           <Input
             type='text'
             name='name'
+            id='name'
             value={this.state.name}
             onChange={this.updateState}
           />
+          <Popover
+            placement='top'
+            isOpen={this.state.namePopover}
+            target='name'>
+            <PopoverBody>
+              Please, fill out this field!
+            </PopoverBody>
+          </Popover>
         </InputGroup>
         <InputGroup className='my-2'>
           <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
@@ -140,15 +157,16 @@ class Dictionary extends Component {
             value={this.state.description}
             onChange={this.updateState}
           />
-        </InputGroup>
-        <br />
+        </InputGroup>        
         <NewWord 
           dictionaryId={this.state.id} 
-          addNewWord={this.dictionary}/>
+          addNewWord={this.dictionary}/>        
+        <h4 className='my-3'>Words</h4>
         <WordsTable 
           words={this.state.words} 
           onDeleteWord={this.dictionary}
         />
+        
         </Container>
     );
   }
