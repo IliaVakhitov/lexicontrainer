@@ -1,3 +1,4 @@
+import time
 import json
 import logging
 from flask import request
@@ -50,6 +51,10 @@ def word(word_id):
 @bp.route('/get_definition', methods=['POST'])
 @token_auth.login_required
 def get_definition():
+
+    # System delay
+    time.sleep(2)
+
     user = User.check_request(request)
     request_data = request.get_json()
 

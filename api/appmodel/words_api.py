@@ -18,7 +18,7 @@ class WordsApi:
 
         response = requests.request("GET", url, headers=headers)
 
-        if not response or response.status_code == '200':
+        if not response or response.status_code != '200':
             return None
 
         return response.text

@@ -1,3 +1,4 @@
+import time
 import json
 import logging
 from flask import request
@@ -30,6 +31,9 @@ def dictionaries():
     List of dictionaries of current user
     """
     
+    # System delay
+    time.sleep(2)
+
     user = User.check_request(request)    
     dictionaries = Dictionary.query\
         .filter_by(user_id=user.id)\
