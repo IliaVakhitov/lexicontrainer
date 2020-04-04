@@ -1,6 +1,6 @@
 import React from 'react';
 import { Component } from "react";
-import { Input, Button,
+import { Input, Button, Spinner,
   InputGroupButtonDropdown, DropdownToggle, 
   InputGroup, InputGroupAddon, InputGroupText,
   DropdownMenu, DropdownItem, Card, CardBody,
@@ -20,7 +20,8 @@ class Word extends Component {
       spellingPopover: false,
       definitionPopover:false,
       collapseOpen: false,
-      requestingDefitions: false
+      requestingDefitions: false,
+      requestError: false
     };
 
     this.getDefinitionsList = this.getDefinitionsList.bind(this);
@@ -52,7 +53,8 @@ class Word extends Component {
       [event.target.name]: event.target.value,
       saved: false,
       spellingPopover: false,
-      definitionPopover:false
+      definitionPopover:false,
+      requestError: false
     });
   }
 
@@ -94,18 +96,21 @@ class Word extends Component {
     this.setState({
       requestingDefitions: true   
     });
+    
   }
 
   getDefinitions() {    
     if (!this.state.spelling) {
       console.log('Spelling is empty');
     }
-    
-    if (!this.state.splitOpen) {
-      this.getDefinitionsAPI(this.state.spelling);
+    if (!this.state.splitOpen) {      
       this.setState({
         splitOpen: true,
         getVisible: true
+      });
+      this.getDefinitionsAPI(this.state.spelling);
+      this.setState({
+        requestingDefitions: false
       });
     } else {
       this.setState({
@@ -132,19 +137,27 @@ class Word extends Component {
       (data) => {
         if ('error' in data) {
           console.log(data);
+          this.setState({
+            requestError: true
+          }); 
           return;
         }       
         if ('message' in data) {
           console.log(data);
+          this.setState({
+            requestError: true
+          }); 
           return; 
         }
         this.setState({
-          definitions: data.definitions,
-          requestingDefitions: false
+          definitions: data.definitions
         });
       },
       (error) => {
         console.log(error);
+        this.setState({
+          requestError: true
+        }); 
       }
     );    
   }
@@ -164,10 +177,22 @@ class Word extends Component {
 
   getDefinitionsList() {
     let i = 1;
+    if (this.state.requestError) {
+      return (
+        <DropdownItem key={i++}>
+          <p>Couldn't get definition</p>          
+        </DropdownItem>
+      );
+    } 
     const definitions = this.state.definitions;
     if (!definitions || definitions.length === 0) {
-      return <DropdownItem key={i++}>Couldn't get online definition</DropdownItem>
+      return (
+        <DropdownItem key={i++}>
+          <Spinner type='grow' color='dark' />
+        </DropdownItem>          
+      );
     }
+    
     return definitions.map(definition =>
       <DropdownItem key={i++}
         onClick={() => this.setDefinition(definition.definition)}>

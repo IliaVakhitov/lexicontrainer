@@ -2,7 +2,7 @@ import React from 'react';
 import { Component } from 'react';
 import { Input,InputGroup, InputGroupAddon, InputGroupText, Button,
   InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, 
-  Card, CardBody, Popover, PopoverBody } from 'reactstrap';
+  Card, CardBody, Popover, PopoverBody, Spinner } from 'reactstrap';
 
 
 class NewWord extends Component {
@@ -17,7 +17,8 @@ class NewWord extends Component {
       splitOpen: false,
       spellingPopover: false,
       definitionPopover:false,
-      requestingDefitions: false
+      requestingDefitions: false,
+      requestError: false
     };
 
     this.addNewWord = this.addNewWord.bind(this);
@@ -33,7 +34,9 @@ class NewWord extends Component {
     this.setState({
       [event.target.name]: event.target.value,
       spellingPopover: false,
-      definitionPopover:false
+      definitionPopover:false,
+      requestError: false,
+      definitions: []
     });
   }
 
@@ -57,10 +60,13 @@ class NewWord extends Component {
       console.log('Spelling is empty');
     }
     if (!this.state.splitOpen) {
-      this.getDefinitionsAPI(this.state.spelling);
       this.setState({
         splitOpen: true,
         getVisible: true
+      });
+      this.getDefinitionsAPI(this.state.spelling);
+      this.setState({
+        requestingDefitions: false
       });
     } else {
       this.setState({
@@ -113,10 +119,22 @@ class NewWord extends Component {
 
   getDefinitionsList() {
     let i = 1;
+    if (this.state.requestError) {
+      return (
+        <DropdownItem key={i++}>
+          <p>Couldn't get definition</p>          
+        </DropdownItem>
+      );
+    } 
     const definitions = this.state.definitions;
     if (!definitions || definitions.length === 0) {
-      return <DropdownItem key={i++}>Couldn't get online definition</DropdownItem>
+      return (
+        <DropdownItem key={i++}>
+          <Spinner type='grow' color='dark' />
+        </DropdownItem>          
+      );
     }
+    
     return definitions.map(definition =>
       <DropdownItem key={i++}
         onClick={() => this.setDefinition(definition.definition)}>
@@ -142,19 +160,27 @@ class NewWord extends Component {
       (data) => {
         if ('error' in data) {
           console.log(data);
+          this.setState({
+            requestError: true
+          }); 
           return;
         }       
         if ('message' in data) {
           console.log(data);
+          this.setState({
+            requestError: true
+          }); 
           return; 
         }
         this.setState({
-          definitions: data.definitions,
-          requestingDefitions: false
+          definitions: data.definitions
         });
       },
       (error) => {
         console.log(error);
+        this.setState({
+          requestError: true
+        }); 
       }
     );
     

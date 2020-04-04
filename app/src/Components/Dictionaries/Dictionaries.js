@@ -1,6 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { Container, Input, 
+import { Container, Input, Spinner,
   InputGroup, InputGroupAddon, InputGroupText,
   Popover, PopoverBody, Card, CardHeader, CardBody, Button,
   ListGroup, ListGroupItem, Collapse,
@@ -18,6 +18,7 @@ class Dictionaries extends Component {
       newDictionaryDescription:'',
       addDictionary: false,
       namePopover: false,
+      fetchInProgress: true
     };
 
     this.allDictionaries();
@@ -89,6 +90,7 @@ class Dictionaries extends Component {
   }
 
   allDictionaries() {
+    this.setState({fetchInProgress: true});
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
@@ -103,10 +105,16 @@ class Dictionaries extends Component {
           console.log(data);
           return;
         }        
-        this.setState({dictionaries: data.dictionaries});
+        this.setState({
+          dictionaries: data.dictionaries,
+          fetchInProgress: false
+        });
       },
       (error) => {
         console.log(error);
+        this.setState({
+          fetchInProgress: false
+        });
       }
     );   
   }
@@ -195,9 +203,10 @@ class Dictionaries extends Component {
   }
 
   render() {
-
+    const fetchInProgress = this.state.fetchInProgress;
     return (
-      <Container>
+      <Container>     
+        {fetchInProgress && <Spinner type='grow' color='dark' />}
         <h3>Dictionaries</h3>
         <p>
           <Button outline 
@@ -257,9 +266,9 @@ class Dictionaries extends Component {
             </CardBody>
           </Card>
         </Collapse>
-        {this.getDictionaiesList()}
-      </Container>
-      );
+        {this.getDictionaiesList()}      
+      </Container>        
+    );
   }
 }
 export default withRouter(Dictionaries);
