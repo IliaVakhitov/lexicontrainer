@@ -21,7 +21,7 @@ class Dictionaries extends Component {
       fetchInProgress: true
     };
 
-    this.allDictionaries();
+    this._isMounted = false; 
     this.getWordsList = this.getWordsList.bind(this);
     this.updateState = this.updateState.bind(this);
     this.saveDictionary = this.saveDictionary.bind(this);
@@ -29,6 +29,45 @@ class Dictionaries extends Component {
     this.openDictionary = this.openDictionary.bind(this);
     this.cancelEdit = this.cancelEdit.bind(this);
     this.getDictionaiesList = this.getDictionaiesList.bind(this);
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
+    this._isMounted && this.allDictionaries();
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  allDictionaries() {
+    this.setState({fetchInProgress: true});
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
+    fetch('/dicts/dictionaries', {
+      method: 'GET',
+      headers: myHeaders
+    })
+      .then(res => res.json())
+      .then(
+      (data) => {
+        if ('error' in data) {
+          console.log(data);
+          return;
+        }        
+        this.setState({
+          dictionaries: data.dictionaries,
+          fetchInProgress: false
+        });
+      },
+      (error) => {
+        console.log(error);
+        this.setState({
+          fetchInProgress: false
+        });
+      }
+    );   
   }
 
   updateState(event) {
@@ -87,36 +126,6 @@ class Dictionaries extends Component {
     this.setState({
       addDictionary: !this.state.addDictionary
     });
-  }
-
-  allDictionaries() {
-    this.setState({fetchInProgress: true});
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/dicts/dictionaries', {
-      method: 'GET',
-      headers: myHeaders
-    })
-      .then(res => res.json())
-      .then(
-      (data) => {
-        if ('error' in data) {
-          console.log(data);
-          return;
-        }        
-        this.setState({
-          dictionaries: data.dictionaries,
-          fetchInProgress: false
-        });
-      },
-      (error) => {
-        console.log(error);
-        this.setState({
-          fetchInProgress: false
-        });
-      }
-    );   
   }
 
   openDictionary(id) {
@@ -178,6 +187,7 @@ class Dictionaries extends Component {
     );
   }
   getDictionaiesList() {
+    let j = 0;
     let dictionaries = this.state.dictionaries.slice();
     let dictComp = [];
     while (dictionaries.length > 0) {
@@ -189,7 +199,7 @@ class Dictionaries extends Component {
         this.getDictionary(dictionary)  
       );
       dictComp.push(
-        <ListGroup horizontal='lg'>
+        <ListGroup key={j++} horizontal='lg'>
           {dictionariesList}          
         </ListGroup>
       );

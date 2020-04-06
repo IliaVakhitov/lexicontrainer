@@ -21,14 +21,22 @@ class Dictionary extends Component {
       words: []
     };
 
+    this._isMounted = false; 
+
     this.saveDictionary = this.saveDictionary.bind(this);
     this.cancelEdit = this.cancelEdit.bind(this);
     this.updateState = this.updateState.bind(this);
     this.dictionary = this.dictionary.bind(this);
+    this.deleteDictionary = this.deleteDictionary.bind(this);
   }
   
   componentDidMount() {
-    this.dictionary();
+    this._isMounted = true; 
+    this._isMounted && this.dictionary();
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   updateState(event) {
@@ -38,6 +46,9 @@ class Dictionary extends Component {
     });
   }
 
+  deleteDictionary() {
+    // TODO
+  }
 
   dictionary() {
   
@@ -126,6 +137,10 @@ class Dictionary extends Component {
             color='secondary' 
             onClick={this.cancelEdit}
             className='mx-1 my-1'>Cancel</Button>
+          <Button outline 
+            color='danger' 
+            onClick={this.deleteDictionary}
+            className='float-right mx-1 my-1'>Delete dictionary</Button>
         </div>
         <InputGroup className='my-2'>
           <InputGroupAddon style={{width:'10%'}} addonType='prepend'>

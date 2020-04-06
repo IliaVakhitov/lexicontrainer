@@ -21,6 +21,10 @@ class Symonyms extends Component {
     this._isMounted && this.fetchData();    
   }
 
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+  
   fetchData() {
     const spelling = this.props.word.spelling;
     var myHeaders = new Headers();
