@@ -32,7 +32,7 @@ def dictionaries():
     """
     
     # System delay
-    time.sleep(2)
+    time.sleep(1)
 
     user = User.check_request(request)    
     dictionaries = Dictionary.query\

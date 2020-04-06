@@ -53,7 +53,7 @@ def word(word_id):
 def get_definition():
 
     # System delay
-    time.sleep(2)
+    time.sleep(1)
 
     user = User.check_request(request)
     request_data = request.get_json()
@@ -71,7 +71,7 @@ def get_definition():
         return result
 
     # Get definitions from online dictionary
-    result_query = WordsApi.get_definitions(spelling)
+    result_query = WordsApi.get_words_data(spelling, 'definitions')
     if not result_query:
         return {'message': 'Error in requesting words api'}
 
@@ -83,7 +83,30 @@ def get_definition():
             definition=definition['definition'])
         db.session.add(definition_entry)
     db.session.commit()
-    return result
+    return result_query
+
+
+@bp.route('/get_synonyms', methods=['POST'])
+#@token_auth.login_required
+def get_synonyms():
+
+    # System delay
+    time.sleep(1)
+
+    user = User.check_request(request)
+    request_data = request.get_json()
+
+    # Check definitions table for current word
+    spelling = request_data.get('spelling')
+    if not spelling:
+        return {'error': 'No spelling in request'}
+
+    # Get synonyms from online dictionary
+    result_query = WordsApi.get_words_data(spelling, 'synonyms')
+    if not result_query:
+        return {'message': 'Error in requesting words api'}
+
+    return result_query
 
 
 @bp.route('/add_word', methods=['POST'])
