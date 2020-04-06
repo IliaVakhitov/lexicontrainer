@@ -10,7 +10,8 @@ from appmodel.game_round import GameRound
 from appmodel.game_type import GameType
 from appmodel.revision_game import RevisionGame
 from config import Config
-from app.words.routes import update_defitions_table
+from app.words.routes import get_definition
+from app.words.routes import get_synonyms
 
 
 class TestConfig(Config):
@@ -204,7 +205,7 @@ class WordModelCase(unittest.TestCase):
         pass
 
     def test_route(self):
-        update_defitions_table()       
+        print(get_synonyms())
 
 
 if __name__ == '__main__':

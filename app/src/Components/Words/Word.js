@@ -4,7 +4,8 @@ import { Input, Button, Spinner,
   InputGroupButtonDropdown, DropdownToggle, 
   InputGroup, InputGroupAddon, InputGroupText,
   DropdownMenu, DropdownItem, Card, CardBody,
-  Popover, PopoverBody, Collapse } from 'reactstrap';
+  Popover, PopoverBody, Collapse} from 'reactstrap';
+import Symonyms from './Symonyms';
 
 class Word extends Component {
   constructor(props) {
@@ -16,6 +17,7 @@ class Word extends Component {
       saved: true,
       definitions: [],
       getVisible: false,
+      synonymsVisible: false,
       splitOpen: false,
       spellingPopover: false,
       definitionPopover:false,
@@ -31,6 +33,7 @@ class Word extends Component {
     this.setDefinition = this.setDefinition.bind(this);
     this.cardChangeFocus = this.cardChangeFocus.bind(this);
     this.stayFocused = this.stayFocused.bind(this);
+    this.synonymsVisible = this.synonymsVisible.bind(this);
   
   }
 
@@ -54,7 +57,8 @@ class Word extends Component {
       saved: false,
       spellingPopover: false,
       definitionPopover:false,
-      requestError: false
+      requestError: false,
+      synonymsVisible: false
     });
   }
 
@@ -62,6 +66,17 @@ class Word extends Component {
     this.setState({
       collapseOpen: show || this.state.requestingDefitions,
       getVisible: show || this.state.requestingDefitions,
+    });
+    if (!show) {
+      this.setState({
+        synonymsVisible: false
+      });  
+    }
+  }
+
+  synonymsVisible() {
+    this.setState({
+      synonymsVisible: !this.state.synonymsVisible
     });
   }
 
@@ -298,15 +313,27 @@ class Word extends Component {
               </PopoverBody>
             </Popover> 
           </InputGroup>
-          <Collapse isOpen={this.state.collapseOpen}> 
+            <Collapse isOpen={this.state.collapseOpen} className='my-2'>
+            <Button 
+              className='float-left'
+              outline  
+              onClick={this.synonymsVisible}    
+              id={'showSymonyms'+this.props.word.id}
+              color='info'>
+                Synonyms
+            </Button>
             <Button 
               className='float-right'
               outline 
               onClick={() => this.deleteWord(this.props.word.id)}
               color='danger'>
-                Delete
+                Delete word
             </Button>
+            {this.state.synonymsVisible 
+              && <Symonyms 
+                word={this.props.word}/>}             
           </Collapse>
+          
         </CardBody>
       </Card>
     );
