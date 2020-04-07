@@ -15,7 +15,6 @@ class Dictionary extends Component {
     super(props);
 
     this.state = {
-      id: this.props.location.state.id,
       name: '',
       description: '',
       words: []
@@ -46,21 +45,17 @@ class Dictionary extends Component {
     });
   }
 
-  deleteDictionary() {
-    // TODO
-  }
-
   dictionary() {
   
-    if (isNaN(this.state.id)) {
-      console.log('Incorrect dictionary id '.concat(this.state.id));
+    if (isNaN(this.props.location.state.id)) {
+      console.log('Incorrect dictionary id '.concat(this.props.location.state.id));
       this.props.history.push('/dictionaries');
     }
     
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    myHeaders.append('dictionary_id', this.state.id);  
+    myHeaders.append('dictionary_id', this.props.location.state.id);  
     fetch('/dicts/dictionary', {
       method: 'GET',
       headers: myHeaders
@@ -86,6 +81,34 @@ class Dictionary extends Component {
     
   }
 
+  deleteDictionary() {
+    // TODO
+    // Show confirmation
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
+    fetch('/dicts/delete_dictionary', {
+      method: 'DELETE',
+      headers: myHeaders,
+      body: JSON.stringify({
+        'dictionary_id': this.props.location.state.id
+      })
+    })
+      .then(res => res.json())
+      .then(
+      (data) => {
+        if ('error' in data) {
+          console.log(data);
+          return;
+        }        
+        this.props.history.push('/dictionaries');
+      },
+      (error) => {
+        console.log(error);
+      }
+    ); 
+  }
+
   saveDictionary() {
     if (!this.state.name) {
       this.setState({namePopover: true});
@@ -98,7 +121,7 @@ class Dictionary extends Component {
       method: 'POST',
       headers: myHeaders,
       body: JSON.stringify({
-        'dictionary_id': this.state.id,  
+        'dictionary_id': this.props.location.state.id,  
         'dictionary_name': this.state.name,  
         'description': this.state.description
       })
@@ -174,7 +197,7 @@ class Dictionary extends Component {
           />
         </InputGroup>        
         <NewWord 
-          dictionaryId={this.state.id} 
+          dictionaryId={this.props.location.state.id} 
           addNewWord={this.dictionary}/>        
         <h4 className='my-3'>Words</h4>
         <WordsTable 

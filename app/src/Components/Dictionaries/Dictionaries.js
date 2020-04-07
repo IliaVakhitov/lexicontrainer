@@ -215,8 +215,7 @@ class Dictionaries extends Component {
   render() {
     const fetchInProgress = this.state.fetchInProgress;
     return (
-      <Container>     
-        {fetchInProgress && <Spinner type='grow' color='dark' />}
+      <Container>             
         <h3>Dictionaries</h3>
         <p>
           <Button outline 
@@ -276,6 +275,7 @@ class Dictionaries extends Component {
             </CardBody>
           </Card>
         </Collapse>
+        {fetchInProgress && <Spinner type='grow' color='dark' />}
         {this.getDictionaiesList()}      
       </Container>        
     );
