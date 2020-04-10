@@ -162,20 +162,22 @@ class Dictionaries extends Component {
         key={dict.id} 
         className='w-50'>
         <Card>
-          <CardHeader>
-            <Button color='' outline 
-              size='md' 
-              className='w-100'
-              onClick={() => this.openDictionary(dict.id)}>
-              {dict.dictionary_name}
-            </Button>
+          <CardHeader
+            tag='a' 
+            style={{ cursor: 'pointer' }} 
+            onClick={() => this.openDictionary(dict.id)}
+          >          
+            {dict.dictionary_name}            
           </CardHeader>
           <CardBody>
             <CardTitle>{dict.description}</CardTitle>
             <CardText>Progress: TODO</CardText>  
             <Button outline 
               id={'words_togger'.concat(dict.id)} 
-              color='info'>Words</Button>
+              color='info'
+            >
+              Words
+            </Button>
             <p/>
             <UncontrolledCollapse toggler={'#words_togger'.concat(dict.id)}>
               {this.getWordsList(dict.words)}          

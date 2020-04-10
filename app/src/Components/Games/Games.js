@@ -3,7 +3,10 @@ import { Component } from 'react';
 import { Input, Label, Col, 
   FormGroup, Form, ButtonGroup, Button, Container } from 'reactstrap';
 import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
 import { withRouter } from 'react-router-dom';
+
+const animatedComponents = makeAnimated();
 
 class Games extends Component {
   constructor(props){
@@ -180,7 +183,12 @@ class Games extends Component {
           <FormGroup row>
             <Label for='dictionaries' sm={2}>Dictionaries</Label>
             <Col sm={5}>
-              <Select name='dictionaries' isMulti options={dictionaries} />
+              <Select 
+                closeMenuOnSelect={false}
+                components={animatedComponents}
+                name='dictionaries' 
+                isMulti 
+                options={dictionaries} />
             </Col>
           </FormGroup> 
           <FormGroup check>

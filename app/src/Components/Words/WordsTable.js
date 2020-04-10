@@ -9,7 +9,10 @@ class WordsTable extends Component {
   getWordsList() {
     const words = this.props.words;
     return words.map(word =>
-      <ListGroupItem key={word.id}>
+      <ListGroupItem 
+        style={{borderStyle: 'none'}}
+        key={word.id}
+      >
         <Word         
           onDeleteWord={this.props.onDeleteWord}
           word={word} />

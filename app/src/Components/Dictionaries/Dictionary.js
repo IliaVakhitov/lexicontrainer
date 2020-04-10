@@ -2,7 +2,7 @@ import React from 'react';
 import { Component } from 'react';
 import { Container, Input, InputGroup, 
   InputGroupAddon, InputGroupText, Button,
-Popover, PopoverBody} from 'reactstrap';
+Popover, PopoverBody, Spinner} from 'reactstrap';
 
 import { withRouter } from 'react-router-dom';
 
@@ -17,6 +17,7 @@ class Dictionary extends Component {
     this.state = {
       name: '',
       description: '',
+      fetchInProgress: true,
       words: []
     };
 
@@ -46,7 +47,7 @@ class Dictionary extends Component {
   }
 
   dictionary() {
-  
+    this.setState({fetchInProgress: true});
     if (isNaN(this.props.location.state.id)) {
       console.log('Incorrect dictionary id '.concat(this.props.location.state.id));
       this.props.history.push('/dictionaries');
@@ -71,7 +72,8 @@ class Dictionary extends Component {
           name: data.dictionary_name,
           description: data.description,
           words: data.words,
-          namePopover: false
+          namePopover: false,
+          fetchInProgress: false
         });        
       },
       (error) => {
@@ -145,10 +147,8 @@ class Dictionary extends Component {
     this.props.history.push('/dictionaries');
   }
 
-  
-
   render() {
-     
+    const fetchInProgress = this.state.fetchInProgress; 
     return (
       <Container>
         <div>
@@ -200,6 +200,7 @@ class Dictionary extends Component {
           dictionaryId={this.props.location.state.id} 
           addNewWord={this.dictionary}/>        
         <h4 className='my-3'>Words</h4>
+        {fetchInProgress && <Spinner type='grow' color='dark' />}
         <WordsTable 
           words={this.state.words} 
           onDeleteWord={this.dictionary}
