@@ -1,3 +1,4 @@
+import time
 from flask import request
 from flask import g
 from sqlalchemy import func
@@ -82,6 +83,9 @@ def user():
     """
     Return information about user
     """
+
+    # System delay
+    #time.sleep(1)
 
     user = User.check_request(request)
     

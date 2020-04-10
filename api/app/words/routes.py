@@ -4,7 +4,8 @@ import logging
 from flask import request
 from flask_httpauth import HTTPTokenAuth
 
-from app.models import Word, User, Dictionary, Definitions, LearningIndex
+from app.models import Word, User, Dictionary, LearningIndex
+from app.models import Synonyms, Definitions
 from app.words import bp
 from app import db
 from appmodel.words_api import WordsApi
@@ -39,15 +40,6 @@ def all_words():
     return {'words': words}
 
 
-@bp.route('/word')
-@token_auth.login_required
-def word(word_id):
-    word_entry = Word.query.filter_by(id=word_id).first_or_404()
-    return render_template('main/word.html',
-                           title=word_entry.spelling,
-                           word=word_entry)
-
-
 @bp.route('/get_definition', methods=['POST'])
 @token_auth.login_required
 def get_definition():
@@ -58,17 +50,20 @@ def get_definition():
     user = User.check_request(request)
     request_data = request.get_json()
 
-    # Check definitions table for current word
     spelling = request_data.get('spelling')
     if not spelling:
         return {'error': 'No spelling in request'}
 
-    definitions = Definitions.query.filter_by(spelling=spelling).all()
-    if definitions:
-        result = {'definitions': []}
-        for definition_entry in definitions:
-            result['definitions'].append({'definition': definition_entry.definition})
-        return result
+    # Check definitions table for current word
+    definitions = Definitions.query.\
+        filter_by(spelling=spelling).\
+        order_by('definition').all()
+
+    result = []
+    if definitions:        
+        for definition in definitions:
+            result.append(definition.definition)
+        return json.dumps({'definitions': result})
 
     # Get definitions from online dictionary
     result_query = WordsApi.get_words_data(spelling, 'definitions')
@@ -76,14 +71,17 @@ def get_definition():
         return {'message': 'Error in requesting words api'}
 
     # Save definitions in table for future requests
-    result = json.loads(result_query)
-    for definition in result['definitions']:
+    definitions = json.loads(result_query)
+    result = []
+    for definition in definitions['definitions']:
+        result.append(definition['definition'])
         definition_entry = Definitions(
             spelling=spelling, 
             definition=definition['definition'])
         db.session.add(definition_entry)
     db.session.commit()
-    return result_query
+
+    return json.dumps({'definitions': result})
 
 
 @bp.route('/get_synonyms', methods=['POST'])
@@ -96,17 +94,38 @@ def get_synonyms():
     user = User.check_request(request)
     request_data = request.get_json()
 
-    # Check definitions table for current word
     spelling = request_data.get('spelling')
     if not spelling:
         return {'error': 'No spelling in request'}
 
+    result = []
+
+    # Check synonyms table for current word
+    synonyms = Synonyms.query.\
+        filter_by(spelling=spelling).\
+        order_by('synonym').all()
+
+    if synonyms:        
+        for synonym in synonyms:
+            result.append(synonym.synonym)
+        return json.dumps({'synonyms': result})
+    
     # Get synonyms from online dictionary
     result_query = WordsApi.get_words_data(spelling, 'synonyms')
     if not result_query:
         return {'message': 'Error in requesting words api'}
 
-    return result_query
+    # Save synonyms in table for future requests
+    synonyms = json.loads(result_query)
+    for synonym in synonyms['synonyms']:
+        result.append(synonym)
+        synonym_entry = Synonyms(
+            spelling=spelling, 
+            synonym=synonym)
+        db.session.add(synonym_entry)
+    db.session.commit()
+
+    return json.dumps({'synonyms': result})
 
 
 @bp.route('/add_word', methods=['POST'])

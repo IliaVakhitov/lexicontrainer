@@ -32,7 +32,7 @@ def dictionaries():
     """
     
     # System delay
-    time.sleep(1)
+    #time.sleep(1)
 
     user = User.check_request(request)    
     dictionaries = Dictionary.query\
@@ -42,7 +42,10 @@ def dictionaries():
     dicts = []
     for dictionary in dictionaries:
         dict_entry = dictionary.to_dict()        
-        words = [{'id': w.id, 'spelling': w.spelling} for w in dictionary.words.all()]
+        words = [{
+            'id': w.id, 
+            'spelling': w.spelling
+        } for w in dictionary.words.all()]
         dict_entry['words'] = words
         dicts.append(dict_entry)
     return {'dictionaries': dicts}
@@ -72,7 +75,6 @@ def delete_dictionary():
     user = User.check_request(request)
     dictionary_id = request.get_json().get('dictionary_id')
     dictionary_entry = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
-    db.session.commit()
     db.session.delete(dictionary_entry)
     db.session.commit()
 
@@ -94,54 +96,29 @@ def update_dictionary():
 @bp.route('/dictionary', methods=['GET'])
 @token_auth.login_required
 def dictionary():
+
+    # System delay
+    #time.sleep(1)
+    
     user = User.check_request(request)
     dictionary_id = request.headers.get('dictionary_id')
     dictionary = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
-    dict_entry = dictionary.to_dict()        
+    dict_entry = dictionary.to_dict()     
+    synonyms = []
+    #synonyms.append('synonym1')
+    #synonyms.append('synonym2')
+    #synonyms.append('synonym3')   
     words = [{
         'id': w.id, 
         'spelling': w.spelling,
-        'definition': w.definition
+        'definition': w.definition,
+        'progress': 0 if w.learning_index is None else w.learning_index.index
         } for w in dictionary.words.all()]
 
     dict_entry['words'] = words
     
     return dict_entry
 
-"""
-
-@bp.route('/edit/dictionary/<int:dictionary_id>', methods=['GET', 'POST'])
-@token_auth.login_required
-def edit_dictionary(dictionary_id):
-    user = User.check_request(request)
-    dictionary_entry = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
-    dictionary_form = EditDictionaryForm(dictionary_entry.dictionary_name, dictionary_entry.description)
-
-    if 'delete' in request.form:
-        db.session.delete(dictionary_entry)
-        db.session.commit()
-        return redirect(url_for('main.dictionaries'))
-
-    if dictionary_form.validate_on_submit():
-        if 'save_dictionary' in request.form:
-            dictionary_entry.dictionary_name = dictionary_form.dictionary_name.data.strip()
-            dictionary_entry.description = dictionary_form.description.data.strip()
-            db.session.commit()
-            flash('Dictionary saved!')
-            return redirect(url_for('main.dictionary', dictionary_id=dictionary_entry.id))
-
-        elif 'cancel_edit' in request.form:
-            return redirect(url_for('main.dictionary', dictionary_id=dictionary_entry.id))
-
-    if request.method == 'GET':
-        dictionary_form.dictionary_name.data = dictionary_entry.dictionary_name
-        dictionary_form.description.data = dictionary_entry.description
-
-    return render_template('main/edit_dictionary.html',
-                           title=dictionary_entry.dictionary_name,
-                           dictionary=dictionary_entry,
-                           form=dictionary_form)
-"""
 
 @bp.route('/check_dictionary_name', methods=['GET'])
 def check_dictionary_name():
