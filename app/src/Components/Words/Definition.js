@@ -5,22 +5,35 @@ import { InputGroup, InputGroupAddon, InputGroupText,
 
 import CreatableSelect from 'react-select/creatable';
 
-class Symonyms extends Component {
+class Definition extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      value:[],
+      value: '',
       options: [],
-      synonyms: [],
+      definitions: [],
       showPopover: false,
       requestingData: false
     };
-       
+    
     this.showPopover = this.showPopover.bind(this);
     this.requestData = this.requestData.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleCreate = this.handleCreate.bind(this);
+  }
+
+
+  componentDidMount() {
+    const definition = this.props.word.definition;
+    let definitions = this.state.definitions;
+    definitions.push(definition);
+    let value = this.createOption(definition);
+    this.setState({
+      value: value,
+      definitions: definitions
+    }); 
+    this.updateOptions();
   }
 
   showPopover(show) {
@@ -29,7 +42,7 @@ class Symonyms extends Component {
 
   updateOptions() {
     let options = [];
-    this.state.synonyms.forEach(element => {
+    this.state.definitions.forEach(element => {
       let newOption = this.createOption(element);
       options.push(newOption);
     });
@@ -38,8 +51,8 @@ class Symonyms extends Component {
     });
   }
 
-  createOption(value) {
-    return ({
+  createOption(value) {    
+    return ({      
       label: value,
       value: value,
     });    
@@ -55,7 +68,7 @@ class Symonyms extends Component {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/words/get_synonyms', {
+    fetch('/words/get_definition', {
       method: 'POST',
       headers: myHeaders,
       body: JSON.stringify({
@@ -66,51 +79,50 @@ class Symonyms extends Component {
       .then(
       (data) => {
         if ('error' in data) {
-          console.log(data);
+          console.log(data); 
           this.setState({
             requestingData: false
-          }); 
+          });
           return;
         }       
         if ('message' in data) {
-          console.log(data);
+          console.log(data); 
           this.setState({
             requestingData: false
-          }); 
+          });
           return; 
         }
         this.setState({
-          synonyms: data.synonyms,
+          definitions: data.definitions,
           requestingData: false
         });
         this.updateOptions();
       },
       (error) => {
-        console.log(error);
+        console.log(error); 
         this.setState({
           requestingData: false
-        }); 
+        });
       }
-    ); 
-    
+    );    
   }
 
+  
   handleChange(newValue){
     this.setState({
       value: newValue
     });
   }
+  
 
   handleCreate(inputValue) {
     this.setState({ requestingData: true });
-    let synonyms = this.state.synonyms;
-    let value = this.state.value;
-    let newOption = this.createOption(inputValue);
-    value.push(newOption);
-    synonyms.push(inputValue);
+    let definitions = this.state.definitions;
+    let value = this.createOption(inputValue);
+    definitions.push(inputValue);
     this.setState({
       requestingData: false,
-      synonyms: synonyms,
+      definitions: definitions,
       value: value
     });
     this.updateOptions();
@@ -123,41 +135,40 @@ class Symonyms extends Component {
         <Popover
           placement='top'
           isOpen={this.state.showPopover}
-          target={'synonymsText'.concat(this.props.word.id)}>
+          target={'definitionText'.concat(this.props.word.id)}>
           <PopoverBody>
-            Get synonyms from Words API
+            Get definition from Words API
           </PopoverBody>
         </Popover>
-        <InputGroupAddon style={{width:'11%'}} addonType='prepend'>
+        <InputGroupAddon  style={{width:'11%'}} addonType='prepend'>
           <InputGroupText 
             className='w-100'
             tag='a' 
-            name={'synonymsText'.concat(this.props.word.id)}
-            id={'synonymsText'.concat(this.props.word.id)}
+            name={'definitionText'.concat(this.props.word.id)}
+            id={'definitionText'.concat(this.props.word.id)}
             onMouseOver={() => this.showPopover(true)}
             onMouseLeave={() => this.showPopover(false)}
             onClick={this.requestData}
             style={{ cursor: 'pointer' }}
           >
-            Symonyms
+            Definition 
           </InputGroupText>
-        </InputGroupAddon>              
+        </InputGroupAddon>     
         <div style={{width:'89%'}}>
-          <CreatableSelect 
+          <CreatableSelect            
             isClearable
-            isMulti
-            closeMenuOnSelect={false}
             isDisabled={this.state.requestingData}
             isLoading={this.state.requestingData}
-            onChange={this.handleChange}          
+            onChange={this.handleChange} 
             onCreateOption={this.handleCreate}
             options={this.state.options}  
             value={this.state.value}       
-          />
-        </div>              
-      </InputGroup> 
+          />        
+        </div> 
+      </InputGroup>             
     );
   }
 }
 
-export default Symonyms;
+export default Definition;
+          
