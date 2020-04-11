@@ -21,10 +21,24 @@ class Symonyms extends Component {
     this.requestData = this.requestData.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleCreate = this.handleCreate.bind(this);
+    this.checkOptions = this.checkOptions.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({
+      synonyms: this.props.synonyms
+    }); 
+    this.updateOptions();
   }
 
   showPopover(show) {
     this.setState({ showPopover: show });
+  }
+
+  checkOptions() {
+    if (this.state.synonyms.length !== this.state.options.length) {
+      this.updateOptions();
+    }
   }
 
   updateOptions() {
@@ -46,7 +60,7 @@ class Symonyms extends Component {
   }
 
   requestData() {    
-    const spelling = this.props.word.spelling;
+    const spelling = this.props.spelling;
     if (!spelling) {
       console.log('Spelling is empty');
       return;
@@ -123,7 +137,7 @@ class Symonyms extends Component {
         <Popover
           placement='top'
           isOpen={this.state.showPopover}
-          target={'synonymsText'.concat(this.props.word.id)}>
+          target={'synonymsText'.concat(this.props.id)}>
           <PopoverBody>
             Get synonyms from Words API
           </PopoverBody>
@@ -132,8 +146,8 @@ class Symonyms extends Component {
           <InputGroupText 
             className='w-100'
             tag='a' 
-            name={'synonymsText'.concat(this.props.word.id)}
-            id={'synonymsText'.concat(this.props.word.id)}
+            name={'synonymsText'.concat(this.props.id)}
+            id={'synonymsText'.concat(this.props.id)}
             onMouseOver={() => this.showPopover(true)}
             onMouseLeave={() => this.showPopover(false)}
             onClick={this.requestData}
@@ -149,6 +163,7 @@ class Symonyms extends Component {
             closeMenuOnSelect={false}
             isDisabled={this.state.requestingData}
             isLoading={this.state.requestingData}
+            onMenuOpen={this.checkOptions}
             onChange={this.handleChange}          
             onCreateOption={this.handleCreate}
             options={this.state.options}  

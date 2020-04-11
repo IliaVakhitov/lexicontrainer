@@ -14,26 +14,47 @@ class Definition extends Component {
       options: [],
       definitions: [],
       showPopover: false,
-      requestingData: false
+      requestingData: false,
+      definitionPopover: false
     };
     
     this.showPopover = this.showPopover.bind(this);
     this.requestData = this.requestData.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleCreate = this.handleCreate.bind(this);
+    this.updateOptions = this.updateOptions.bind(this);
+    this.checkOptions = this.checkOptions.bind(this);
+    
+    this._isMounted = false; 
   }
 
-
   componentDidMount() {
-    const definition = this.props.word.definition;
-    let definitions = this.state.definitions;
-    definitions.push(definition);
+    
+    this._isMounted = true; 
+    const definition = this.props.definition;
+    const definitions = this.props.definitions;
     let value = this.createOption(definition);
     this.setState({
       value: value,
       definitions: definitions
-    }); 
+    });       
     this.updateOptions();
+  }
+
+  checkOptions() {
+    // TODO 
+    //reset definitons when new word has been saved
+    if (!this.props.spelling) {
+      this.setState({ 
+        value:'',
+        definitions: [],
+        options: []
+      });
+      return;
+    }
+    if (this.state.definitions.length !== this.state.options.length) {
+      this.updateOptions();
+    }
   }
 
   showPopover(show) {
@@ -59,7 +80,7 @@ class Definition extends Component {
   }
 
   requestData() {    
-    const spelling = this.props.word.spelling;
+    const spelling = this.props.spelling;
     if (!spelling) {
       console.log('Spelling is empty');
       return;
@@ -112,6 +133,7 @@ class Definition extends Component {
     this.setState({
       value: newValue
     });
+    this.props.updateDefinition(newValue === null ? '' : newValue.value);
   }
   
 
@@ -125,6 +147,7 @@ class Definition extends Component {
       definitions: definitions,
       value: value
     });
+    this.props.updateDefinition(inputValue);
     this.updateOptions();
   }
 
@@ -135,7 +158,7 @@ class Definition extends Component {
         <Popover
           placement='top'
           isOpen={this.state.showPopover}
-          target={'definitionText'.concat(this.props.word.id)}>
+          target={'definitionText'.concat(this.props.id)}>
           <PopoverBody>
             Get definition from Words API
           </PopoverBody>
@@ -144,8 +167,8 @@ class Definition extends Component {
           <InputGroupText 
             className='w-100'
             tag='a' 
-            name={'definitionText'.concat(this.props.word.id)}
-            id={'definitionText'.concat(this.props.word.id)}
+            name={'definitionText'.concat(this.props.id)}
+            id={'definitionText'.concat(this.props.id)}
             onMouseOver={() => this.showPopover(true)}
             onMouseLeave={() => this.showPopover(false)}
             onClick={this.requestData}
@@ -155,15 +178,16 @@ class Definition extends Component {
           </InputGroupText>
         </InputGroupAddon>     
         <div style={{width:'89%'}}>
-          <CreatableSelect            
+          <CreatableSelect              
             isClearable
             isDisabled={this.state.requestingData}
             isLoading={this.state.requestingData}
+            onMenuOpen={this.checkOptions}
             onChange={this.handleChange} 
             onCreateOption={this.handleCreate}
             options={this.state.options}  
             value={this.state.value}       
-          />        
+          />           
         </div> 
       </InputGroup>             
     );
