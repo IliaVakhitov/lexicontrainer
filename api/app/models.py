@@ -133,6 +133,7 @@ class Statistic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     game_type = db.Column(db.String(30))
+    date_completed = db.Column(db.DateTime, default=datetime.utcnow)
     total_rounds = db.Column(db.Integer)
     correct_answers = db.Column(db.Integer, default=0)
 
