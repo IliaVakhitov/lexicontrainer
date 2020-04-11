@@ -8,7 +8,7 @@ from flask_httpauth import HTTPTokenAuth
 from app.errors.handlers import error_response
 
 from app.dicts import bp
-from app.models import User, Dictionary, Word
+from app.models import User, Dictionary, Word, Definitions, Synonyms
 from app import db
 from datetime import datetime
 
@@ -103,17 +103,26 @@ def dictionary():
     user = User.check_request(request)
     dictionary_id = request.headers.get('dictionary_id')
     dictionary = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
-    dict_entry = dictionary.to_dict()     
-    synonyms = []
-    #synonyms.append('synonym1')
-    #synonyms.append('synonym2')
-    #synonyms.append('synonym3')   
-    words = [{
-        'id': w.id, 
-        'spelling': w.spelling,
-        'definition': w.definition,
-        'progress': 0 if w.learning_index is None else w.learning_index.index
-        } for w in dictionary.words.all()]
+    dict_entry = dictionary.to_dict()  
+    words = []
+    for word in dictionary.words.all():
+        definitions = []
+        synonyms = []
+        definitions_query = Definitions.query.filter_by(spelling=word.spelling).all()
+        synonyms_query = Synonyms.query.filter_by(spelling=word.spelling).all()
+        for definition in definitions_query:
+            definitions.append(definition.definition)
+        for synonym in synonyms_query:
+            synonyms.append(synonym.synonym)
+        
+        words.append({
+            'id': word.id, 
+            'spelling': word.spelling,
+            'definition': word.definition,
+            'definitions': definitions,
+            'synonyms': synonyms,
+            'progress': 0 if word.learning_index is None else word.learning_index.index
+        })
 
     dict_entry['words'] = words
     

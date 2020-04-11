@@ -45,12 +45,12 @@ def all_words():
 def get_definition():
 
     # System delay
-    time.sleep(1)
+    time.sleep(0.3)
 
     user = User.check_request(request)
     request_data = request.get_json()
 
-    spelling = request_data.get('spelling')
+    spelling = request_data.get('spelling').lower()
     if not spelling:
         return {'error': 'No spelling in request'}
 
@@ -85,16 +85,16 @@ def get_definition():
 
 
 @bp.route('/get_synonyms', methods=['POST'])
-#@token_auth.login_required
+@token_auth.login_required
 def get_synonyms():
 
     # System delay
-    time.sleep(1)
+    time.sleep(0.3)
 
     user = User.check_request(request)
     request_data = request.get_json()
 
-    spelling = request_data.get('spelling')
+    spelling = request_data.get('spelling').lower()
     if not spelling:
         return {'error': 'No spelling in request'}
 
@@ -138,6 +138,9 @@ def add_word():
         definition=request_data.get('definition').strip(),
         dictionary_id=request_data.get('dictionary_id'))
     db.session.add(new_word)
+    db.session.commit()
+    learning_index = LearningIndex(word_id=new_word.id, index=0)
+    db.session.add(learning_index)
     db.session.commit()
 
     return {'new_word_id': new_word.id}
@@ -184,5 +187,17 @@ def update_defitions_table():
     for definition in definitions:
         definition[0].spelling = definition[1].spelling
     db.session.commit()
+    
+    return {'result': 'success'}
+
+# Additional functions 
+@bp.route('/update_defitions_table1', methods=['GET'])
+def update_defitions_table1():
+    definitions = Word.query.all()        
+    for word in definitions:
+        word.spelling = word.spelling.lower()
+        word.definition = word.definition.lower()
+    db.session.commit()
+
     return {'result': 'success'}
 
