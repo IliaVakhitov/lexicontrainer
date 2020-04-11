@@ -1,6 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { Button, Container } from 'reactstrap';
+import { Button, Container, Progress, Spinner } from 'reactstrap';
 
 
 class PlayGame extends Component {
@@ -8,24 +8,40 @@ class PlayGame extends Component {
     super(props);
 
     this.state = {
-      game_type: 'Find Definition',
+      gameType: 'Find Definition',
       progress: 0,
-      value: 'value',
-      answers: ['one', 'two', 'three', 'four'],
-      nextIsDisabled: true,
-      answerIsDisabled: false,
-      correct_index: -1,
-      answer_index: -2
+      value: '',
+      answers: [],
+      fetchInProgress: true,
+      correctIndex: -1,
+      answerIndex: -2,
+      answerGiven: false,
+      firstRequest: true
     }
 
-    this.check_answer = this.check_answer.bind(this);
-    this.current_round = this.current_round.bind(this);
-    this.next_round = this.next_round.bind(this);
+    this._isMounted = false;
 
-    this.current_round();
+    this.checkAnswer = this.checkAnswer.bind(this);
+    this.currentRound = this.currentRound.bind(this);
+    this.nextRound = this.nextRound.bind(this);
+
   }
 
-  check_answer(answer_index) {
+  componentDidMount() {
+    this._isMounted = true; 
+    this._isMounted && this.currentRound();
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  
+
+  checkAnswer(answerIndex) {
+    this.setState({ 
+      answerGiven: true
+    });
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
@@ -34,17 +50,16 @@ class PlayGame extends Component {
       credentials: 'include',
       headers: myHeaders,
       body: JSON.stringify({
-        'answer_index': answer_index
+        'answer_index': answerIndex
       })
     })
       .then(res => res.json())
       .then((data) => {
         if( 'correct_index' in data) {
           this.setState({
-            correct_index: data.correct_index,
-            answer_index: answer_index,
-            answerIsDisabled: true,
-            nextIsDisabled: false  
+            progress: data.progress,
+            correctIndex: data.correct_index,
+            answerIndex: answerIndex
           }); 
         }        
       },
@@ -54,7 +69,10 @@ class PlayGame extends Component {
     );  
   }
 
-  current_round() {
+  currentRound() {
+    this.setState({ 
+      fetchInProgress: true
+    });
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
@@ -66,14 +84,13 @@ class PlayGame extends Component {
       .then((data) => {
         if( 'game_round' in data) {
           this.setState({
-            game_type: data.game_type,
+            gameType: data.game_type,
             progress: data.progress,
             value: data.game_round.value,
             answers: data.game_round.answers,
-            answerIsDisabled: false,
-            nextIsDisabled: true,
-            correct_index: -1,
-            answer_index: -2
+            answerGiven: false,
+            fetchInProgress: false,
+            firstRequest: false
           }); 
         }        
       },
@@ -83,7 +100,10 @@ class PlayGame extends Component {
     );    
   }
 
-  next_round() {
+  nextRound() {
+    this.setState({ 
+      fetchInProgress: true
+    });
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
@@ -98,14 +118,14 @@ class PlayGame extends Component {
         }
         if('game_round' in data) {
           this.setState({
-            game_type: data.game_type,
+            gameType: data.game_type,
             progress: data.progress,
             value: data.game_round.value,
             answers: data.game_round.answers,
-            answerIsDisabled: false,
-            nextIsDisabled: true,
-            correct_index: -1,
-            answer_index: -2
+            answerGiven: false,
+            fetchInProgress: false,
+            correctIndex: -1,
+            answerIndex: -2
           }); 
         }        
       },
@@ -116,36 +136,68 @@ class PlayGame extends Component {
   }
   // TODO Find a way to make it simpler
   render() {
-    const corr_ind = this.state.correct_index;
-    const answer_index = this.state.answer_index;
-    const answer_is_correct = (corr_ind === answer_index);
-     
-    const buttons_answers = this.state.answers.map(answer => 
-      <p key={this.state.answers.indexOf(answer)}>
-        <Button outline={this.state.answers.indexOf(answer) === corr_ind 
-            || this.state.answers.indexOf(answer) === answer_index  ? false : true}
-          color={this.state.answers.indexOf(answer) === corr_ind 
-            ? 'success' : 
-              (this.state.answers.indexOf(answer) === answer_index 
-                && !answer_is_correct
-                ? 'warning' : 'dark') } 
-          disabled={this.state.answerIsDisabled}          
-          onClick={() => this.check_answer(this.state.answers.indexOf(answer))}
-        >{answer}</Button>
-      </p>        
-    );
+    
+    const correctIndex = this.state.correctIndex;
+    const answerIndex = this.state.answerIndex;
+    const answerGiven = this.state.answerGiven;
+    const btnNextText = this.state.progress >= 100 ? 'Finish' : 'Next';
+
+    let buttonsAnswers = [];
+    this.state.answers.forEach(answer => { 
+      const currentIndex = this.state.answers.indexOf(answer);
+            
+      let outline = true; 
+      let color = 'dark';
+
+      if (answerGiven) {
+        if (currentIndex === answerIndex) {
+          outline = false; 
+          color = 'warning'
+        }
+        if (currentIndex === correctIndex) {
+          color = 'success';
+          outline = false;
+        }
+      }
+      buttonsAnswers.push(
+        <p key={currentIndex}>
+          <Button outline={outline}
+            color={color}
+            disabled={this.state.answerGiven}          
+            onClick={() => this.checkAnswer(currentIndex)}
+          >{answer}</Button>
+        </p>
+      );   
+    });
     
     return (
-      <Container>
-        <h3>{this.state.game_type}</h3>
+      <Container>        
+        <Progress 
+          color='success'
+          max='100'
+          value={this.state.progress}
+        >
+          {this.state.progress+'%'}
+        </Progress>
+        <h3>{this.state.gameType}</h3>
         <br />
-        <h5>{this.state.value}</h5>
-        <br />
-        <ul>{buttons_answers}</ul>
-        <br />
-        <Button outline color='info' 
-          disabled={this.state.nextIsDisabled}
-          onClick={this.next_round}>Next</Button>
+        {this.state.firstRequest && <Spinner type='grow' color='dark' />}
+        {!this.state.firstRequest && 
+          <div>
+            <h5>{this.state.value}</h5>
+            <br />
+            <ul>{buttonsAnswers}</ul>
+            <br />
+            <Button 
+              outline 
+              color='info' 
+              disabled={!this.state.answerGiven}
+              onClick={this.nextRound}
+            >
+              {btnNextText}
+            </Button>
+          </div>
+        }
       </Container>
     );
   }

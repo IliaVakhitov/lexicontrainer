@@ -1,3 +1,4 @@
+import time
 import json
 import logging
 from flask_httpauth import HTTPTokenAuth
@@ -35,7 +36,9 @@ def check_current_game():
         user_id=user.id, game_completed=False).first()
     
     if revision_game_entry is None:
-        return {'current_game' : False} 
+        return {'current_game' : False,
+                'progress':0,
+                'game_type': ''} 
 
     return {'current_game': True,
             'progress': revision_game_entry.get_progress(),
@@ -62,9 +65,8 @@ def define_game():
     user = User.check_request(request)
     revision_game_entry = CurrentGame.query.filter_by(
         user_id=user.id, game_completed=False).first()
-    dictionaries = Dictionary.query.filter_by(
-        user_id=user.id).order_by('dictionary_name')
 
+    
     # Remove previous game
     if revision_game_entry is not None:
         db.session.delete(revision_game_entry)
@@ -74,21 +76,26 @@ def define_game():
     request_data = request.get_json()
     game_type = GameType[request_data.get('game_type').strip()]
     word_limit = int(request_data.get('game_rounds'))
-    not_include_learned_words = request_data.get('include_learned_words')
+    include_learned_words = request_data.get('include_learned_words')
+    game_dictionaries = request_data.get('dictionaries')
 
-    # If need to filter dictionaries
-    if 'select_dictionaries' in request_data:
-        dict_names = request_data.getlist('select_dictionaries')
+    if len(game_dictionaries) == 0:
+        # All dictionaries
+        dictionaries = Dictionary.query.filter_by(
+            user_id=user.id).order_by('dictionary_name')
+        # IDs need to make filter in words query
+        dict_ids = [d.id for d in dictionaries]
+    else:
+        # If need to filter dictionaries
+        dict_ids = [dictionary['key'] for dictionary in game_dictionaries]
         dictionaries = Dictionary.query.\
             filter_by(user_id=user.id).\
-            filter(Dictionary.dictionary_name.in_(dict_names)).\
+            filter(Dictionary.id.in_(dict_ids)).\
             order_by('dictionary_name')
-
-    # IDs need to make filter in words query
-    dict_ids = [d.id for d in dictionaries]
+    
     words_query = db.session.query(Word).filter(Word.dictionary_id.in_(dict_ids))
 
-    if not_include_learned_words:
+    if not include_learned_words:
         words_query = words_query.\
             join(LearningIndex, LearningIndex.word_id == Word.id).\
             filter(LearningIndex.index < 100)
@@ -118,6 +125,10 @@ def define_game():
 @bp.route('/next_round', methods=['GET'])
 @token_auth.login_required
 def next_round():
+
+    # System delay
+    time.sleep(0.1)
+
     user = User.check_request(request)
     revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
     game_ended = revision_game_entry.get_next_round()
@@ -132,6 +143,10 @@ def next_round():
 @bp.route('/current_round', methods=['GET'])
 @token_auth.login_required
 def current_round():
+
+    # System delay
+    time.sleep(0.3)
+
     user = User.check_request(request)
     revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
     return {'game_type':revision_game_entry.game_type,
@@ -142,6 +157,10 @@ def current_round():
 @bp.route('/check_answer', methods=['POST'])
 @token_auth.login_required
 def check_answer():
+
+    # System delay
+    #time.sleep(0.5)
+
     user = User.check_request(request)
     answer_index = request_data = request.get_json().get('answer_index')
     revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
