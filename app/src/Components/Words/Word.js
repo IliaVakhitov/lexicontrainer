@@ -2,8 +2,8 @@ import React from 'react';
 import { Component } from 'react';
 import { Input, Button, 
   InputGroup, InputGroupAddon, InputGroupText,
-  Card, CardBody, CardHeader,
-  Popover, PopoverBody, Collapse} from 'reactstrap'; 
+  Card, CardBody, CardHeader, FormFeedback,
+  Collapse} from 'reactstrap'; 
 
 import Symonyms from './Symonyms';
 import Definition from './Definition';
@@ -14,19 +14,25 @@ class Word extends Component {
 
     this.state = {
       spelling: '',
+      definition: '',
+      progress: 0,
+      synonyms: '',
       saved: true,
-      collapseOpen: false,
-      spellingPopover: false
+      collapseOpen: false
     };
 
     this.updateState = this.updateState.bind(this);
     this.deleteWord = this.deleteWord.bind(this);
     this.showCollapse = this.showCollapse.bind(this); 
+    this.updateDefinition = this.updateDefinition.bind(this); 
+    this.updateSynonyms = this.updateSynonyms.bind(this); 
   }
 
   componentDidMount() {
     this.setState({
-      spelling: this.props.word.spelling
+      spelling: this.props.word.spelling,
+      definition: this.props.word.definition,
+      progress: this.props.word.progress
     });
     this.myInterval = setInterval(() => {
       this.saveWord();
@@ -35,14 +41,30 @@ class Word extends Component {
 
   componentWillUnmount() {
     clearInterval(this.myInterval);
+    if (!this.state.saved) {
+      this.saveWord();
+    }
   }
 
   updateState(event) {
     this.setState({
       [event.target.name]: event.target.value,
       saved: false,
-      spellingPopover: false
     });
+  }
+
+  updateDefinition(definition) {
+    this.setState({ 
+      definition: definition,
+      saved: false
+    });     
+  }
+
+  updateSynonyms(synonyms) {
+    this.setState({ 
+      synonyms: synonyms,
+      saved: false
+    });     
   }
 
   showCollapse() {
@@ -80,17 +102,14 @@ class Word extends Component {
   }
 
   saveWord() {
-    //TODO
 
     if (this.state.saved === true) {
       return;
     }
     if (!this.state.spelling) {
-      this.setState({spellingPopover: true});
       return;
     }
     if (!this.state.definition) {
-      this.setState({definitionPopover: true});
       return;
     }
     var myHeaders = new Headers();
@@ -112,7 +131,10 @@ class Word extends Component {
           console.log(data);
           return;
         }    
-        this.setState({saved: true});   
+        this.setState({
+          saved: true,
+          progress: 0
+        });   
       },
       (error) => {
         console.log(error);
@@ -135,28 +157,37 @@ class Word extends Component {
             <InputGroup >
               <InputGroupAddon  style={{width:'11%'}} addonType='prepend'>
                 <InputGroupText className='w-100'>Spelling</InputGroupText>
-              </InputGroupAddon>   
-              <Popover
-                placement='top'
-                isOpen={this.state.spellingPopover}
-                target='spelling'>
-                <PopoverBody>
-                  Please, fill out this field!
-                </PopoverBody>
-              </Popover>       
+              </InputGroupAddon>         
               <Input 
+                invalid={!this.state.spelling}
                 value={this.state.spelling}
                 name='spelling' 
                 id='spelling' 
                 onChange={this.updateState}/>
+              <FormFeedback>Please, fill out this field!</FormFeedback>
             </InputGroup>            
             <Definition 
+              updateDefinition={(value) => this.updateDefinition(value)}
               key={'definition'.concat(this.props.word.id)} 
-              word={this.props.word} />          
+              id={this.props.word.id}
+              spelling={this.props.word.spelling}
+              definition={this.props.word.definition} 
+              definitions={this.props.word.definitions} 
+            />  
+            <span               
+              hidden={this.state.definition}
+              style={{color:'#e63b45', fontSize:'13px'}}
+            >
+              Please, fill out this field!
+            </span>        
             <Symonyms 
+              updateSynonyms={(value) => this.updateSynonyms(value)}
               key={'synonyms'.concat(this.props.word.id)} 
-              word={this.props.word} />             
-            Progress: {this.props.word.progress}%          
+              id={this.props.word.id}
+              spelling={this.props.word.spelling}
+              synonyms={this.props.word.synonyms} 
+            />             
+            Progress: {this.state.progress}%          
             <Button 
               className='float-right'
               outline 

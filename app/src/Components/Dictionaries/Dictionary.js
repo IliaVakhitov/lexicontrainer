@@ -2,8 +2,7 @@ import React from 'react';
 import { Component } from 'react';
 import { Container, Input, InputGroup, 
   InputGroupAddon, InputGroupText, Button,
-Popover, PopoverBody, Spinner} from 'reactstrap';
-
+  FormFeedback, Spinner} from 'reactstrap'
 import { withRouter } from 'react-router-dom';
 
 import NewWord from '../../Components/Words/NewWord';
@@ -170,20 +169,14 @@ class Dictionary extends Component {
             <InputGroupText className='w-100'>Name</InputGroupText>
           </InputGroupAddon>
           <Input
+            invalid={!this.state.name}
             type='text'
             name='name'
             id='name'
             value={this.state.name}
             onChange={this.updateState}
           />
-          <Popover
-            placement='top'
-            isOpen={this.state.namePopover}
-            target='name'>
-            <PopoverBody>
-              Please, fill out this field!
-            </PopoverBody>
-          </Popover>
+          <FormFeedback>Please, fill out this field!</FormFeedback>
         </InputGroup>
         <InputGroup className='my-2'>
           <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
@@ -205,8 +198,7 @@ class Dictionary extends Component {
           words={this.state.words} 
           onDeleteWord={this.dictionary}
         />
-        
-        </Container>
+      </Container>
     );
   }
 }

@@ -2,8 +2,8 @@ import React from 'react';
 import { Component } from 'react';
 import { Container, Input, Spinner,
   InputGroup, InputGroupAddon, InputGroupText,
-  Popover, PopoverBody, Card, CardHeader, CardBody, Button,
-  ListGroup, ListGroupItem, Collapse,
+  Card, CardHeader, CardBody, Button,
+  ListGroup, ListGroupItem, Collapse, FormFeedback,
   UncontrolledCollapse, CardTitle, CardText } from 'reactstrap'
 import { withRouter } from 'react-router-dom';
 
@@ -17,7 +17,6 @@ class Dictionaries extends Component {
       newDictionaryName:'',
       newDictionaryDescription:'',
       addDictionary: false,
-      namePopover: false,
       fetchInProgress: true
     };
 
@@ -72,14 +71,12 @@ class Dictionaries extends Component {
 
   updateState(event) {
     this.setState({
-      [event.target.name]: event.target.value,
-      namePopover: false
+      [event.target.name]: event.target.value
     });
   }
 
   saveDictionary() {
     if (!this.state.newDictionaryName) {
-      this.setState({namePopover: true});
       return;
     }
     var myHeaders = new Headers();
@@ -117,8 +114,7 @@ class Dictionaries extends Component {
     this.setState({
       newDictionaryName:'',
       newDictionaryDescription:'',
-      addDictionary: false,
-      namePopover: false
+      addDictionary: false
     });  
   }
 
@@ -159,6 +155,7 @@ class Dictionaries extends Component {
   getDictionary(dict) {
     return(
       <ListGroupItem 
+        style={{borderStyle: 'none'}}
         key={dict.id} 
         className='w-50'>
         <Card>
@@ -201,7 +198,10 @@ class Dictionaries extends Component {
         this.getDictionary(dictionary)  
       );
       dictComp.push(
-        <ListGroup key={j++} horizontal='lg'>
+        <ListGroup           
+          key={j++} 
+          horizontal='lg'
+        >
           {dictionariesList}          
         </ListGroup>
       );
@@ -234,6 +234,7 @@ class Dictionaries extends Component {
                   <InputGroupText className='w-100'>Name</InputGroupText>
                 </InputGroupAddon>                
                 <Input 
+                  invalid={!this.state.newDictionaryName}
                   type='text' 
                   value={this.state.newDictionaryName} 
                   name='newDictionaryName'
@@ -241,14 +242,7 @@ class Dictionaries extends Component {
                   placeholder='Type name for new dictionary'
                   onChange={this.updateState}
                 />
-                <Popover
-                  placement='top'
-                  isOpen={this.state.namePopover}
-                  target='newDictionaryName'>
-                  <PopoverBody>
-                    Please, fill out this field!
-                  </PopoverBody>
-                </Popover>
+                <FormFeedback>Please, fill out this field!</FormFeedback>
               </InputGroup>          
               <InputGroup className='my-2'>
                 <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
@@ -265,6 +259,7 @@ class Dictionaries extends Component {
               <Button outline 
                 color='success' 
                 className='mx-1 my-1'
+                disabled={!this.state.newDictionaryName}
                 onClick={this.saveDictionary}>
                 Save
               </Button>
