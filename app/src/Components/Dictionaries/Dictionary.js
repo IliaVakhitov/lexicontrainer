@@ -164,34 +164,39 @@ class Dictionary extends Component {
             onClick={this.deleteDictionary}
             className='float-right mx-1 my-1'>Delete dictionary</Button>
         </div>
-        <InputGroup className='my-2'>
-          <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
-            <InputGroupText className='w-100'>Name</InputGroupText>
-          </InputGroupAddon>
-          <Input
-            invalid={!this.state.name}
-            type='text'
-            name='name'
-            id='name'
-            value={this.state.name}
-            onChange={this.updateState}
-          />
-          <FormFeedback>Please, fill out this field!</FormFeedback>
-        </InputGroup>
-        <InputGroup className='my-2'>
-          <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
-            <InputGroupText className='w-100'>Description</InputGroupText>
-          </InputGroupAddon>        
-          <Input
-            type='text'
-            name='description'
-            value={this.state.description}
-            onChange={this.updateState}
-          />
-        </InputGroup>        
-        <NewWord 
-          dictionaryId={this.props.location.state.id} 
-          addNewWord={this.dictionary}/>        
+        {!fetchInProgress &&
+          <div>
+            <InputGroup className='my-2'>
+              <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
+                <InputGroupText className='w-100'>Name</InputGroupText>
+              </InputGroupAddon>
+              <Input
+                invalid={!this.state.name}
+                type='text'
+                name='name'
+                id='name'
+                value={this.state.name}
+                onChange={this.updateState}
+              />
+              <FormFeedback>Please, fill out this field!</FormFeedback>
+            </InputGroup>
+            <InputGroup className='my-2'>
+              <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
+                <InputGroupText className='w-100'>Description</InputGroupText>
+              </InputGroupAddon>        
+              <Input
+                type='text'
+                name='description'
+                value={this.state.description}
+                onChange={this.updateState}
+              />
+            </InputGroup>        
+            <NewWord 
+              dictionaryId={this.props.location.state.id} 
+              onSaveWord={this.dictionary}
+            />  
+          </div>
+        }      
         <h4 className='my-3'>Words</h4>
         {fetchInProgress && <Spinner type='grow' color='dark' />}
         <WordsTable 
