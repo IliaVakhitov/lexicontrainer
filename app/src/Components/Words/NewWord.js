@@ -1,7 +1,7 @@
 import React from 'react';
 import { Component } from 'react';
 import { Input,InputGroup, InputGroupAddon, InputGroupText, 
-  Button, Card, CardBody } from 'reactstrap';
+  Button, Card, CardBody, Collapse, Container } from 'reactstrap';
 
 import Definition from './Definition';
 
@@ -11,12 +11,22 @@ class NewWord extends Component {
 
     this.state = {
       spelling: '',
-      definition: ''
+      definition: '',
+      collapseOpen: false
     };
 
     this.addNewWord = this.addNewWord.bind(this);
     this.updateState = this.updateState.bind(this);
     this.updateDefinition = this.updateDefinition.bind(this);
+    this.changeCollapseOpen = this.changeCollapseOpen.bind(this);
+  }
+
+  changeCollapseOpen() {
+    this.setState({
+      spelling:'',
+      definition:'',
+      collapseOpen: !this.state.collapseOpen
+    });  
   }
 
   updateState(event) {
@@ -55,7 +65,7 @@ class NewWord extends Component {
           spelling: '',
           definition: '',
         });
-        this.props.addNewWord();
+        this.props.onSaveWord();
       },
       (error) => {
         console.log(error);
@@ -72,36 +82,64 @@ class NewWord extends Component {
 
   render() {
     return (
-      <Card>
-        <CardBody>
-          <Button outline color='primary'
-            disabled={!this.state.spelling || ! this.state.definition}
-            onClick={this.addNewWord}>
-            Add new word
-          </Button> 
+      <div>
+        <Button 
+          outline 
+          className='my-1 mx-1' 
+          color='info' 
+          hidden={this.state.collapseOpen}
+          onClick={this.changeCollapseOpen}
+        >
+          Add new word
+        </Button>
+        <Collapse isOpen={this.state.collapseOpen}>
+        <Button 
+          className='my-1 mx-1' 
+          outline 
+          color='success'
+          hidden={!this.state.collapseOpen}
+          disabled={!this.state.spelling || ! this.state.definition}
+          onClick={this.addNewWord}
+        >
+          Save
+        </Button> 
+        <Button 
+          outline 
+          color='secondary' 
+          className='mx-1 my-1'
+          hidden={!this.state.collapseOpen}
+          onClick={this.changeCollapseOpen}
+        >
+          Cancel
+        </Button>
+        
           
-          <InputGroup className='my-2'>
-            <InputGroupAddon style={{width:'11%'}} addonType='prepend'>
-              <InputGroupText className='w-100'>Spelling</InputGroupText>
-            </InputGroupAddon>        
-              <Input 
-                value={this.state.spelling}
-                name='spelling'
-                id='spelling'
-                onChange={this.updateState} 
-                placeholder='Type word or phrase '
-              />
-          </InputGroup>            
-          <Definition 
-            updateDefinition={(value) => this.updateDefinition(value)}
-            key={'definition0'} 
-            id={'newWord'}
-            spelling={this.state.spelling}
-            definition={this.state.definition} 
-            definitions={[]}
-          />                  
-        </CardBody>       
-      </Card>
+              <InputGroup className='my-2'>
+                <InputGroupAddon style={{width:'11%'}} addonType='prepend'>
+                  <InputGroupText className='w-100'>Spelling</InputGroupText>
+                </InputGroupAddon>        
+                  <Input 
+                    invalid={!this.state.spelling}
+                    value={this.state.spelling}
+                    name='spelling'
+                    id='spelling'
+                    onChange={this.updateState} 
+                    placeholder='Type word or phrase '
+                  />
+              </InputGroup>            
+              <Definition 
+                updateDefinition={(value) => this.updateDefinition(value)}
+                key={'definition0'} 
+                id={'newWord'}
+                spelling={this.state.spelling}
+                definition={this.state.definition} 
+                definitions={[]}
+              />  
+                   
+              </Collapse>           
+            
+        
+      </div>
     );
   }
 }
