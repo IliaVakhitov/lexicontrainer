@@ -28,10 +28,10 @@ class App extends Component {
     }
   }
 
-  onLogin(new_username) {
+  onLogin(newUsername) {
     this.setState({
       isLoggedIn: true,
-      username: new_username});
+      username: newUsername});
   }
 
   onLogout() {
@@ -101,6 +101,4 @@ export default App;
 // 1. Make standart fetch requests
 // 2. Handle errors in requests on client side
 // 3. Make available demo version, without login
-// 4. Edit word
-// 5. Edit dictionary
-// 6. Print statistic from statistic table
+// 4. Print statistic from statistic table

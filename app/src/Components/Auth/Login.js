@@ -12,24 +12,44 @@ class Login extends Component {
       this.state = {
         username: '',
         password: '',
-        rememberMe: false
+        showInvalid: false,
+        rememberMe: false,
+        loginError: false
       }
       this.updateState = this.updateState.bind(this);
       this.handleOnClickRememberMe = this.handleOnClickRememberMe.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
+      this.handleRegisterOnClick = this.handleRegisterOnClick.bind(this);
   }
 
   updateState(event) {
-    this.setState({[event.target.name]: event.target.value});
+    this.setState({
+      [event.target.name]: event.target.value,
+      showInvalid: false
+    });
   }
 
   handleOnClickRememberMe() {
     this.setState({rememberMe: !this.state.rememberMe});
   }
 
+  handleRegisterOnClick() {
+    this.props.history.push({
+      pathname:'/register', 
+      state: { username: this.state.username }
+    });
+  }
+
   handleSubmit(event) {
     event.preventDefault();
-    // TODO validate form data
+    if (! this.state.username
+      || !this.state.password) {
+
+      this.setState({
+        showInvalid: true
+      });
+      return;
+    }
     var myHeaders = new Headers();
     myHeaders.append('Authorization', 'Basic ' + btoa(this.state.username+':'+this.state.password));
     myHeaders.append('Content-Type', 'application/json');
@@ -45,7 +65,9 @@ class Login extends Component {
       .then((data) => {        
         if ('error' in data) {
           console.log(data);
-          this.props.history.push('/login');
+          // TODO
+          // Show message
+          this.setState({ loginError: true });
           return;
         } 
         this.setState({
@@ -62,6 +84,7 @@ class Login extends Component {
       },
       (error) => {
         console.log(error);
+        return;
       }
     );      
   }
@@ -70,28 +93,32 @@ class Login extends Component {
     return (
       <Container>
         <Form onSubmit={this.handleSubmit}>
-          <InputGroup>
-            <InputGroupAddon addonType='prepend'>
-              <InputGroupText>Username</InputGroupText>
+        <InputGroup className='my-2'>
+            <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
+              <InputGroupText className='w-100'>Username</InputGroupText>
             </InputGroupAddon>
-            <Input placeholder='username'  
+            <Input 
+              invalid={this.state.loginError 
+                || (this.state.showInvalid && !this.state.username)}
+              placeholder='username'  
               value={this.state.username} 
               name='username'            
               onChange={this.updateState}/>
           </InputGroup>
-          <br/>
-          <InputGroup>
-            <InputGroupAddon addonType='prepend'>
-              <InputGroupText>Password</InputGroupText>
+          <InputGroup className='my-2'>
+            <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
+              <InputGroupText className='w-100'>Password</InputGroupText>
             </InputGroupAddon>
-            <Input type='password' 
+            <Input 
+              type='password'
+              invalid={this.state.loginError 
+                || (this.state.showInvalid && !this.state.password)} 
               value={this.state.password} 
               name='password'                        
               placeholder='password'                
               onChange={this.updateState}/>
-          </InputGroup>
-          <br/>
-          <FormGroup check>
+          </InputGroup>          
+          <FormGroup check className='my-2'>
             <Label for='rememberMe'>
               <Input 
                 name='remeber_me'
@@ -102,8 +129,19 @@ class Login extends Component {
               Remember me
             </Label>
           </FormGroup>
-          <br/>
-          <Button>Sing in</Button>
+          <Button 
+            outline
+            className='mx-1 my-1'
+          >
+            Sing in
+          </Button>
+          <Button 
+            className='mx-1 my-1'
+            outline
+            onClick={this.handleRegisterOnClick}
+          >
+            Register
+          </Button>          
         </Form>
       </Container>
     );

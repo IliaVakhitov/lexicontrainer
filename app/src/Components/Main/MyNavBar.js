@@ -59,11 +59,16 @@ class MyNavBar extends Component {
               ) : (
               <Nav className='ml-auto' navbar>
                 <NavItem className='d-flex align-items-center'>
+                  <NavLink tag={RRNavLink} className='font-weight-bold' to='/register'>
+                    Register
+                  </NavLink>
+                </NavItem>
+                <NavItem className='d-flex align-items-center'>
                   <NavLink tag={RRNavLink} className='font-weight-bold' to='/login'>
                     Login
                   </NavLink>
-                </NavItem> 
-                </Nav>              
+                </NavItem>                  
+              </Nav>              
               )}
           </Collapse>
         </div>

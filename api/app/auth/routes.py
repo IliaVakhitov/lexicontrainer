@@ -75,7 +75,7 @@ def logout():
 def register():
     # TODO
     # add user create function
-    return {'message': 'Page not available'} 
+    return {'error': 'Page not available'} 
 
 
 @bp.route('/user', methods=['GET'])
