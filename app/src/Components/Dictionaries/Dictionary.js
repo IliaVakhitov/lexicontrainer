@@ -200,7 +200,7 @@ class Dictionary extends Component {
               />
             </InputGroup>        
             <NewWord 
-              dictionaryId={this.props.location.state.id} 
+              dictionary={this.getDictionaryData()}
               onSaveWord={this.dictionary}
             />  
           </div>

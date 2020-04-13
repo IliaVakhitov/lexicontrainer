@@ -74,6 +74,7 @@ def logout():
 @bp.route('/register', methods=['POST'])
 def register():
     # TODO
+    # add user create function
     return {'message': 'Page not available'} 
 
 

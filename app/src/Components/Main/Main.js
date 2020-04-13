@@ -30,7 +30,7 @@ class Main extends Component {
     // TODO
     // show message
     // TODO
-    this.props.history.push('/dictionaries');
+    //this.props.history.push('/dictionaries');
   }
   
   
@@ -38,7 +38,7 @@ class Main extends Component {
     // TODO
     // show message
     // TODO
-    this.props.history.push('/words');
+    //this.props.history.push('/words');
   }
   
 
@@ -110,7 +110,7 @@ class Main extends Component {
         <Row xs='1'>
           <Col>
             <NewWord 
-              dictionaryId={null} 
+              dictionary={null} 
               onSaveWord={this.onSaveWord}
             />
           </Col>

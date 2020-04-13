@@ -4,21 +4,33 @@ import { Input,InputGroup, InputGroupAddon, InputGroupText,
   Button, Collapse } from 'reactstrap';
 
 import Definition from './Definition';
+import WordDictionary from './WordDictionary';
 
 class NewWord extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      dictionaryId: null,
       spelling: '',
       definition: '',
-      collapseOpen: false
+      collapseOpen: false,
+      showDictionary: false
     };
 
     this.addNewWord = this.addNewWord.bind(this);
     this.updateState = this.updateState.bind(this);
     this.updateDefinition = this.updateDefinition.bind(this);
     this.changeCollapseOpen = this.changeCollapseOpen.bind(this);
+  }
+
+  componentDidMount() {
+    
+    this.setState({
+      dictionaryId: (this.props.dictionary === null ? null : this.props.dictionary.id),
+      showDictionary: (this.props.dictionary === null)
+    });
+
   }
 
   changeCollapseOpen() {
@@ -42,6 +54,11 @@ class NewWord extends Component {
     if (!this.state.definition) {
       return;
     }
+    if (this.state.dictionaryId === null) {
+      console.log('Dictionary id is ' + this.state.dictionaryId)
+      return;
+    }
+
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
@@ -49,7 +66,7 @@ class NewWord extends Component {
       method: 'POST',
       headers: myHeaders,
       body: JSON.stringify({
-        'dictionary_id': this.props.dictionaryId,  
+        'dictionary_id': this.state.dictionaryId,  
         'spelling': this.state.spelling,  
         'definition': this.state.definition
       })
@@ -74,6 +91,12 @@ class NewWord extends Component {
     
   }
 
+  updateDictionary(id) {
+    this.setState({ 
+      dictionaryId: id
+    });
+  }
+
   updateDefinition(definition) {
     this.setState({
       definition: definition
@@ -93,52 +116,53 @@ class NewWord extends Component {
           Add new word
         </Button>
         <Collapse isOpen={this.state.collapseOpen}>
-        <Button 
-          className='my-1 mx-1' 
-          outline 
-          color='success'
-          hidden={!this.state.collapseOpen}
-          disabled={!this.state.spelling || ! this.state.definition}
-          onClick={this.addNewWord}
-        >
-          Save
-        </Button> 
-        <Button 
-          outline 
-          color='secondary' 
-          className='mx-1 my-1'
-          hidden={!this.state.collapseOpen}
-          onClick={this.changeCollapseOpen}
-        >
-          Cancel
-        </Button>
-        
-          
-              <InputGroup className='my-2'>
-                <InputGroupAddon style={{width:'11%'}} addonType='prepend'>
-                  <InputGroupText className='w-100'>Spelling</InputGroupText>
-                </InputGroupAddon>        
-                  <Input 
-                    invalid={!this.state.spelling}
-                    value={this.state.spelling}
-                    name='spelling'
-                    id='spelling'
-                    onChange={this.updateState} 
-                    placeholder='Type word or phrase '
-                  />
-              </InputGroup>            
-              <Definition 
-                updateDefinition={(value) => this.updateDefinition(value)}
-                key={'definition0'} 
-                id={'newWord'}
-                spelling={this.state.spelling}
-                definition={this.state.definition} 
-                definitions={[]}
-              />  
-                   
-              </Collapse>           
-            
-        
+          <Button 
+            className='my-1 mx-1' 
+            outline 
+            color='success'
+            hidden={!this.state.collapseOpen}
+            disabled={!this.state.spelling || ! this.state.definition}
+            onClick={this.addNewWord}
+          >
+            Save
+          </Button> 
+          <Button 
+            outline 
+            color='secondary' 
+            className='mx-1 my-1'
+            hidden={!this.state.collapseOpen}
+            onClick={this.changeCollapseOpen}
+          >
+            Cancel
+          </Button>
+          <InputGroup className='my-2'>
+            <InputGroupAddon style={{width:'11%'}} addonType='prepend'>
+              <InputGroupText className='w-100'>Spelling</InputGroupText>
+            </InputGroupAddon>        
+              <Input 
+                invalid={!this.state.spelling}
+                value={this.state.spelling}
+                name='spelling'
+                id='spelling'
+                onChange={this.updateState} 
+                placeholder='Type word or phrase '
+              />
+          </InputGroup>            
+          <Definition 
+            updateDefinition={(value) => this.updateDefinition(value)}
+            key={'definition0'} 
+            id={'newWord'}
+            spelling={this.state.spelling}
+            definition={this.state.definition} 
+            definitions={[]}
+          />    
+          {this.state.showDictionary &&
+            <WordDictionary
+              id={0}
+              updateDictionary={value => this.updateDictionary(value)}
+            />
+          }
+        </Collapse>           
       </div>
     );
   }

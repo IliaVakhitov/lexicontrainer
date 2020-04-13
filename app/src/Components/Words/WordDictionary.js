@@ -23,27 +23,34 @@ class WordDictionary extends Component {
 
     this._isMounted = false;
 
-    this.changeDictionary = this.changeDictionary.bind(this);
+    this.getDictionaries = this.getDictionaries.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.changeDictionary = this.changeDictionary.bind(this);
     this.showPopover = this.showPopover.bind(this);
   }
 
   componentDidMount() {
+    // TODO Send dictionaries list as props ??
     this._isMounted = true; 
     const dictionary = this.props.dictionary;
-    let value = this.createOption(dictionary.id, dictionary.dictionary_name);
-    this.setState({
-      value: value,
-      dictionary: dictionary
-    });
+    if (dictionary) {
+      let value = this.createOption(dictionary.id, dictionary.dictionary_name);
+      this.setState({
+        value: value,
+        dictionary: dictionary
+      });
+    } else {
+      this.setState({
+        selectDisable: false
+      });
+      this.getDictionaries();
+    }
   }
   
   showPopover(show) {
     this.setState({ showPopover: show });
   }
 
-  changeDictionary() {
+  getDictionaries() {
     this.setState({
       requestingData: true,
       selectDisable: false
@@ -126,7 +133,7 @@ class WordDictionary extends Component {
             id={'dictionary'.concat(this.props.id)}
             onMouseOver={() => this.showPopover(true)}
             onMouseLeave={() => this.showPopover(false)}
-            onClick={this.changeDictionary}
+            onClick={this.getDictionaries}
             style={{ cursor: 'pointer' }}
           >
             Dictionary 
