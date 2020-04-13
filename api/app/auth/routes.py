@@ -73,9 +73,17 @@ def logout():
 
 @bp.route('/register', methods=['POST'])
 def register():
-    # TODO
-    # add user create function
-    return {'error': 'Page not available'} 
+    request_data = request.get_json()
+    new_user = User(username=request_data.get('username'))
+    new_user.secret_question = request_data.get('secret_question')
+    new_user.set_password(request_data.get('password'))
+    new_user.set_secret_answer(request_data.get('secret_answer'))
+    db.session.add(new_user)
+    db.session.commit()
+    token = new_user.get_token()
+    db.session.commit()
+    return {'token': token,
+            'username': new_user.username} 
 
 
 @bp.route('/user', methods=['GET'])
@@ -108,7 +116,10 @@ def user():
     index_progress = 0
     for li_entry in learning_index_list:
         index_progress += li_entry.index
-    progress = round(index_progress / total_words, 2)
+    if total_words > 0:
+        progress = round(index_progress / total_words, 2)
+    else:
+        progress = 0
     return {'username': user.username,
             'dictionaries': total_dictionaries,
             'words': total_words,
