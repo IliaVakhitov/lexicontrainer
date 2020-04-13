@@ -55,12 +55,12 @@ class Main extends Component {
           <Col>
             <Button
               className='mx-1 my-1'
-              name='games'
+              name='words'
               outline
               color='dark'
               onClick={this.handleClick}
             >
-              Play revision game
+              View words
             </Button>
           </Col>
           <Col>
@@ -88,28 +88,36 @@ class Main extends Component {
             </Button>
           </Col>
           <Col>
-            <Button
+          <Button
               className='mx-1 my-1'
-              name='words'
+              name='games'
               outline
               color='dark'
               onClick={this.handleClick}
             >
-              View words
+              Play revision game
             </Button>
+            
           </Col>        
         </Row>
-        <Row xs='2'>
+        <Row xs='1'>
           <Col>
             <NewDictionary 
               onSaveDictionary={this.onSaveDictionary}
             />
           </Col>
+        </Row>
+        <Row xs='1'>
           <Col>
             <NewWord 
               dictionaryId={null} 
               onSaveWord={this.onSaveWord}
             />
+          </Col>
+        </Row>
+        <Row xs='1'>
+          <Col>
+            <h6>Random word</h6>
           </Col>
         </Row>
       </Container>

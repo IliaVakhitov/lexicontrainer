@@ -7,18 +7,21 @@ import { Input, Button,
 
 import Symonyms from './Symonyms';
 import Definition from './Definition';
+import WordDictionary from './WordDictionary';
   
 class Word extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      dictionaryId: 0,
       spelling: '',
       definition: '',
       progress: 0,
       synonyms: '',
       saved: true,
-      collapseOpen: false
+      collapseOpen: false,
+      updateDictionary: false
     };
 
     this.updateState = this.updateState.bind(this);
@@ -26,10 +29,12 @@ class Word extends Component {
     this.showCollapse = this.showCollapse.bind(this); 
     this.updateDefinition = this.updateDefinition.bind(this); 
     this.updateSynonyms = this.updateSynonyms.bind(this); 
+    this.updateDictionary = this.updateDictionary.bind(this); 
   }
 
   componentDidMount() {
     this.setState({
+      dictionaryId: this.props.word.dictionary_id,
       spelling: this.props.word.spelling,
       definition: this.props.word.definition,
       progress: this.props.word.progress
@@ -65,6 +70,14 @@ class Word extends Component {
       synonyms: synonyms,
       saved: false
     });     
+  }
+
+  updateDictionary(id) {
+    this.setState({ 
+      dictionaryId: id,
+      updateDictionary: true,
+      saved: false
+    });
   }
 
   showCollapse() {
@@ -119,6 +132,7 @@ class Word extends Component {
       method: 'POST',
       headers: myHeaders,
       body: JSON.stringify({
+        'dictionary_id': this.state.dictionaryId,
         'word_id': this.props.word.id,  
         'spelling': this.state.spelling,  
         'definition': this.state.definition  
@@ -134,7 +148,10 @@ class Word extends Component {
         this.setState({
           saved: true,
           progress: 0
-        });   
+        });  
+        if (this.state.updateDictionary) {
+          this.props.updateDictionary();
+        } 
       },
       (error) => {
         console.log(error);
@@ -153,7 +170,7 @@ class Word extends Component {
           <h5>{this.state.spelling}</h5>                  
         </CardHeader>
         <Collapse isOpen={this.state.collapseOpen}>
-          <CardBody>            
+          <CardBody>   
             <InputGroup >
               <InputGroupAddon  style={{width:'11%'}} addonType='prepend'>
                 <InputGroupText className='w-100'>Spelling</InputGroupText>
@@ -186,7 +203,12 @@ class Word extends Component {
               id={this.props.word.id}
               spelling={this.props.word.spelling}
               synonyms={this.props.word.synonyms} 
-            />             
+            />  
+            <WordDictionary 
+              updateDictionary={value => this.updateDictionary(value)}
+              id={this.props.word.id} 
+              dictionary={this.props.dictionary}
+            />           
             Progress: {this.state.progress}%          
             <Button 
               className='float-right'

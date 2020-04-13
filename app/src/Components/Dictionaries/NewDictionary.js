@@ -1,7 +1,7 @@
 import React from 'react';
 import { Component } from 'react';
 import { Input, InputGroup, InputGroupAddon, InputGroupText,
-  Card, CardBody, Button, Collapse, Container } from 'reactstrap'
+  Button, Collapse } from 'reactstrap'
 
 class NewDictionary extends Component {
 

@@ -169,6 +169,7 @@ def update_word():
     word_entry = Word.query.filter_by(id=request_data.get('word_id')).first_or_404()
     word_entry.spelling = request_data.get('spelling').strip()
     word_entry.definition = request_data.get('definition').strip()
+    word_entry.dictionary_id = int(request_data.get('dictionary_id'))
     if word_entry.learning_index is None:
         learning_index = LearningIndex(word_id=word_entry.id, index=0)
         db.session.add(learning_index)

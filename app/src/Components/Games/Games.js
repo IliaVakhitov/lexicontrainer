@@ -179,7 +179,7 @@ class Games extends Component {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/dicts/game_dictionaries', {
+    fetch('/dicts/dictionaries_list', {
       method: 'GET',
       headers: myHeaders
     })

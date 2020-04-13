@@ -13,7 +13,9 @@ class WordsTable extends Component {
         style={{borderStyle: 'none'}}
         key={word.id}
       >
-        <Word         
+        <Word       
+          updateDictionary={this.props.updateDictionary}
+          dictionary={this.props.dictionary}
           onDeleteWord={this.props.onDeleteWord}
           word={word} />
       </ListGroupItem>

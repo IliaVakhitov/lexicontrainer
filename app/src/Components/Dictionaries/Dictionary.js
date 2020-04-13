@@ -27,6 +27,7 @@ class Dictionary extends Component {
     this.updateState = this.updateState.bind(this);
     this.dictionary = this.dictionary.bind(this);
     this.deleteDictionary = this.deleteDictionary.bind(this);
+    this.getDictionaryData = this.getDictionaryData.bind(this);
   }
   
   componentDidMount() {
@@ -146,6 +147,13 @@ class Dictionary extends Component {
     this.props.history.push('/dictionaries');
   }
 
+  getDictionaryData() {
+    return {
+      id: this.props.location.state.id,
+      dictionary_name: this.state.name
+    }
+  }
+
   render() {
     const fetchInProgress = this.state.fetchInProgress; 
     return (
@@ -200,6 +208,8 @@ class Dictionary extends Component {
         <h4 className='my-3'>Words</h4>
         {fetchInProgress && <Spinner type='grow' color='dark' />}
         <WordsTable 
+          updateDictionary={this.dictionary}
+          dictionary={this.getDictionaryData()}
           words={this.state.words} 
           onDeleteWord={this.dictionary}
         />
