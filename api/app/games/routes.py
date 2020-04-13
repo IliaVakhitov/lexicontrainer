@@ -77,9 +77,9 @@ def define_game():
     game_type = GameType[request_data.get('game_type').strip()]
     word_limit = int(request_data.get('game_rounds'))
     include_learned_words = request_data.get('include_learned_words')
-    game_dictionaries = request_data.get('dictionaries')
+    dictionaries_list = request_data.get('dictionaries')
 
-    if len(game_dictionaries) == 0:
+    if len(dictionaries_list) == 0:
         # All dictionaries
         dictionaries = Dictionary.query.filter_by(
             user_id=user.id).order_by('dictionary_name')
@@ -87,7 +87,7 @@ def define_game():
         dict_ids = [d.id for d in dictionaries]
     else:
         # If need to filter dictionaries
-        dict_ids = [dictionary['key'] for dictionary in game_dictionaries]
+        dict_ids = [dictionary['key'] for dictionary in dictionaries_list]
         dictionaries = Dictionary.query.\
             filter_by(user_id=user.id).\
             filter(Dictionary.id.in_(dict_ids)).\

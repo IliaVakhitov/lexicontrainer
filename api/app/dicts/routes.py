@@ -51,9 +51,9 @@ def dictionaries():
     return {'dictionaries': dicts}
 
 
-@bp.route('/game_dictionaries', methods=['GET'])
+@bp.route('/dictionaries_list', methods=['GET'])
 @token_auth.login_required
-def game_dictionaries():
+def dictionaries_list():
     """
     List of dictionaries of current user to define game
     """
