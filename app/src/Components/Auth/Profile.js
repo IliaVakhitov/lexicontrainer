@@ -12,7 +12,7 @@ class Profile extends Component {
       words: '',
       wordsLearned: '',
       progress: '',
-      fetchInProgress: true
+      requestingData: true
     }
 
     this._isMounted = false;
@@ -30,7 +30,7 @@ class Profile extends Component {
   
   user_profile() {
     this.setState({
-      fetchInProgress: true
+      requestingData: true
     });
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -47,13 +47,13 @@ class Profile extends Component {
           progress: data.progress,
           wordsLearned: data.words_learned,
           username: data.username,
-          fetchInProgress: false
+          requestingData: false
         });
       },
       (error) => {
         console.log(error);
         this.setState({
-          fetchInProgress: false
+          requestingData: false
         });
       }
     );
@@ -62,16 +62,16 @@ class Profile extends Component {
   
 
   render() {
-    const fetchInProgress = this.state.fetchInProgress;
+    const requestingData = this.state.requestingData;
     return (      
         <Container>
-          {fetchInProgress && 
+          {requestingData && 
             <Container>
               <h3>User information</h3>
               <Spinner type='grow' color='dark' />
             </Container>
             }
-          {!fetchInProgress &&
+          {!requestingData &&
            <Container>
             <h3>{this.state.username} user information</h3>            
             <p>Dictionaries: {this.state.dictionaries}</p>

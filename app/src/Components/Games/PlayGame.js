@@ -12,7 +12,7 @@ class PlayGame extends Component {
       progress: 0,
       value: '',
       answers: [],
-      fetchInProgress: true,
+      requestingData: true,
       correctIndex: -1,
       answerIndex: -2,
       answerGiven: false,
@@ -71,7 +71,7 @@ class PlayGame extends Component {
 
   currentRound() {
     this.setState({ 
-      fetchInProgress: true
+      requestingData: true
     });
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -89,7 +89,7 @@ class PlayGame extends Component {
             value: data.game_round.value,
             answers: data.game_round.answers,
             answerGiven: false,
-            fetchInProgress: false,
+            requestingData: false,
             firstRequest: false
           }); 
         }        
@@ -102,7 +102,7 @@ class PlayGame extends Component {
 
   nextRound() {
     this.setState({ 
-      fetchInProgress: true
+      requestingData: true
     });
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
@@ -123,7 +123,7 @@ class PlayGame extends Component {
             value: data.game_round.value,
             answers: data.game_round.answers,
             answerGiven: false,
-            fetchInProgress: false,
+            requestingData: false,
             correctIndex: -1,
             answerIndex: -2
           }); 

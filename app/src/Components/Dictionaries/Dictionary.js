@@ -15,8 +15,10 @@ class Dictionary extends Component {
 
     this.state = {
       name: '',
+      id: this.props.location.state.id,
       description: '',
-      fetchInProgress: true,
+      dictionaries: [],
+      requestingData: true,
       words: []
     };
 
@@ -27,7 +29,6 @@ class Dictionary extends Component {
     this.updateState = this.updateState.bind(this);
     this.dictionary = this.dictionary.bind(this);
     this.deleteDictionary = this.deleteDictionary.bind(this);
-    this.getDictionaryData = this.getDictionaryData.bind(this);
   }
   
   componentDidMount() {
@@ -47,8 +48,8 @@ class Dictionary extends Component {
   }
 
   dictionary() {
-    this.setState({fetchInProgress: true});
-    if (isNaN(this.props.location.state.id)) {
+    this.setState({requestingData: true});
+    if (isNaN(this.state.id)) {
       console.log('Incorrect dictionary id '.concat(this.props.location.state.id));
       this.props.history.push('/dictionaries');
     }
@@ -56,7 +57,7 @@ class Dictionary extends Component {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    myHeaders.append('dictionary_id', this.props.location.state.id);  
+    myHeaders.append('dictionary_id', this.state.id);  
     fetch('/dicts/dictionary', {
       method: 'GET',
       headers: myHeaders
@@ -73,7 +74,7 @@ class Dictionary extends Component {
           description: data.description,
           words: data.words,
           namePopover: false,
-          fetchInProgress: false
+          requestingData: false
         });        
       },
       (error) => {
@@ -93,7 +94,7 @@ class Dictionary extends Component {
       method: 'DELETE',
       headers: myHeaders,
       body: JSON.stringify({
-        'dictionary_id': this.props.location.state.id
+        'dictionary_id': this.state.id
       })
     })
       .then(res => res.json())
@@ -123,7 +124,7 @@ class Dictionary extends Component {
       method: 'POST',
       headers: myHeaders,
       body: JSON.stringify({
-        'dictionary_id': this.props.location.state.id,  
+        'dictionary_id': this.state.id,  
         'dictionary_name': this.state.name,  
         'description': this.state.description
       })
@@ -147,15 +148,8 @@ class Dictionary extends Component {
     this.props.history.push('/dictionaries');
   }
 
-  getDictionaryData() {
-    return {
-      id: this.props.location.state.id,
-      dictionary_name: this.state.name
-    }
-  }
-
   render() {
-    const fetchInProgress = this.state.fetchInProgress; 
+    const requestingData = this.state.requestingData; 
     return (
       <Container>
         <div>
@@ -172,7 +166,7 @@ class Dictionary extends Component {
             onClick={this.deleteDictionary}
             className='float-right mx-1 my-1'>Delete dictionary</Button>
         </div>
-        {!fetchInProgress &&
+        {!requestingData &&
           <div>
             <InputGroup className='my-2'>
               <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
@@ -200,17 +194,21 @@ class Dictionary extends Component {
               />
             </InputGroup>        
             <NewWord 
-              dictionary={this.getDictionaryData()}
+              dictionaryId={this.state.id}
+              dictionaries={this.state.dictionaries}
+              dictionaryName={this.state.name}
               onSaveWord={this.dictionary}
             />  
           </div>
         }      
         <h4 className='my-3'>Words</h4>
-        {fetchInProgress && <Spinner type='grow' color='dark' />}
+        {requestingData && <Spinner type='grow' color='dark' />}
         <WordsTable 
+          dictionaryName={this.state.name}
+          dictionaryId={this.state.id}
+          dictionaries={this.props.dictionaries}
           updateDictionary={this.dictionary}
-          dictionary={this.getDictionaryData()}
-          words={this.state.words} 
+          words={[]}
           onDeleteWord={this.dictionary}
         />
       </Container>
@@ -219,3 +217,4 @@ class Dictionary extends Component {
 }
 
 export default withRouter(Dictionary);
+//words={this.state.words} 

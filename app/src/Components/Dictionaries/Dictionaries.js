@@ -16,10 +16,11 @@ class Dictionaries extends Component {
 
     this.state = {
       dictionaries: [], 
-      fetchInProgress: true
+      requestingData: true
     };
 
-    this._isMounted = false; 
+    this._isMounted = false;
+
     this.getWordsList = this.getWordsList.bind(this);
     this.openDictionary = this.openDictionary.bind(this);
     this.onSaveDictionary = this.onSaveDictionary.bind(this);
@@ -28,15 +29,15 @@ class Dictionaries extends Component {
 
   componentDidMount() {
     this._isMounted = true;
-    this._isMounted && this.allDictionaries();
+    this._isMounted && this.getDictionaries();
   }
 
   componentWillUnmount() {
     this._isMounted = false;
   }
 
-  allDictionaries() {
-    this.setState({fetchInProgress: true});
+  getDictionaries() {
+    this.setState({requestingData: true});
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
@@ -53,20 +54,20 @@ class Dictionaries extends Component {
         }        
         this.setState({
           dictionaries: data.dictionaries,
-          fetchInProgress: false
+          requestingData: false
         });
       },
       (error) => {
         console.log(error);
         this.setState({
-          fetchInProgress: false
+          requestingData: false
         });
       }
     );   
   }
 
   onSaveDictionary() {
-    this.allDictionaries(); 
+    this.getDictionaries(); 
   }
   
   openDictionary(id) {
@@ -161,14 +162,14 @@ class Dictionaries extends Component {
   }
 
   render() {
-    const fetchInProgress = this.state.fetchInProgress;
+    const requestingData = this.state.requestingData;
     return (
       <Container>             
         <h3>Dictionaries</h3>
         <NewDictionary 
           onSaveDictionary={this.onSaveDictionary}
         />
-        {fetchInProgress && <Spinner type='grow' color='dark' />}
+        {requestingData && <Spinner type='grow' color='dark' />}
         {this.getDictionaiesList()}      
       </Container>        
     );
