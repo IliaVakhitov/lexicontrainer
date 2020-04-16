@@ -142,7 +142,7 @@ class Symonyms extends Component {
             Get synonyms from Words API
           </PopoverBody>
         </Popover>
-        <InputGroupAddon style={{width:'11%'}} addonType='prepend'>
+        <InputGroupAddon style={{width:'15%'}} addonType='prepend'>
           <InputGroupText 
             className='w-100'
             tag='a' 
@@ -156,7 +156,7 @@ class Symonyms extends Component {
             Symonyms
           </InputGroupText>
         </InputGroupAddon>              
-        <div style={{width:'89%'}}>
+        <div style={{width:'85%'}}>
           <CreatableSelect 
             isClearable
             isMulti

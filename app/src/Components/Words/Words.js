@@ -12,8 +12,6 @@ class Words extends Component {
 
     this.state = {
       words: [],
-      wordsRender: [],
-      wordsRendered: 0,
       dictionaries: [],
       requestingData: false
     };
@@ -22,21 +20,13 @@ class Words extends Component {
 
     this.getWords = this.getWords.bind(this);
     this.getDictionaries = this.getDictionaries.bind(this);
-    this.renderWords = this.renderWords.bind(this);
-
+    
   }
 
   componentDidMount() {
     this._isMounted = true;
     this._isMounted && this.getWords();
     this._isMounted && this.getDictionaries();
-    this._isMounted && this.updateList();
-  }
-
-  updateList() {
-    this.myInterval = setInterval(() => {
-      this.renderWords();
-    }, 300); 
   }
 
   getDictionaries() {
@@ -102,7 +92,6 @@ class Words extends Component {
           wordsRender: [],
           wordsRendered: 0      
         });
-        this.updateList();
       },
       (error) => {
         console.log(error);
@@ -110,27 +99,10 @@ class Words extends Component {
     );   
   }
 
-  renderWords() {
-    let wordsRendered = this.state.wordsRendered;
-    if (wordsRendered + 5 < this.state.words.length - 1) {
-      wordsRendered += 5;
-    } else { 
-      wordsRendered = this.state.words.length - 1;
-    }
-    if (wordsRendered > 0 && wordsRendered === this.state.words.length - 1) {
-      clearInterval(this.myInterval);
-    }
-    this.setState({
-      wordsRender: this.state.words.slice(0, wordsRendered),
-      wordsRendered: wordsRendered
-    })
-  }
-
   render() {
-    const listItems = this.state.wordsRender.map(word => 
+    const listItems = this.state.words.map(word => 
         <ListGroupItem 
-          key={word.id}
-          style={{borderStyle: 'none'}}          
+          key={word.id}          
         >  
           <Word  
             dictionaries={this.state.dictionaries}   

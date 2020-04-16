@@ -163,7 +163,7 @@ class Definition extends Component {
             Get definition from Words API
           </PopoverBody>
         </Popover>
-        <InputGroupAddon  style={{width:'11%'}} addonType='prepend'>
+        <InputGroupAddon  style={{width:'15%'}} addonType='prepend'>
           <InputGroupText 
             className='w-100'
             tag='a' 
@@ -177,7 +177,7 @@ class Definition extends Component {
             Definition 
           </InputGroupText>
         </InputGroupAddon>     
-        <div style={{width:'89%'}}>
+        <div style={{width:'85%'}}>
           <CreatableSelect              
             isClearable
             isDisabled={this.state.requestingData}

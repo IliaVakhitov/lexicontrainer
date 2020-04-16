@@ -128,7 +128,7 @@ class NewWord extends Component {
             Cancel
           </Button>
           <InputGroup className='my-2'>
-            <InputGroupAddon style={{width:'11%'}} addonType='prepend'>
+            <InputGroupAddon style={{width:'15%'}} addonType='prepend'>
               <InputGroupText className='w-100'>Spelling</InputGroupText>
             </InputGroupAddon>        
               <Input 

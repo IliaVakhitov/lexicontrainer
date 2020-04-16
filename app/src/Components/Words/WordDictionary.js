@@ -103,7 +103,7 @@ class WordDictionary extends Component {
             Change dictionary
           </PopoverBody>
         </Popover>
-        <InputGroupAddon  style={{width:'11%'}} addonType='prepend'>
+        <InputGroupAddon  style={{width:'15%'}} addonType='prepend'>
           <InputGroupText 
             className='w-100'
             tag='a' 
@@ -117,7 +117,7 @@ class WordDictionary extends Component {
             Dictionary 
           </InputGroupText>
         </InputGroupAddon>     
-        <div style={{width:'89%'}}>
+        <div style={{width:'85%'}}>
           <Select    
             components={animatedComponents}          
             isDisabled={this.state.selectDisable}
