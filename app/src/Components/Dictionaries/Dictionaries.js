@@ -41,7 +41,7 @@ class Dictionaries extends Component {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/dicts/dictionaries', {
+    fetch('/dicts/dictionaries_list', {
       method: 'GET',
       headers: myHeaders
     })
@@ -78,6 +78,7 @@ class Dictionaries extends Component {
   }
 
   getWordsList(words) {
+
     if (words.length === 0) {
       return (<div>Nothing there! You can add new word!</div>);
     }
@@ -123,11 +124,10 @@ class Dictionaries extends Component {
             </Button>
             <p/>
             <UncontrolledCollapse toggler={'#words_togger'.concat(dict.id)}>
-              {this.getWordsList(dict.words)}          
+              this.getWordsList(dict.words)
             </UncontrolledCollapse> 
           </CardBody>              
-        </Card>      
-              
+        </Card>                 
       </ListGroupItem> 
     );
   }
