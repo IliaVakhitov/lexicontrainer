@@ -6,7 +6,7 @@ import { Container, Input, InputGroup,
 import { withRouter } from 'react-router-dom';
 
 import NewWord from '../../Components/Words/NewWord';
-import WordsTable from '../../Components/Words/WordsTable';
+import Words from '../../Components/Words/Words';
 
 
 class Dictionary extends Component {
@@ -17,9 +17,7 @@ class Dictionary extends Component {
       name: '',
       id: this.props.location.state.id,
       description: '',
-      dictionaries: [],
-      requestingData: true,
-      words: []
+      requestingData: true
     };
 
     this._isMounted = false; 
@@ -72,7 +70,6 @@ class Dictionary extends Component {
         this.setState({
           name: data.dictionary_name,
           description: data.description,
-          words: data.words,
           namePopover: false,
           requestingData: false
         });        
@@ -192,23 +189,15 @@ class Dictionary extends Component {
                 value={this.state.description}
                 onChange={this.updateState}
               />
-            </InputGroup>        
-            <NewWord 
-              dictionaryId={this.state.id}
-              dictionaries={this.state.dictionaries}
-              dictionaryName={this.state.name}
-              onSaveWord={this.dictionary}
-            />  
+            </InputGroup>
           </div>
         }      
-        <h4 className='my-3'>Words</h4>
         {requestingData && <Spinner type='grow' color='dark' />}
-        <WordsTable 
+        <Words 
           dictionaryName={this.state.name}
           dictionaryId={this.state.id}
           dictionaries={this.props.dictionaries}
           updateDictionary={this.dictionary}
-          words={[]}
           onDeleteWord={this.dictionary}
         />
       </Container>
@@ -217,4 +206,3 @@ class Dictionary extends Component {
 }
 
 export default withRouter(Dictionary);
-//words={this.state.words} 

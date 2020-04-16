@@ -14,12 +14,20 @@ class Main extends Component {
     super(props);
 
     this.state = {
-      newDictionary: false,
-      newWord: false  
+      dictionaries: [],
+      requestingData: false  
     };
+
+    this._isMounted = false;
+
     this.handleClick = this.handleClick.bind(this);
     this.onSaveDictionary = this.onSaveDictionary.bind(this);
     this.onSaveWord = this.onSaveWord.bind(this);
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
+    this._isMounted && this.getDictionaries();
   }
 
   handleClick(button) {
@@ -41,6 +49,38 @@ class Main extends Component {
     //this.props.history.push('/words');
   }
   
+  getDictionaries() {
+    this.setState({
+      requestingData: true,
+    });
+
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
+    fetch('/dicts/dictionaries_list', {
+      method: 'GET',
+      headers: myHeaders
+    })
+      .then(res => res.json())
+      .then(
+      (data) => {
+        if ('error' in data) {
+          console.log(data);
+          return;
+        }        
+        this.setState({
+          dictionaries: data.dictionaries,
+          requestingData: false
+        });
+      },
+      (error) => {
+        console.log(error);
+        this.setState({
+          requestingData: false
+        });
+      }
+    );  
+  }
 
   render() {
     const username = this.props.username;
@@ -109,9 +149,10 @@ class Main extends Component {
         </Row>
         <Row xs='1'>
           <Col>
-            <NewWord 
-              dictionary={null} 
-              onSaveWord={this.onSaveWord}
+            <NewWord  
+              dictionaryId={undefined}
+              dictionaries={this.state.dictionaries}
+              updateList={this.onSaveWord}
             />
           </Col>
         </Row>
