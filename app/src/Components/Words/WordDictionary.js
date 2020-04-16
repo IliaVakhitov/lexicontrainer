@@ -13,36 +13,44 @@ class WordDictionary extends Component {
     super(props);
 
     this.state = {
-      dictionary: {},
-      requestingData: false,
+      dictionaryName: '',
+      dictionaryId: 0,
       selectDisable: true,
       showPopover: false,
-      dictionaries: [],
       options: [] 
     };
 
     this._isMounted = false;
 
-    this.getDictionaries = this.getDictionaries.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.showPopover = this.showPopover.bind(this);
+    this.checkOptions = this.checkOptions.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+    this.updateOptions = this.updateOptions.bind(this);
+
   }
 
   componentDidMount() {
-    // TODO Send dictionaries list as props ??
+    const dictionaryId = this.props.dictionaryId;
+    const dictionaryName = this.props.dictionaryName;
     this._isMounted = true; 
-    const dictionary = this.props.dictionary;
-    if (dictionary) {
-      let value = this.createOption(dictionary.id, dictionary.dictionary_name);
+    if (this.props.dictionaryName) {
+      let value = this.createOption(dictionaryId, dictionaryName);
       this.setState({
         value: value,
-        dictionary: dictionary
+        dictionaryName: dictionaryName,
+        dictionaryId: dictionaryId,        
       });
     } else {
       this.setState({
         selectDisable: false
-      });
-      this.getDictionaries();
+      });      
+    }
+  }
+
+  checkOptions() {
+    if (this.props.dictionaries.length !== this.state.options.length) {
+      this.updateOptions();
     }
   }
   
@@ -50,40 +58,10 @@ class WordDictionary extends Component {
     this.setState({ showPopover: show });
   }
 
-  getDictionaries() {
+  handleClick(){
     this.setState({
-      requestingData: true,
       selectDisable: false
     });
-
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/dicts/dictionaries_list', {
-      method: 'GET',
-      headers: myHeaders
-    })
-      .then(res => res.json())
-      .then(
-      (data) => {
-        if ('error' in data) {
-          console.log(data);
-          return;
-        }        
-        this.setState({
-          dictionaries: data.dictionaries,
-          requestingData: false
-        });
-        this.updateOptions();
-      },
-      (error) => {
-        console.log(error);
-        this.setState({
-          requestingData: false
-        });
-      }
-    );  
-
   }
 
   handleChange(newValue){
@@ -97,7 +75,7 @@ class WordDictionary extends Component {
 
   updateOptions() {
     let options = [];
-    this.state.dictionaries.forEach(element => {
+    this.props.dictionaries.forEach(element => {
       let newOption = this.createOption(element.id, element.dictionary_name);
       options.push(newOption);
     });
@@ -133,7 +111,7 @@ class WordDictionary extends Component {
             id={'dictionary'.concat(this.props.id)}
             onMouseOver={() => this.showPopover(true)}
             onMouseLeave={() => this.showPopover(false)}
-            onClick={this.getDictionaries}
+            onClick={this.handleClick}
             style={{ cursor: 'pointer' }}
           >
             Dictionary 
@@ -145,6 +123,7 @@ class WordDictionary extends Component {
             isDisabled={this.state.selectDisable}
             isLoading={this.state.requestingData}
             onChange={this.handleChange} 
+            onMenuOpen={this.checkOptions}
             options={this.state.options}  
             value={this.state.value}       
           />           

@@ -14,7 +14,7 @@ class Word extends Component {
     super(props);
 
     this.state = {
-      dictionaryId: 0,
+      dictionaryId: null,
       spelling: '',
       definition: '',
       progress: 0,
@@ -39,9 +39,7 @@ class Word extends Component {
       definition: this.props.word.definition,
       progress: this.props.word.progress
     });
-    this.myInterval = setInterval(() => {
-      this.saveWord();
-    }, 2000);
+    
   }
 
   componentWillUnmount() {
@@ -80,7 +78,15 @@ class Word extends Component {
     });
   }
 
-  showCollapse() {
+  showCollapse() {    
+    if (!this.state.collapseOpen) {
+      this.myInterval = setInterval(() => {
+        this.saveWord();
+      }, 1000);
+    } else {
+      this.saveWord();
+      clearInterval(this.myInterval);
+    }
     this.setState({
       collapseOpen: !this.state.collapseOpen,
     });
@@ -106,7 +112,7 @@ class Word extends Component {
           console.log(data);
           return;
         }        
-        this.props.onDeleteWord();         
+        this.props.updateList();         
       },
       (error) => {
         console.log(error);
@@ -150,7 +156,7 @@ class Word extends Component {
           progress: 0
         });  
         if (this.state.updateDictionary) {
-          this.props.updateDictionary();
+          this.props.updateList();
         } 
       },
       (error) => {
@@ -205,9 +211,11 @@ class Word extends Component {
               synonyms={this.props.word.synonyms} 
             />  
             <WordDictionary 
+              dictionaries={this.props.dictionaries}
               updateDictionary={value => this.updateDictionary(value)}
               id={this.props.word.id} 
-              dictionary={this.props.dictionary}
+              dictionaryName={this.props.word.dictionary_name}
+              dictionaryId={this.state.dictionaryId}
             />           
             Progress: {this.state.progress}%          
             <Button 

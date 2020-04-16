@@ -11,11 +11,11 @@ class NewWord extends Component {
     super(props);
 
     this.state = {
-      dictionaryId: null,
+      dictionaryId: this.props.dictionaryId,
+      showDictionary: isNaN(this.props.dictionaryId),
       spelling: '',
       definition: '',
-      collapseOpen: false,
-      showDictionary: false
+      collapseOpen: false
     };
 
     this.addNewWord = this.addNewWord.bind(this);
@@ -24,14 +24,6 @@ class NewWord extends Component {
     this.changeCollapseOpen = this.changeCollapseOpen.bind(this);
   }
 
-  componentDidMount() {
-    
-    this.setState({
-      dictionaryId: (this.props.dictionary === null ? null : this.props.dictionary.id),
-      showDictionary: (this.props.dictionary === null)
-    });
-
-  }
 
   changeCollapseOpen() {
     this.setState({
@@ -54,7 +46,7 @@ class NewWord extends Component {
     if (!this.state.definition) {
       return;
     }
-    if (this.state.dictionaryId === null) {
+    if (isNaN(this.state.dictionaryId)) {
       console.log('Dictionary id is ' + this.state.dictionaryId)
       return;
     }
@@ -82,7 +74,7 @@ class NewWord extends Component {
           spelling: '',
           definition: '',
         });
-        this.props.onSaveWord();
+        this.props.updateList();
       },
       (error) => {
         console.log(error);
@@ -159,6 +151,9 @@ class NewWord extends Component {
           {this.state.showDictionary &&
             <WordDictionary
               id={0}
+              dictionaryName={this.props.dictionaryName}
+              dictionaryId={this.props.dictionaryId}
+              dictionaries={this.props.dictionaries}
               updateDictionary={value => this.updateDictionary(value)}
             />
           }
