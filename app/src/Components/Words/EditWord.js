@@ -2,7 +2,7 @@ import React from 'react';
 import { Component } from 'react';
 import { Input, Button, 
   InputGroup, InputGroupAddon, InputGroupText,
-  FormFeedback } from 'reactstrap'; 
+  FormFeedback, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'; 
 
 import Symonyms from './Symonyms';
 import Definition from './Definition';
@@ -18,7 +18,8 @@ class EditWord extends Component {
       definition: '',
       progress: 0,
       synonyms: '',
-      saved: true
+      saved: true,
+      modal: false
     };
 
     this.updateState = this.updateState.bind(this);
@@ -28,6 +29,7 @@ class EditWord extends Component {
     this.updateDefinition = this.updateDefinition.bind(this); 
     this.updateSynonyms = this.updateSynonyms.bind(this); 
     this.updateDictionary = this.updateDictionary.bind(this); 
+    this.showModal = this.showModal.bind(this); 
   }
 
   componentDidMount() {
@@ -70,8 +72,6 @@ class EditWord extends Component {
   }
 
   deleteWord(word_id) {
-    // TODO
-    // Show confirmation
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
@@ -145,6 +145,12 @@ class EditWord extends Component {
     );  
   }
 
+  showModal() {
+    this.setState({
+      modal: !this.state.modal      
+    });
+  }
+
   render() {    
 
     return ( 
@@ -208,12 +214,29 @@ class EditWord extends Component {
         <Button 
           className='float-right'
           outline 
-          onClick={() => this.deleteWord(this.props.word.id)}
+          onClick={this.showModal}
           color='danger'
         >
           Delete word
         </Button>            
-      
+        <Modal isOpen={this.state.modal} toggle={this.showModal}>
+            <ModalHeader>Delete word {this.state.spelling}?</ModalHeader>
+            <ModalBody>This cannot be undone!</ModalBody>
+            <ModalFooter>
+              <Button 
+                outline
+                className='mx-1 my-1'
+                color='danger' 
+                onClick={() => this.deleteWord(this.props.word.id)}
+              >
+                Delete
+              </Button>
+              <Button 
+                outline
+                className='mx-1 my-1'
+                color='secondary' onClick={this.showModal}>Cancel</Button>
+            </ModalFooter>
+          </Modal>
       </div>
     );
   }

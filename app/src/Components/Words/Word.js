@@ -1,7 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { Modal, Button, 
-  ModalHeader, ModalBody } from 'reactstrap'; 
+import { Modal, ModalHeader, ModalBody } from 'reactstrap'; 
 
 import EditWord from './EditWord';
   

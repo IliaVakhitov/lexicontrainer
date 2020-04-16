@@ -1,8 +1,9 @@
 import React from 'react';
 import { Component } from 'react';
 import { Container, Input, InputGroup, 
-  InputGroupAddon, InputGroupText, Button,
-  FormFeedback, Spinner} from 'reactstrap'
+  InputGroupAddon, InputGroupText,
+  FormFeedback, Spinner, Button,
+  Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap'
 import { withRouter } from 'react-router-dom';
 
 import NewWord from '../../Components/Words/NewWord';
@@ -17,7 +18,8 @@ class Dictionary extends Component {
       name: '',
       id: this.props.location.state.id,
       description: '',
-      requestingData: true
+      requestingData: true,
+      modal: false
     };
 
     this._isMounted = false; 
@@ -27,6 +29,7 @@ class Dictionary extends Component {
     this.updateState = this.updateState.bind(this);
     this.dictionary = this.dictionary.bind(this);
     this.deleteDictionary = this.deleteDictionary.bind(this);
+    this.showModal = this.showModal.bind(this);
   }
   
   componentDidMount() {
@@ -45,6 +48,16 @@ class Dictionary extends Component {
     });
   }
 
+  cancelEdit() {
+    this.props.history.push('/dictionaries');
+  }
+
+  showModal() {
+    this.setState({
+      modal: !this.state.modal      
+    });
+  }
+  
   dictionary() {
     this.setState({requestingData: true});
     if (isNaN(this.state.id)) {
@@ -82,8 +95,6 @@ class Dictionary extends Component {
   }
 
   deleteDictionary() {
-    // TODO
-    // Show confirmation
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
@@ -141,10 +152,6 @@ class Dictionary extends Component {
     );  
   }
 
-  cancelEdit() {
-    this.props.history.push('/dictionaries');
-  }
-
   render() {
     const requestingData = this.state.requestingData; 
     return (
@@ -153,15 +160,46 @@ class Dictionary extends Component {
           <Button outline 
             color='success' 
             onClick={this.saveDictionary}
-            className='mx-1 my-1'>Save</Button>
+            className='mx-1 my-1'
+          >
+            Save
+          </Button>
           <Button outline 
             color='secondary' 
             onClick={this.cancelEdit}
-            className='mx-1 my-1'>Cancel</Button>
+            className='mx-1 my-1'
+          >
+            Cancel
+          </Button>
           <Button outline 
             color='danger' 
-            onClick={this.deleteDictionary}
-            className='float-right mx-1 my-1'>Delete dictionary</Button>
+            onClick={this.showModal}
+            className='float-right mx-1 my-1'
+          >
+            Delete dictionary
+          </Button>
+          <Modal isOpen={this.state.modal} toggle={this.showModal}>
+            <ModalHeader>Delete dictionary {this.state.name}?</ModalHeader>
+            <ModalBody>This cannot be undone!</ModalBody>
+            <ModalFooter>
+              <Button 
+                outline
+                className='mx-1 my-1'
+                color='danger' 
+                onClick={this.deleteDictionary}
+              >
+                Delete
+              </Button>
+              <Button 
+                outline
+                className='mx-1 my-1'
+                color='secondary' 
+                onClick={this.showModal}
+              >
+                Cancel
+              </Button>
+            </ModalFooter>
+          </Modal>
         </div>
         {!requestingData &&
           <div>
