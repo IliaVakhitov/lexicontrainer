@@ -24,32 +24,6 @@ def verify_token(token):
 def token_auth_error():
     return error_response(401)
 
-@bp.route('/dictionaries', methods=['GET'])
-@token_auth.login_required
-def dictionaries():
-    """
-    List of dictionaries of current user
-    """
-    
-    # System delay
-    #time.sleep(1)
-
-    user = User.check_request(request)    
-    dictionaries = Dictionary.query\
-        .filter_by(user_id=user.id)\
-        .order_by('dictionary_name')
-
-    dicts = []
-    for dictionary in dictionaries:
-        dict_entry = dictionary.to_dict()        
-        words = [{
-            'id': w.id, 
-            'spelling': w.spelling
-        } for w in dictionary.words.all()]
-        dict_entry['words'] = words
-        dicts.append(dict_entry)
-    return {'dictionaries': dicts}
-
 
 @bp.route('/dictionaries_list', methods=['GET'])
 @token_auth.login_required
@@ -130,27 +104,6 @@ def dictionary():
     dictionary_id = request.headers.get('dictionary_id')
     dictionary = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
     dict_entry = dictionary.to_dict()  
-    words = []
-    for word in dictionary.words.all():
-        definitions = []
-        synonyms = []
-        definitions_query = Definitions.query.filter_by(spelling=word.spelling).all()
-        synonyms_query = Synonyms.query.filter_by(spelling=word.spelling).all()
-        for definition in definitions_query:
-            definitions.append(definition.definition)
-        for synonym in synonyms_query:
-            synonyms.append(synonym.synonym)
-        
-        words.append({
-            'id': word.id, 
-            'spelling': word.spelling,
-            'definition': word.definition,
-            'definitions': definitions,
-            'synonyms': synonyms,
-            'progress': 0 if word.learning_index is None else word.learning_index.index
-        })
-
-    dict_entry['words'] = words
     
     return dict_entry
 

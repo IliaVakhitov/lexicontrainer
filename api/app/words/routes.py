@@ -30,13 +30,43 @@ def all_words():
     
     user = User.check_request(request)
 
-    dictionaries = Dictionary.query.filter_by(user_id=user.id).all()
-    dict_ids = [d.id for d in dictionaries]
-    words_query = Word.query.\
+    
+    if 'dictionary_id' in request.headers:
+        dictionary_id = request.headers.get('dictionary_id')
+        dict_ids = [dictionary_id]
+    else:
+        dictionaries = Dictionary.query.filter_by(user_id=user.id).all()
+        dict_ids = [d.id for d in dictionaries]
+    
+    words_query = db.session.query(Word, Dictionary).\
+        filter(Dictionary.id == Word.dictionary_id).\
         filter(Word.dictionary_id.in_(dict_ids)).\
         order_by('spelling').all()
 
-    words = [word.to_dict() for word in words_query]
+    words = []
+    for word_entry in words_query:
+        word = word_entry[0]
+        dictionary = word_entry[1]
+        definitions = []
+        synonyms = []
+        definitions_query = Definitions.query.filter_by(spelling=word.spelling).all()
+        synonyms_query = Synonyms.query.filter_by(spelling=word.spelling).all()
+        for definition in definitions_query:
+            definitions.append(definition.definition)
+        for synonym in synonyms_query:
+            synonyms.append(synonym.synonym)
+        
+        words.append({
+            'id': word.id, 
+            'dictionary_id': word.dictionary_id, 
+            'dictionary_name': dictionary.dictionary_name, 
+            'spelling': word.spelling,
+            'definition': word.definition,
+            'definitions': definitions,
+            'synonyms': synonyms,
+            'progress': 0 if word.learning_index is None else word.learning_index.index
+        })
+
     return {'words': words}
 
 
