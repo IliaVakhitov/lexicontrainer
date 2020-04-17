@@ -25,6 +25,8 @@ class Dictionaries extends Component {
     this.openDictionary = this.openDictionary.bind(this);
     this.onSaveDictionary = this.onSaveDictionary.bind(this);
     this.getDictionaiesList = this.getDictionaiesList.bind(this);
+    this.getDictionary = this.getDictionary.bind(this);
+    this.getDictionaries = this.getDictionaries.bind(this);
   }
 
   componentDidMount() {
@@ -41,7 +43,7 @@ class Dictionaries extends Component {
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/dicts/dictionaries_list', {
+    fetch('/dicts/dictionaries', {
       method: 'GET',
       headers: myHeaders
     })
@@ -77,18 +79,31 @@ class Dictionaries extends Component {
     });
   }
 
-  getWordsList(words) {
+  getWordsList(words, dictionaryId) {
 
     if (words.length === 0) {
-      return (<div>Nothing there! You can add new word!</div>);
+      return (
+        <div>
+          Nothing there! You can add
+          <Button
+            className='mx-1 my-1'
+            outline 
+            color='dark'
+            onClick={() => this.openDictionary(dictionaryId)}    
+          >
+            New word
+          </Button>
+        </div>
+      );
     }
     const wordsList = words.map(word => 
       <Button 
         key={word.id}
         className='mx-1 my-1'
         outline 
-        color='dark'>
-          {word.spelling}
+        color='dark'
+      >
+        {word.spelling}
       </Button>     
     );
     return (
@@ -124,7 +139,7 @@ class Dictionaries extends Component {
             </Button>
             <p/>
             <UncontrolledCollapse toggler={'#words_togger'.concat(dict.id)}>
-              this.getWordsList(dict.words)
+              {this.getWordsList(dict.words, dict.id)}
             </UncontrolledCollapse> 
           </CardBody>              
         </Card>                 

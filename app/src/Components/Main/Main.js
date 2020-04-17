@@ -1,9 +1,7 @@
 import React from 'react';
 import { Component } from 'react';
-import { Container, Button, Row, Col } from 'reactstrap';
+import { Container } from 'reactstrap';
 import { withRouter } from 'react-router-dom';
-
-import TestComponent from '../../TestComponent';
 
 import NewWord from '../../Components/Words/NewWord';
 import NewDictionary from '../../Components/Dictionaries/NewDictionary';
@@ -89,78 +87,16 @@ class Main extends Component {
     return (
       <Container>
         <h3>{welcomeString}</h3>
-        <TestComponent />
-        <br />
-        <Row xs='2'>
-          <Col>
-            <Button
-              className='mx-1 my-1'
-              name='words'
-              outline
-              color='dark'
-              onClick={this.handleClick}
-            >
-              View words
-            </Button>
-          </Col>
-          <Col>
-            <Button
-              className='mx-1 my-1'
-              name='profile'
-              outline
-              color='dark'
-              onClick={this.handleClick}
-            >
-              View profile
-            </Button>
-          </Col>          
-        </Row>
-        <Row xs='2'>
-          <Col>
-            <Button
-              className='mx-1 my-1'
-              name='dictionaries'
-              outline
-              color='dark'
-              onClick={this.handleClick}
-            >
-              View dictionaries
-            </Button>
-          </Col>
-          <Col>
-          <Button
-              className='mx-1 my-1'
-              name='games'
-              outline
-              color='dark'
-              onClick={this.handleClick}
-            >
-              Play revision game
-            </Button>
-            
-          </Col>        
-        </Row>
-        <Row xs='1'>
-          <Col>
-            <NewDictionary 
-              onSaveDictionary={this.onSaveDictionary}
-            />
-          </Col>
-        </Row>
-        <Row xs='1'>
-          <Col>
-            <NewWord  
-              dictionaryId={undefined}
-              dictionaries={this.state.dictionaries}
-              updateList={this.onSaveWord}
-            />
-          </Col>
-        </Row>
-        <Row xs='1'>
-          <Col>
-            <h6>Random word</h6>
-          </Col>
-        </Row>
+          <NewDictionary 
+            onSaveDictionary={this.onSaveDictionary}
+          />
+          <NewWord  
+            dictionaryId={undefined}
+            dictionaries={this.state.dictionaries}
+            updateList={this.onSaveWord}
+          />
+        <h6>Random word</h6>
+        
       </Container>
     );
   }

@@ -51,6 +51,38 @@ def dictionaries_list():
     return {'dictionaries': dicts}
 
 
+@bp.route('/dictionaries', methods=['GET'])
+@token_auth.login_required
+def dictionaries():
+    """
+    List of dictionaries of current user to define game
+    """
+    
+    # System delay
+    #time.sleep(1)
+
+    user = User.check_request(request)    
+    dictionaries = Dictionary.query\
+        .filter_by(user_id=user.id)\
+        .order_by('dictionary_name')
+
+    dicts = []
+    for dictionary in dictionaries:
+        words = [{
+            'id': w.id, 
+            'spelling': w.spelling
+        } for w in dictionary.words.all()]
+
+        dict_entry = {
+            'id': dictionary.id,
+            'dictionary_name': dictionary.dictionary_name,
+            'words': words
+        }        
+        dicts.append(dict_entry)
+        
+    return {'dictionaries': dicts}
+
+
 @bp.route('/add_dictionary', methods=['POST'])
 @token_auth.login_required
 def add_dictionary():

@@ -37,7 +37,7 @@ class Word extends Component {
         <h5 style={{ cursor: 'pointer' }} 
           onClick={this.showModal}
         >
-          {this.props.word.spelling}{'  '}
+          <b>{this.props.word.spelling}</b>{'  '}
           <i color='secondary' style={{fontSize:'15px'}}>{this.props.word.definition}{'. '}</i>
           <span style={{fontSize:'16px'}}>{'Progress: '}{this.props.word.progress}{'%'}</span>
         </h5>                  

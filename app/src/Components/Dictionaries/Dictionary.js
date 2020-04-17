@@ -6,7 +6,6 @@ import { Container, Input, InputGroup,
   Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap'
 import { withRouter } from 'react-router-dom';
 
-import NewWord from '../../Components/Words/NewWord';
 import Words from '../../Components/Words/Words';
 
 
@@ -61,7 +60,7 @@ class Dictionary extends Component {
   dictionary() {
     this.setState({requestingData: true});
     if (isNaN(this.state.id)) {
-      console.log('Incorrect dictionary id '.concat(this.props.location.state.id));
+      console.log('Incorrect dictionary id '.concat(this.state.id));
       this.props.history.push('/dictionaries');
     }
     
@@ -90,8 +89,7 @@ class Dictionary extends Component {
       (error) => {
         console.log(error);
       }
-    );
-    
+    );    
   }
 
   deleteDictionary() {

@@ -70,6 +70,31 @@ def all_words():
     return {'words': words}
 
 
+@bp.route('/words_list', methods=['GET'])
+@token_auth.login_required
+def words_list():
+    
+    user = User.check_request(request)
+
+    words = []
+    if not 'dictionary_id' in request.headers:
+        return {'words': words}
+    dictionary_id = request.headers.get('dictionary_id')
+    dict_ids = [dictionary_id]
+    
+    words_query = db.session.query(Word).\
+        filter(Word.dictionary_id.in_(dict_ids)).\
+        order_by('spelling').all()
+
+    for word in words_query:
+        words.append({
+            'id': word.id, 
+            'spelling': word.spelling
+        })
+
+    return {'words': words}
+
+
 @bp.route('/get_definition', methods=['POST'])
 @token_auth.login_required
 def get_definition():
