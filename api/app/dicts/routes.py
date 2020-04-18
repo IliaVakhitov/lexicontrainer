@@ -1,18 +1,17 @@
 import time
-import json
 import logging
 from flask import request
 
-from flask import jsonify
 from flask_httpauth import HTTPTokenAuth
 from app.errors.handlers import error_response
 
 from app.dicts import bp
-from app.models import User, Dictionary, Word, Definitions, Synonyms
+from app.models import User, Dictionary
 from app import db
-from datetime import datetime
+
 
 token_auth = HTTPTokenAuth()
+
 
 @token_auth.verify_token
 def verify_token(token):

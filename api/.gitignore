@@ -3,6 +3,8 @@
 # testing
 /coverage
 
+# frontend build
+static/build/*
 
 # misc
 .DS_Store
@@ -24,6 +26,7 @@ instance/
 # Environments
 venv
 .env
+.env*
 .venv
 env/
 venv/

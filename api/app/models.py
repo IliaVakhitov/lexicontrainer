@@ -3,11 +3,9 @@ import os
 import base64
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
 
 from app.errors.handlers import error_response
 from app import db
-from app import login
 
 
 class LearningIndex(db.Model):
@@ -59,7 +57,7 @@ class Word(db.Model):
                 'learning_index': 0 if self.learning_index is None else self.learning_index.index}
 
 
-class User(UserMixin, db.Model):
+class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -226,6 +224,3 @@ class Dictionary(db.Model):
                 'dictionary_name': self.dictionary_name,
                 'description': self.description}
 
-@login.user_loader
-def load_user(id):
-    return User.query.get(int(id))

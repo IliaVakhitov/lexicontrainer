@@ -14,15 +14,14 @@ from app.main import bp
 from app import db
 from appmodel.words_api import WordsApi
 from datetime import datetime
+from flask import current_app
 
 
 @bp.route('/')
 @bp.route('/index')
-@login_required
-# TODO make index do not require login
-# TODO add page with information and link to login
 def index():
-    pass
+    logger.info('1')
+    return current_app.send_static_file('index.html')
 
 
 @bp.route('/time', methods=['GET'])

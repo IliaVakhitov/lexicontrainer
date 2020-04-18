@@ -62,12 +62,12 @@ def is_authenticated():
 
 
 @bp.route('/logout', methods=['POST'])
+@token_auth.login_required
 def logout():
     curr_user = User.check_request(request)
-    if current_user.is_authenticated:
-        current_user.revoke_token()
+    if curr_user:
+        curr_user.revoke_token()
         db.session.commit()
-        logout_user()
     return {'message': 'Logout successfull'} 
 
 
@@ -125,3 +125,5 @@ def user():
             'words': total_words,
             'words_learned': words_learned,
             'progress': progress}
+
+

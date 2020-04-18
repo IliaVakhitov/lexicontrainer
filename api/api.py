@@ -1,6 +1,7 @@
 from app import create_app, db
 from app.models import Word, Dictionary, LearningIndex, User
 
+
 app = create_app()
 
 
@@ -12,3 +13,4 @@ def make_shell_context():
             'Word': Word,
             'LearningIndex': LearningIndex,
             'Dictionary': Dictionary}
+
