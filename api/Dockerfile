@@ -13,7 +13,6 @@ RUN python -m venv venv
 RUN venv/bin/pip install -r requirements.txt
 RUN venv/bin/pip install gunicorn
 
-COPY .env_prod .env
 COPY config_prod.py config.py
 COPY app app
 COPY appmodel appmodel

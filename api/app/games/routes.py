@@ -1,18 +1,18 @@
-import time
 import json
 import logging
-from flask_httpauth import HTTPTokenAuth
-from flask import jsonify
+import time
+
 from flask import request
+from flask_httpauth import HTTPTokenAuth
 from sqlalchemy import func
 
-from app.games import bp
 from app import db
 from app.errors.handlers import error_response
-from app.models import User, CurrentGame, Word, Dictionary, Statistic, LearningIndex
+from app.games import bp
+from app.models import (CurrentGame, Dictionary, LearningIndex, Statistic,
+                        User, Word)
 from appmodel.game_generator import GameGenerator
 from appmodel.game_type import GameType
-
 
 token_auth = HTTPTokenAuth()
 
@@ -34,11 +34,11 @@ def check_current_game():
     user = User.check_request(request)
     revision_game_entry = CurrentGame.query.filter_by(
         user_id=user.id, game_completed=False).first()
-    
+
     if revision_game_entry is None:
         return {'current_game' : False,
                 'progress':0,
-                'game_type': ''} 
+                'game_type': ''}
 
     return {'current_game': True,
             'progress': revision_game_entry.get_progress(),
@@ -51,7 +51,7 @@ def remove_game():
     user = User.check_request(request)
     revision_game_entry = CurrentGame.query.filter_by(
         user_id=user.id, game_completed=False).first()
-    
+
     if revision_game_entry is not None:
         db.session.delete(revision_game_entry)
         db.session.commit()
@@ -66,7 +66,7 @@ def define_game():
     revision_game_entry = CurrentGame.query.filter_by(
         user_id=user.id, game_completed=False).first()
 
-    
+
     # Remove previous game
     if revision_game_entry is not None:
         db.session.delete(revision_game_entry)
@@ -92,7 +92,7 @@ def define_game():
             filter_by(user_id=user.id).\
             filter(Dictionary.id.in_(dict_ids)).\
             order_by('dictionary_name')
-    
+
     words_query = db.session.query(Word).filter(Word.dictionary_id.in_(dict_ids))
 
     if not include_learned_words:
@@ -107,8 +107,8 @@ def define_game():
     revision_game = GameGenerator.generate_game(words_query, game_type, word_limit)
     if revision_game is None:
         logger.info('Could not create game!')
-        flash('Could not create game! Not enough words to create game! Try to add dictionaries!')
-        return redirect(url_for('games.define_game'))
+        return {'result': 'Could not create game!'\
+                'Not enough words to create game! Try to add dictionaries!'}
 
     # Entry of current game to continue if not finished
     revision_game_entry = CurrentGame()
@@ -162,7 +162,7 @@ def check_answer():
     #time.sleep(0.5)
 
     user = User.check_request(request)
-    answer_index = request_data = request.get_json().get('answer_index')
+    answer_index = request.get_json().get('answer_index')
     revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
     return {'correct_index': revision_game_entry.get_correct_index(answer_index),
             'progress': revision_game_entry.get_progress()}
@@ -173,9 +173,11 @@ def check_answer():
 def statistic():
 
     user = User.check_request(request)
-    revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=True).first()
+    revision_game_entry = CurrentGame.query.\
+        filter_by(user_id=user.id, game_completed=True).first()
     if revision_game_entry is None:
-        revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
+        revision_game_entry = CurrentGame.query.\
+            filter_by(user_id=user.id, game_completed=False).first()
         if revision_game_entry is None:
             return {'redirect': '/games'}
         else:
@@ -197,7 +199,6 @@ def statistic():
     return {'total_rounds': total_rounds,
             'correct_answers': correct_answers,
             'game_type': revision_game_entry.game_type}
-    
+
 
 logger = logging.getLogger(__name__)
-

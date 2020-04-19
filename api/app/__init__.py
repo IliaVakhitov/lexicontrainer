@@ -1,12 +1,13 @@
 import logging
-from logging.handlers import RotatingFileHandler
 import os
+from logging.handlers import RotatingFileHandler
+
 from flask import Flask
 from flask_cors import CORS
-from config import Config
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 
+from config import Config
 
 # DB
 db = SQLAlchemy()
@@ -14,10 +15,11 @@ migrate = Migrate()
 
 
 def create_app(config_class=Config):
-    # Creating app
+    """Create app, define blueprints, set logger"""
+
     app = Flask(__name__, static_url_path='/', static_folder='static/build/')
     CORS(app)
-    
+
     app.config.from_object(config_class)
     db.init_app(app)
     migrate.init_app(app, db)
@@ -33,7 +35,7 @@ def create_app(config_class=Config):
     # Auth BP
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp, url_prefix='/auth')
-    
+
     # Dictionaries BP
     from app.dicts import bp as dicts_bp
     app.register_blueprint(dicts_bp, url_prefix='/dicts')
@@ -65,4 +67,3 @@ def create_app(config_class=Config):
 
 from app import models
 
-    

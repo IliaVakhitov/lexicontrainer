@@ -6,6 +6,9 @@
 # frontend build
 static/build/*
 
+#pylint
+.pylintrc
+
 # misc
 .DS_Store
 .env.local

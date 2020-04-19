@@ -1,3 +1,5 @@
 .vscode
 app/yarn.lock
 api/app/static/build/*
+.pylintrc
+pylint.res

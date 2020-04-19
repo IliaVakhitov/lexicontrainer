@@ -1,3 +1,5 @@
+""" Database model and methods to handle data """
+
 import json
 import os
 import base64
@@ -9,6 +11,8 @@ from app import db
 
 
 class LearningIndex(db.Model):
+    """Shows user progress in emembering word 0 < index < 100"""
+
     __tablename__ = 'learning_index'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -18,14 +22,18 @@ class LearningIndex(db.Model):
 
 
 class Synonyms(db.Model):
+    """Synonyms from words api for cache"""
+
     __tablename__ = 'synonyms'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     spelling = db.Column(db.String(250), index=True)
     synonym = db.Column(db.String(250))
 
 
 class Definitions(db.Model):
+    """Definitions from words api for cache"""
+
     __tablename__ = 'definitions'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -33,7 +41,32 @@ class Definitions(db.Model):
     definition = db.Column(db.String(550))
 
 
+class Dictionary(db.Model):
+    """Stores words list. Owned by user"""
+
+    __tablename__ = 'dictionaries'
+
+    id = db.Column(db.Integer, primary_key=True)
+    dictionary_name = db.Column(db.String(128))
+    description = db.Column(db.String(250))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    words = db.relationship('Word', cascade="all,delete",
+                            backref='Dictionary',
+                            lazy='dynamic',
+                            order_by="Word.spelling")
+
+    def __repr__(self):
+        return f'{self.dictionary_name}'
+
+    def to_dict(self):
+        return {'id': self.id,
+                'dictionary_name': self.dictionary_name,
+                'description': self.description}
+
+
 class Word(db.Model):
+    """Word represented as pair Spellng-Definition"""
+
     __tablename__ = 'words'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -41,23 +74,25 @@ class Word(db.Model):
     definition = db.Column(db.String(550))
     dictionary_id = db.Column(db.Integer, db.ForeignKey('dictionaries.id'))
     learning_index = db.relationship(
-        'LearningIndex', 
-        cascade="all,delete", 
-        uselist=False, 
+        'LearningIndex',
+        cascade="all,delete",
+        uselist=False,
         back_populates='word')
-    
+
     def __repr__(self):
         return f'<{self.spelling}>'
 
     def to_dict(self):
         return {'id': self.id,
                 'spelling': self.spelling,
-                'definition': self.definition,       
-                'dictionary_id': self.dictionary_id,       
+                'definition': self.definition,
+                'dictionary_id': self.dictionary_id,
                 'learning_index': 0 if self.learning_index is None else self.learning_index.index}
 
 
 class User(db.Model):
+    """Users table. Methods used for auth"""
+
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -85,7 +120,7 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-    
+
     def set_secret_answer(self, secret_answer):
         self.secret_answer_hash = generate_password_hash(secret_answer)
 
@@ -99,7 +134,7 @@ class User(db.Model):
         self.token = base64.b64encode(os.urandom(24)).decode('utf-8')
         self.token_expiration = now + timedelta(seconds=token_expires)
         db.session.add(self)
-        return self.token    
+        return self.token
 
     def revoke_token(self):
         self.token = None
@@ -111,8 +146,8 @@ class User(db.Model):
         user = User.query.filter_by(token=token).first()
         if user is None or user.token is None or user.token_expiration < datetime.utcnow():
             return None
-        return user   
-    
+        return user
+
     @staticmethod
     def check_request(request):
         if not 'Authorization' in request.headers:
@@ -127,7 +162,10 @@ class User(db.Model):
 
 
 class Statistic(db.Model):
+    """Statistic to show progress"""
+
     __tablename__ = 'statistic'
+    
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     game_type = db.Column(db.String(30))
@@ -137,7 +175,10 @@ class Statistic(db.Model):
 
 
 class CurrentGame(db.Model):
+    """Current game to continue. One for user"""
+
     __tablename__ = 'current_game'
+
     id = db.Column(db.Integer, primary_key=True)
     game_date_started = db.Column(db.DateTime, default=datetime.utcnow)
     game_date_completed = db.Column(db.DateTime)
@@ -170,7 +211,8 @@ class CurrentGame(db.Model):
 
     def get_correct_index(self, answer_index: int) -> int:
         current_round = self.get_current_round(False)
-        learning_index = LearningIndex.query.filter_by(id=current_round['learning_index_id']).first()
+        learning_index = LearningIndex.query.\
+            filter_by(id=current_round['learning_index_id']).first()
         if learning_index is None:
             learning_index = LearningIndex(word_id=current_round['word_id'], index=0)
             db.session.add(learning_index)
@@ -181,46 +223,26 @@ class CurrentGame(db.Model):
             learning_index.index += 10 if learning_index.index <= 90 else 0
         else:
             learning_index.index -= 10 if learning_index.index > 10 else 0
-            
+
         self.current_round += 1
         db.session.commit()
         return int(current_round['correct_index'])
 
-    def get_current_round(self, only_answers: True):
+    def get_current_round(self, only_answers):
         if self is None:
             return None
         if self.game_data is None:
             return None
         if self.game_completed:
             return None
+
         json_rounds = json.loads(self.game_data)
         current_round = json.loads(json_rounds['game_rounds'][self.current_round])
-        if only_answers: 
+
+        if only_answers:
             return {'value': current_round['value'],
                     'answers': current_round['answers']
                     }
         else:
             return current_round
-            
-
-
-class Dictionary(db.Model):
-    __tablename__ = 'dictionaries'
-
-    id = db.Column(db.Integer, primary_key=True)
-    dictionary_name = db.Column(db.String(128))
-    description = db.Column(db.String(250))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    words = db.relationship('Word', cascade="all,delete",
-                            backref='Dictionary',
-                            lazy='dynamic',
-                            order_by="Word.spelling")
-
-    def __repr__(self):
-        return f'{self.dictionary_name}'
-
-    def to_dict(self):
-        return {'id': self.id,
-                'dictionary_name': self.dictionary_name,
-                'description': self.description}
 

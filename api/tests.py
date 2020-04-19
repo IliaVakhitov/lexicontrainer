@@ -11,7 +11,6 @@ from appmodel.game_type import GameType
 from appmodel.revision_game import RevisionGame
 from config import Config
 from app.words.routes import get_definition
-from app.words.routes import get_synonyms
 
 
 class TestConfig(Config):
@@ -43,8 +42,6 @@ class WordModelCase(unittest.TestCase):
             db.session.add(word_i)
         db.session.commit()
 
-        # self.login_test_user(user)
-    
         # Add entry to current_game table
         word_limit = 10
         game_type = GameType.FindSpelling
@@ -66,17 +63,6 @@ class WordModelCase(unittest.TestCase):
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
-
-    def test_user_db(self):
-        with self.app_client:
-            # Arrange
-            self.login_test_user('Test', 'Test')
-            # Act
-            user = User.query.filter_by(username='Test').first()
-            # Assert
-            # TODO self.assertEqual(current_user, user, 'User should Test')
-            # self.assertIsNotNone(current_user, 'User could not be None')
-            # TODO self.assertEqual(current_user.username, 'Test', 'Username should be \'Test\'')
 
     def test_user_dictionary(self):
         # Arrange
@@ -117,40 +103,6 @@ class WordModelCase(unittest.TestCase):
                          self.round_i.learning_index_value,
                          f'Learning_index_value should be equal')
 
-    def test_synonym(self):
-        # Arrange
-        word_house = Word(spelling='house', definition='test word house')
-        word_home = Word(spelling='home', definition='test word home')
-
-        # Act
-        db.session.add(word_house)
-        db.session.add(word_home)
-        db.session.commit()
-
-        # Assert
-        self.assertEqual(word_house.synonyms.all(), [])
-        self.assertEqual(word_home.synonyms.all(), [])
-
-        # Act
-        word_house.add_synonym(word_home)
-        db.session.commit()
-
-        # Assert
-        self.assertTrue(word_house.is_synonym(word_home))
-        self.assertEqual(word_house.words_synonyms.count(), 1)
-        self.assertEqual(word_house.words_synonyms.first().spelling, 'home')
-        self.assertEqual(word_home.synonyms.count(), 1)
-        self.assertEqual(word_home.synonyms.first().spelling, 'house')
-
-        # Act
-        word_house.remove_synonym(word_home)
-        db.session.commit()
-
-        # Assert
-        self.assertFalse(word_house.is_synonym(word_home))
-        self.assertEqual(word_house.words_synonyms.count(), 0)
-        self.assertEqual(word_home.words_synonyms.count(), 0)
-
     def test_game_generator(self):
         # Arrange
         # data filled in SetUp()
@@ -179,11 +131,6 @@ class WordModelCase(unittest.TestCase):
         # Assert
         self.assertEqual(len(revision_game.game_rounds), len(revision_game1.game_rounds), 'Len should be equal')
 
-    def test_pages_no_login(self):
-        pass
-
-    def test_pages_login_required(self):
-        pass
 
     def test_dictionaries(self):
         # Arrange
@@ -201,12 +148,7 @@ class WordModelCase(unittest.TestCase):
         res = json.loads(response.data)
         # self.assertTrue(res['name_available'])
 
-    def login_test_user(self, username, password):
-        pass
-
-    def test_route(self):
-        print(get_synonyms())
-
+   
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

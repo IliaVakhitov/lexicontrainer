@@ -14,6 +14,7 @@ from app.errors.handlers import error_response
 
 token_auth = HTTPTokenAuth()
 
+
 @token_auth.verify_token
 def verify_token(token):
     curr_user = User.check_token(token) if token else None
@@ -24,13 +25,13 @@ def verify_token(token):
 def token_auth_error():
     return error_response(401)
 
+
 @bp.route('/all_words', methods=['GET'])
 @token_auth.login_required
 def all_words():
     
     user = User.check_request(request)
 
-    
     if 'dictionary_id' in request.headers:
         dictionary_id = request.headers.get('dictionary_id')
         dict_ids = [dictionary_id]
@@ -77,7 +78,7 @@ def words_list():
     user = User.check_request(request)
 
     words = []
-    if not 'dictionary_id' in request.headers:
+    if 'dictionary_id' not in request.headers:
         return {'words': words}
     dictionary_id = request.headers.get('dictionary_id')
     dict_ids = [dictionary_id]

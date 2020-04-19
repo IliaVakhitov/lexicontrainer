@@ -1,10 +1,7 @@
 import time
 from flask import request
-from flask import g
-from sqlalchemy import func
 from flask_httpauth import HTTPBasicAuth
 from flask_httpauth import HTTPTokenAuth
-from flask_login import current_user, login_required, logout_user,login_user
 from app import db
 from app.models import User, Dictionary, Word, LearningIndex
 from app.auth import bp
@@ -125,5 +122,4 @@ def user():
             'words': total_words,
             'words_learned': words_learned,
             'progress': progress}
-
 
