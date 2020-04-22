@@ -1,4 +1,3 @@
-import time
 from flask import request
 from flask_httpauth import HTTPBasicAuth
 from flask_httpauth import HTTPTokenAuth
@@ -14,33 +13,44 @@ token_auth = HTTPTokenAuth()
 
 @token_auth.verify_token
 def verify_token(token):
+    """Basic auth method"""
+
     curr_user = User.check_token(token) if token else None
+    
     return curr_user is not None
 
 
 @token_auth.error_handler
 def token_auth_error():
+    """Basic auth method"""
+
     return error_response(401)
 
 
 @basic_auth.verify_password
 def verify_password(username, password):
-    user = User.query.filter_by(username=username).first()
-    if user is None:
+    """Basic auth method"""
+
+    db_user = User.query.filter_by(username=username).first()
+    if db_user is None:
         return False
-    password_check = user.check_password(password)
+    password_check = db_user.check_password(password)
     
     return password_check 
 
 
 @basic_auth.error_handler
 def auth_error():
+    """Basic auth method"""
+
     return error_response(401)
 
 
 @bp.route('/token', methods=['POST'])
 @basic_auth.login_required
 def get_token():
+    """Create new token for user"""
+
     username = request.get_json().get('username')
     curr_user = User.query.filter_by(username=username).first()
     token = curr_user.get_token()
@@ -51,25 +61,32 @@ def get_token():
 
 @bp.route('/is_authenticated', methods=['GET'])
 def is_authenticated():
+    """Check if token for is not expired"""
+
     curr_user = User.check_request(request)
-    is_authenticated = curr_user is not None
-    username = curr_user.username if is_authenticated else None 
-    return {'is_authenticated': is_authenticated,
+    user_is_authenticated = curr_user is not None
+    username = curr_user.username if user_is_authenticated else None 
+    return {'is_authenticated': user_is_authenticated,
             'username': username}
 
 
 @bp.route('/logout', methods=['POST'])
 @token_auth.login_required
 def logout():
+    """Revoke user token"""
+
     curr_user = User.check_request(request)
     if curr_user:
         curr_user.revoke_token()
         db.session.commit()
+
     return {'message': 'Logout successfull'} 
 
 
 @bp.route('/register', methods=['POST'])
 def register():
+    """Create new user entry and new token for user"""
+
     request_data = request.get_json()
     new_user = User(username=request_data.get('username'))
     new_user.secret_question = request_data.get('secret_question')
@@ -86,17 +103,12 @@ def register():
 @bp.route('/user', methods=['GET'])
 @token_auth.login_required
 def user():
-    """
-    Return information about user
-    """
+    """Return information about user"""
 
-    # System delay
-    #time.sleep(1)
-
-    user = User.check_request(request)
+    db_user = User.check_request(request)
     
     # All user dictionaries
-    dictionaries = Dictionary.query.filter_by(user_id=user.id).all()
+    dictionaries = Dictionary.query.filter_by(user_id=db_user.id).all()
     dict_ids = [d.id for d in dictionaries]
 
     # All words from all dictionaries
@@ -117,7 +129,7 @@ def user():
         progress = round(index_progress / total_words, 2)
     else:
         progress = 0
-    return {'username': user.username,
+    return {'username': db_user.username,
             'dictionaries': total_dictionaries,
             'words': total_words,
             'words_learned': words_learned,

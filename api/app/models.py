@@ -151,13 +151,11 @@ class User(db.Model):
     @staticmethod
     def check_request(request):
         if not 'Authorization' in request.headers:
-            return error_response(400)
+            return None
 
         request_token = request.headers.get('Authorization').replace('Bearer ', '')
         user = User.check_token(request_token)
-        if user is None:
-            return error_response(401)
-
+        
         return user
 
 
