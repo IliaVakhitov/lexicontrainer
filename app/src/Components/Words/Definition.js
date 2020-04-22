@@ -99,20 +99,13 @@ class Definition extends Component {
       .then(res => res.json())
       .then(
       (data) => {
-        if ('error' in data) {
+        if ('error' in data || 'message' in data) {
           console.log(data); 
           this.setState({
             requestingData: false
           });
           return;
         }       
-        if ('message' in data) {
-          console.log(data); 
-          this.setState({
-            requestingData: false
-          });
-          return; 
-        }
         this.setState({
           definitions: data.definitions,
           requestingData: false
