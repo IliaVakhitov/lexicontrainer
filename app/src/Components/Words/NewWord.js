@@ -1,7 +1,7 @@
 import React from 'react';
 import { Component } from 'react';
 import { Input,InputGroup, InputGroupAddon, InputGroupText, 
-  Button, Collapse } from 'reactstrap';
+  Button, Collapse,PopoverHeader,PopoverBody, Popover } from 'reactstrap';
 
 import Definition from './Definition';
 import WordDictionary from './WordDictionary';
@@ -15,13 +15,16 @@ class NewWord extends Component {
       showDictionary: isNaN(this.props.dictionaryId),
       spelling: '',
       definition: '',
-      collapseOpen: false
+      collapseOpen: false,
+      popoverText: '',
+      showPopover: false
     };
 
     this.addNewWord = this.addNewWord.bind(this);
     this.updateState = this.updateState.bind(this);
     this.updateDefinition = this.updateDefinition.bind(this);
     this.changeCollapseOpen = this.changeCollapseOpen.bind(this);
+    this.showPopover = this.showPopover.bind(this);
   }
 
 
@@ -36,6 +39,30 @@ class NewWord extends Component {
   updateState(event) {
     this.setState({
       [event.target.name]: event.target.value
+    });
+  }
+
+  showPopover(show) {
+    let popoverText = '';
+    let hasEmpty = false;
+    if (!this.state.spelling) {
+      popoverText = 'spelling'
+      hasEmpty = true;
+    }
+    if (!this.state.definition) {
+      popoverText += (popoverText !== '' ? ', ' : '');
+      popoverText += 'definition';
+      hasEmpty = true;
+    }
+    if (!this.state.dictionaryId) {
+      popoverText += (popoverText !== '' ? ', ' : '');
+      popoverText += 'dictionary';
+      hasEmpty = true;
+    }
+    popoverText = 'Please, fill out ' + popoverText + '!';
+    this.setState({
+      showPopover: show && hasEmpty,
+      popoverText: popoverText
     });
   }
 
@@ -108,12 +135,30 @@ class NewWord extends Component {
           Add new word
         </Button>
         <Collapse isOpen={this.state.collapseOpen}>
+          <Popover
+            placement='top'
+            isOpen={this.state.showPopover}
+            target='btnSave'
+          >
+            <PopoverHeader>
+              Empty fields
+            </PopoverHeader>
+            <PopoverBody>
+              {this.state.popoverText}
+            </PopoverBody>
+          </Popover>
           <Button 
             className='my-1 mx-1' 
             outline 
+            id='btnSave'
+            onMouseOver={() => this.showPopover(true)}
+            onMouseLeave={() => this.showPopover(false)}
             color='success'
             hidden={!this.state.collapseOpen}
-            disabled={!this.state.spelling || ! this.state.definition}
+            disabled={!this.state.spelling 
+              || ! this.state.definition 
+              || (isNaN(this.state.dictionaryId))
+            }
             onClick={this.addNewWord}
           >
             Save
