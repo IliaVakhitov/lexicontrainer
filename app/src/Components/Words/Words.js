@@ -20,7 +20,7 @@ class Words extends Component {
 
     this.getWords = this.getWords.bind(this);
     this.getDictionaries = this.getDictionaries.bind(this);
-    
+    this.fetchData = fetchData.bind(this);
   }
 
   componentDidMount() {
@@ -40,28 +40,10 @@ class Words extends Component {
       requestingData: true,
     });
 
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/dicts/dictionaries_list', {
-      method: 'GET',
-      headers: myHeaders
-    })
-      .then(res => res.json())
-      .then(
-      (data) => {
-        if ('error' in data) {
-          console.log(data);
-          return;
-        }        
+    this.fetchData('/dicts/dictionaries_list')
+      .then((data) => {
         this.setState({
           dictionaries: data.dictionaries,
-          requestingData: false
-        });
-      },
-      (error) => {
-        console.log(error);
-        this.setState({
           requestingData: false
         });
       }
@@ -70,31 +52,17 @@ class Words extends Component {
 
   getWords() {
     
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token')); 
-    if (!isNaN(this.props.dictionaryId)) {
+    let myHeaders = new Headers();
+    if (!isNaN(this.props.dictionaryId)) {      
       myHeaders.append('dictionary_id', this.props.dictionaryId);  
     }
-    fetch('/words/all_words', {
-      method: 'GET',
-      headers: myHeaders
-    })
-      .then(res => res.json())
-      .then(
-      (data) => {
-        if ('error' in data) {
-          console.log(data);
-          return;
-        }
+    this.fetchData('/words/all_words', 'GET', myHeaders)
+      .then((data) => {        
         this.setState({ 
           words: data.words,
           wordsRender: [],
           wordsRendered: 0      
         });
-      },
-      (error) => {
-        console.log(error);
       }
     );   
   }

@@ -4,6 +4,7 @@ import { Input, InputGroupAddon, InputGroup, InputGroupText, Container,
   FormGroup, Label, Form, Button } from 'reactstrap';
 
 import { withRouter } from 'react-router-dom';
+import fetchData from '../../Utils/fetchData';
 
 class Login extends Component {
   constructor(props) {
@@ -50,26 +51,13 @@ class Login extends Component {
       });
       return;
     }
-    var myHeaders = new Headers();
+    let myHeaders = new Headers();
     myHeaders.append('Authorization', 'Basic ' + btoa(this.state.username+':'+this.state.password));
-    myHeaders.append('Content-Type', 'application/json');
-    fetch('/auth/token', {
-      method: 'POST',
-      credentials: 'include',
-      headers: myHeaders,
-      body: JSON.stringify({
-        username: this.state.username
-      })
-    })
-      .then(res => res.json())
-      .then((data) => {        
-        if ('error' in data) {
-          console.log(data);
-          // TODO
-          // Show message
-          this.setState({ loginError: true });
-          return;
-        } 
+    const body = JSON.stringify({
+      username: this.state.username
+    });
+    this.fetchData('/auth/token', 'POST', myHeaders, body)
+      .then((data) => {         
         this.setState({
           username: '',
           password: ''
@@ -79,12 +67,7 @@ class Login extends Component {
           localStorage.setItem('rememberMe', 'true');
         }        
         this.props.onLogin(data.username);
-        this.props.history.push('/');
-        
-      },
-      (error) => {
-        console.log(error);
-        return;
+        this.props.history.push('/');        
       }
     );      
   }

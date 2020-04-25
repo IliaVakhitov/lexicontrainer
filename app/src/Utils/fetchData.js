@@ -1,12 +1,7 @@
 
-function handleErrors(response){
-  console.log(response.statusText)
-  return {'error' : response.statusText};   
-}
+export default async function fetchData(url, method = 'GET', headers = [], body = null) {
 
-async function fetchData(url, method = 'GET', headers = [], body = null) {
-
-  var myHeaders = new Headers();
+  let myHeaders = new Headers();
   myHeaders.append('Content-Type', 'application/json');
   myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
   headers.forEach(header => {
@@ -15,23 +10,22 @@ async function fetchData(url, method = 'GET', headers = [], body = null) {
   
   const response = await fetch(url, {
       method: method,
+      credentials: 'include',
       headers: myHeaders,
       body: body
   });    
   if (!response.ok || response.status !== 200) {
-    return handleErrors(response);
+    this.props.history.push({
+      pathname:'/error', 
+      state: { error: response.statusText}
+    });
   }
-  return response.json();
-}
-
-
-function checkError(data) {    
+  const data = response.json();
   if ('error' in data) {
     this.props.history.push({
       pathname:'/error', 
       state: { error: data.error}
     });
-  }    
+  } 
+  return data;
 }
-
-export { checkError, fetchData };

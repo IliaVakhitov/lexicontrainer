@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-dom';
 import NewWord from '../Words/NewWord';
 import NewDictionary from '../Dictionaries/NewDictionary';
 
-import { fetchData, checkError } from '../../Utils/fetchData';
+import fetchData from '../../Utils/fetchData';
 
 class Index extends Component {
   
@@ -23,7 +23,7 @@ class Index extends Component {
     this.handleClick = this.handleClick.bind(this);
     this.onSaveDictionary = this.onSaveDictionary.bind(this);
     this.onSaveWord = this.onSaveWord.bind(this);
-    this.checkError = checkError.bind(this);
+    this.fetchData = fetchData.bind(this);
   }
 
   componentDidMount() {
@@ -60,9 +60,8 @@ class Index extends Component {
       requestingData: true,
     });
 
-    fetchData('/dicts/dictionaries_list')
+    this.fetchData('/dicts/dictionaries_list')
       .then((data) => {
-        this.checkError(data);
         this.setState({
           dictionaries: data.dictionaries,
           requestingData: false

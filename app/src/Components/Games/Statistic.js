@@ -2,6 +2,7 @@ import React from 'react';
 import { Component } from 'react';
 import { Container } from 'reactstrap';
 
+import fetchData from '../../Utils/fetchData';
 
 class Statistic extends Component {
   constructor(props) {
@@ -13,18 +14,19 @@ class Statistic extends Component {
       game_type: ''  
     };
 
-    this.get_statistic();
+    this._isMounted = false;
+
+    this.fetchData = fetchData.bind(this);
+    
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
+    this._isMounted && this.get_statistic();
   }
 
   get_statistic() {
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
-    fetch('/games/statistic', {
-      method: 'GET',
-      headers: myHeaders
-    })
-      .then(res => res.json())
+    this.fetchData('/games/statistic') 
       .then((data) => {
         if ('redirect' in data) {
           this.props.history.push(data.redirect);  
@@ -36,9 +38,6 @@ class Statistic extends Component {
             game_type: data.game_type
           }); 
         }        
-      },
-      (error) => {
-        console.log(error);
       }
     ); 
   }

@@ -2,6 +2,8 @@ import React from 'react';
 import { Component } from 'react';
 import { Container, Spinner } from 'reactstrap';
 
+import fetchData from '../../Utils/fetchData';
+
 class Profile extends Component {
   constructor(props) {
     super(props);
@@ -17,7 +19,7 @@ class Profile extends Component {
 
     this._isMounted = false;
 
-    
+    this.fetchData = fetchData.bind(this);    
   }
   componentDidMount() {
     this._isMounted = true;
@@ -32,14 +34,7 @@ class Profile extends Component {
     this.setState({
       requestingData: true
     });
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));    
-    fetch('auth/user',{
-      method: 'GET',
-      headers: myHeaders
-    })
-      .then(res => res.json())
+    this.fetchData('/auth/user')
       .then((data) => {
         this.setState({
           dictionaries: data.dictionaries,
@@ -47,12 +42,6 @@ class Profile extends Component {
           progress: data.progress,
           wordsLearned: data.words_learned,
           username: data.username,
-          requestingData: false
-        });
-      },
-      (error) => {
-        console.log(error);
-        this.setState({
           requestingData: false
         });
       }

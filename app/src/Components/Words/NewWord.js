@@ -5,6 +5,7 @@ import { Input,InputGroup, InputGroupAddon, InputGroupText,
 
 import Definition from './Definition';
 import WordDictionary from './WordDictionary';
+import fetchData from '../../Utils/fetchData';
 
 class NewWord extends Component {
   constructor(props) {
@@ -25,6 +26,7 @@ class NewWord extends Component {
     this.updateDefinition = this.updateDefinition.bind(this);
     this.changeCollapseOpen = this.changeCollapseOpen.bind(this);
     this.showPopover = this.showPopover.bind(this);
+    this.fetchData = fetchData.bind(this);
   }
 
 
@@ -77,37 +79,20 @@ class NewWord extends Component {
       console.log('Dictionary id is ' + this.state.dictionaryId)
       return;
     }
-
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/words/add_word', {
-      method: 'POST',
-      headers: myHeaders,
-      body: JSON.stringify({
-        'dictionary_id': this.state.dictionaryId,  
-        'spelling': this.state.spelling,  
-        'definition': this.state.definition
-      })
-    })
-      .then(res => res.json())
-      .then(
-      (data) => {
-        if ('error' in data) {
-          console.log(data);
-          return;
-        }        
+    const body = JSON.stringify({
+      'dictionary_id': this.state.dictionaryId,  
+      'spelling': this.state.spelling,  
+      'definition': this.state.definition
+    });
+    this.fetchData('/words/add_word', 'POST', [], body)
+      .then(() => {        
         this.setState({
           spelling: '',
           definition: '',
         });
         this.props.updateList();
-      },
-      (error) => {
-        console.log(error);
       }
-    ); 
-    
+    );     
   }
 
   updateDictionary(id) {

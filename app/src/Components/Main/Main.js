@@ -3,7 +3,7 @@ import { Component } from 'react';
 import MyNavBar from './MyNavBar';
 import Routes from './Routes';
 
-import { fetchData } from "../../Utils/fetchData";
+import fetchData from "../../Utils/fetchData";
 
 class Main extends Component {
   
@@ -17,6 +17,7 @@ class Main extends Component {
 
     this.onLogout = this.onLogout.bind(this);
     this.onLogin = this.onLogin.bind(this);   
+    this.fetchData = fetchData.bind(this);   
   }
  
   componentDidMount() {
@@ -50,7 +51,7 @@ class Main extends Component {
       return;  
     }
 
-    fetchData('/auth/is_authenticated')
+    this.fetchData('/auth/is_authenticated')
       .then((data) => {
         this.setState({
           isLoggedIn: data.is_authenticated,

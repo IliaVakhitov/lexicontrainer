@@ -5,6 +5,8 @@ import { InputGroup, InputGroupAddon, InputGroupText,
 
 import CreatableSelect from 'react-select/creatable';
 
+import fetchData from '../../Utils/fetchData';
+
 class Symonyms extends Component {
   constructor(props) {
     super(props);
@@ -22,6 +24,7 @@ class Symonyms extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleCreate = this.handleCreate.bind(this);
     this.checkOptions = this.checkOptions.bind(this);
+    this.fetchData = fetchData.bind(this);
   }
 
   componentDidMount() {
@@ -71,26 +74,11 @@ class Symonyms extends Component {
       return;
     }
     this.setState({ requestingData: true });
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/words/get_synonyms', {
-      method: 'POST',
-      headers: myHeaders,
-      body: JSON.stringify({
-        'spelling': spelling
-      })
-    })
-      .then(res => res.json())
-      .then(
-      (data) => {
-        if ('error' in data) {
-          console.log(data);
-          this.setState({
-            requestingData: false
-          }); 
-          return;
-        }       
+    const body = JSON.stringify({
+      'spelling': spelling
+    });
+    this.fetchData('/words/get_synonyms', 'POST', [], body)    
+      .then((data) => {     
         if ('message' in data) {
           console.log(data);
           this.setState({
@@ -103,15 +91,8 @@ class Symonyms extends Component {
           requestingData: false
         });
         this.updateOptions();
-      },
-      (error) => {
-        console.log(error);
-        this.setState({
-          requestingData: false
-        }); 
       }
-    ); 
-    
+    );     
   }
 
   handleChange(newValue){

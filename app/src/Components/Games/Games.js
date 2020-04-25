@@ -6,6 +6,8 @@ import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { withRouter } from 'react-router-dom';
 
+import fetchData from '../../Utils/fetchData';
+
 const animatedComponents = makeAnimated();
 
 class Games extends Component {
@@ -33,6 +35,7 @@ class Games extends Component {
     this.resumeGame = this.resumeGame.bind(this);
     this.checkOptions = this.checkOptions.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.fetchData = fetchData.bind(this);
 
   }
 
@@ -78,43 +81,18 @@ class Games extends Component {
   }
 
   removeGame() {
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
-    fetch('/games/remove_game', {
-      method: 'DELETE',
-      credentials: 'include',
-      headers: myHeaders
-    })
-      .then(res => res.json())
+    this.fetchData('/games/remove_game', 'DELETE')
       .then((data) => {
-        if( 'result' in data) {
+        if('result' in data) {
           this.setState({ currentGame: false });
-        } else {
-          console.log(data);
         }
-      },
-      (error) => {
-        console.log(error);
       }
     );   
   }
 
   checkCurrentGame() {
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
-    fetch('/games/check_current_game', {
-      method: 'GET',
-      credentials: 'include',
-      headers: myHeaders
-    })
-      .then(res => res.json())
+    this.fetchData('/games/check_current_game')
       .then((data) => {
-        if ('error' in data) {
-          console.log(data);
-          return;
-        } 
         if( 'currentGame' in data) {
           this.setState({
             currentGame: data.current_game,
@@ -122,9 +100,6 @@ class Games extends Component {
             progress: data.progress
           }); 
         }
-      },
-      (error) => {
-        console.log(error);
       }
     ); 
   }
@@ -150,53 +125,27 @@ class Games extends Component {
     if (this.state.gameRounds < 4) {
       return;
     }
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
-    fetch('/games/define_game', {
-      method: 'POST',
-      credentials: 'include',
-      headers: myHeaders,
-      body: JSON.stringify({
-        'game_type':this.state.gameType,
-        'game_rounds':this.state.gameRounds,
-        'include_learned_words':this.state.includeLearned,
-        'dictionaries':this.state.selectedDictionaries,
-      })
-    })
-      .then(res => res.json())
-      .then((data) => {
+    const body = JSON.stringify({
+      'game_type':this.state.gameType,
+      'game_rounds':this.state.gameRounds,
+      'include_learned_words':this.state.includeLearned,
+      'dictionaries':this.state.selectedDictionaries,
+    });
+    this.fetchData('/games/check_current_game', 'POST', [], body)
+      .then(() => {
         this.props.history.push('/play');
-      },
-      (error) => {
-        console.log(error);
       }
     );         
   }
 
   dictionaries() {
 
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/dicts/dictionaries_list', {
-      method: 'GET',
-      headers: myHeaders
-    })
-      .then(res => res.json())
-      .then(
-      (data) => {
-        if ('error' in data) {
-          console.log(data);
-          return;
-        }        
+    this.fetchData('/dicts/dictionaries_list')
+      .then((data) => {        
         this.setState({
           dictionaries: data.dictionaries,
         });
         this.updateOptions();
-      },
-      (error) => {
-        console.log(error);
       }
     );   
   }

@@ -5,6 +5,8 @@ import { InputGroup, InputGroupAddon, InputGroupText,
 
 import CreatableSelect from 'react-select/creatable';
 
+import fetchData from '../../Utils/fetchData';
+
 class Definition extends Component {
   constructor(props) {
     super(props);
@@ -24,6 +26,7 @@ class Definition extends Component {
     this.handleCreate = this.handleCreate.bind(this);
     this.updateOptions = this.updateOptions.bind(this);
     this.checkOptions = this.checkOptions.bind(this);
+    this.fetchData = fetchData.bind(this);
     
     this._isMounted = false; 
   }
@@ -86,20 +89,12 @@ class Definition extends Component {
       return;
     }
     this.setState({ requestingData: true });
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/words/get_definition', {
-      method: 'POST',
-      headers: myHeaders,
-      body: JSON.stringify({
-        'spelling': spelling
-      })
-    })
-      .then(res => res.json())
-      .then(
-      (data) => {
-        if ('error' in data || 'message' in data) {
+    const body = JSON.stringify({
+      'spelling': spelling
+    });
+    this.fetchData('/words/get_definition', 'POST', [], body) 
+      .then((data) => {
+        if ('message' in data) {
           console.log(data); 
           this.setState({
             requestingData: false
@@ -111,12 +106,6 @@ class Definition extends Component {
           requestingData: false
         });
         this.updateOptions();
-      },
-      (error) => {
-        console.log(error); 
-        this.setState({
-          requestingData: false
-        });
       }
     );    
   }

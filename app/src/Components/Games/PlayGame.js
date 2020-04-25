@@ -2,6 +2,7 @@ import React from 'react';
 import { Component } from 'react';
 import { Button, Container, Progress, Spinner } from 'reactstrap';
 
+import fetchData from '../../Utils/fetchData';
 
 class PlayGame extends Component {
   constructor(props) {
@@ -24,6 +25,7 @@ class PlayGame extends Component {
     this.checkAnswer = this.checkAnswer.bind(this);
     this.currentRound = this.currentRound.bind(this);
     this.nextRound = this.nextRound.bind(this);
+    this.fetchData = fetchData.bind(this);
 
   }
 
@@ -42,18 +44,10 @@ class PlayGame extends Component {
     this.setState({ 
       answerGiven: true
     });
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
-    fetch('/games/check_answer', {
-      method: 'POST',
-      credentials: 'include',
-      headers: myHeaders,
-      body: JSON.stringify({
-        'answer_index': answerIndex
-      })
-    })
-      .then(res => res.json())
+    const body = JSON.stringify({
+      'answer_index': answerIndex
+    });
+    this.fetchData('/games/check_answer', 'POST', [], body)
       .then((data) => {
         if( 'correct_index' in data) {
           this.setState({
@@ -62,9 +56,6 @@ class PlayGame extends Component {
             answerIndex: answerIndex
           }); 
         }        
-      },
-      (error) => {
-        console.log(error);
       }
     );  
   }
@@ -73,14 +64,7 @@ class PlayGame extends Component {
     this.setState({ 
       requestingData: true
     });
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
-    fetch('/games/current_round', {
-      method: 'GET',
-      headers: myHeaders
-    })
-      .then(res => res.json())
+    this.fetchData('/games/current_round')
       .then((data) => {
         if( 'game_round' in data) {
           this.setState({
@@ -93,9 +77,6 @@ class PlayGame extends Component {
             firstRequest: false
           }); 
         }        
-      },
-      (error) => {
-        console.log(error);
       }
     );    
   }
@@ -104,14 +85,7 @@ class PlayGame extends Component {
     this.setState({ 
       requestingData: true
     });
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));
-    fetch('/games/next_round', {
-      method: 'GET',
-      headers: myHeaders
-    })
-      .then(res => res.json())
+    this.fetchData('/games/next_round')
       .then((data) => {
         if ('redirect' in data) {
           this.props.history.push(data.redirect);  
@@ -128,13 +102,10 @@ class PlayGame extends Component {
             answerIndex: -2
           }); 
         }        
-      },
-      (error) => {
-        console.log(error);
       }
     ); 
   }
-  // TODO Find a way to make it simpler
+  
   render() {
     
     const correctIndex = this.state.correctIndex;

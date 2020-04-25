@@ -7,6 +7,7 @@ import { Input, Button,
 import Symonyms from './Symonyms';
 import Definition from './Definition';
 import WordDictionary from './WordDictionary';
+import fetchData from '../../Utils/fetchData';
   
 class EditWord extends Component {
   constructor(props) {
@@ -30,6 +31,7 @@ class EditWord extends Component {
     this.updateSynonyms = this.updateSynonyms.bind(this); 
     this.updateDictionary = this.updateDictionary.bind(this); 
     this.showModal = this.showModal.bind(this); 
+    this.fetchData = fetchData.bind(this);
   }
 
   componentDidMount() {
@@ -76,27 +78,12 @@ class EditWord extends Component {
   }
 
   deleteWord(word_id) {
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/words/delete_word', {
-      method: 'DELETE',
-      headers: myHeaders,
-      body: JSON.stringify({
-        'word_id': word_id
-      })
-    })
-      .then(res => res.json())
-      .then(
-      (data) => {
-        if ('error' in data) {
-          console.log(data);
-          return;
-        }        
+    const body = JSON.stringify({
+      'word_id': word_id
+    });
+    this.fetchData('/words/delete_word', 'DELETE', [], body)
+      .then(() => {        
         this.props.onExit();
-      },
-      (error) => {
-        console.log(error);
       }
     );       
   }
@@ -117,35 +104,20 @@ class EditWord extends Component {
     if (!this.state.definition) {
       return;
     }
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/words/update_word', {
-      method: 'POST',
-      headers: myHeaders,
-      body: JSON.stringify({
-        'dictionary_id': this.state.dictionaryId,
-        'word_id': this.props.word.id,  
-        'spelling': this.state.spelling,  
-        'definition': this.state.definition,  
-        'synonyms': this.state.synonyms  
-      })
-    })
-      .then(res => res.json())
-      .then(
-      (data) => {
-        if ('error' in data) {
-          console.log(data);
-          return;
-        }    
+    const body = JSON.stringify({
+      'dictionary_id': this.state.dictionaryId,
+      'word_id': this.props.word.id,  
+      'spelling': this.state.spelling,  
+      'definition': this.state.definition,  
+      'synonyms': this.state.synonyms  
+    }); 
+    this.fetchData('/words/update_word', 'POST', [], body)
+      .then(() => {    
         this.setState({
           saved: true,
           progress: 0
         });  
         this.props.onExit(); 
-      },
-      (error) => {
-        console.log(error);
       }
     );  
   }

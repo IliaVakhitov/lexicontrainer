@@ -3,6 +3,8 @@ import { Component } from 'react';
 import { Input, InputGroup, InputGroupAddon, InputGroupText,
   Button, Collapse } from 'reactstrap'
 
+import fetchData from '../../Utils/fetchData';
+
 class NewDictionary extends Component {
 
   constructor(props) {
@@ -17,7 +19,7 @@ class NewDictionary extends Component {
     this.saveDictionary = this.saveDictionary.bind(this);
     this.updateState = this.updateState.bind(this);
     this.changeCollapseOpen = this.changeCollapseOpen.bind(this);
-        
+    this.fetchData = fetchData.bind(this);    
   }
 
   updateState(event) {
@@ -38,33 +40,18 @@ class NewDictionary extends Component {
     if (!this.state.name) {
       return;
     }
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/dicts/add_dictionary', {
-      method: 'POST',
-      headers: myHeaders,
-      body: JSON.stringify({
-        dictionary_name: this.state.name,  
-        dictionary_description: this.state.description,  
-      })
-    })
-      .then(res => res.json())
-      .then(
-      (data) => {
-        if ('error' in data) {
-          console.log(data);
-          return;
-        }        
+    const body = JSON.stringify({
+      dictionary_name: this.state.name,  
+      dictionary_description: this.state.description,  
+    });
+    this.fetchData('/dicts/add_dictionary', 'POST', [], body)
+      .then(() => {        
         this.setState({
           newDicnametionaryName:'',
           description:'',
           collapseOpen: false
         });
         this.props.onSaveDictionary();
-      },
-      (error) => {
-        console.log(error);
       }
     ); 
   }

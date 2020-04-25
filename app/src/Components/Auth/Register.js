@@ -5,6 +5,8 @@ import { Input, InputGroupAddon, InputGroup, InputGroupText,
 
 import { withRouter } from 'react-router-dom';
 
+import fetchData from '../../Utils/fetchData';
+
 class Register extends Component {
   constructor(props) {
       super(props);
@@ -18,6 +20,7 @@ class Register extends Component {
       }
       this.updateState = this.updateState.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
+      this.fetchData = fetchData.bind(this);
   }
 
   componentDidMount() {
@@ -43,31 +46,18 @@ class Register extends Component {
       return;
     }
     
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    fetch('/auth/register', {
-      method: 'POST',
-      credentials: 'include',
-      headers: myHeaders,
-      body: JSON.stringify({
-        username: this.state.username,
-        password: this.state.password,
-        secret_question: this.state.secretQuestion,
-        secret_answer: this.state.secretAnswer
-      })
-    })
-      .then(res => res.json())
+    const body = JSON.stringify({
+      username: this.state.username,
+      password: this.state.password,
+      secret_question: this.state.secretQuestion,
+      secret_answer: this.state.secretAnswer
+    });
+    
+    this.fetchData('/auth/register', 'POST', [], body)
       .then((data) => {        
-        if ('error' in data) {
-          console.log(data);          
-          return;
-        }    
         localStorage.setItem('token', data.token);        
         this.props.onLogin(data.username);
         this.props.history.push('/');        
-      },
-      (error) => {
-        console.log(error);
       }
     );      
   }

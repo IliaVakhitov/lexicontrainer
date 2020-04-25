@@ -7,7 +7,7 @@ import { Container, Input, InputGroup,
 import { withRouter } from 'react-router-dom';
 
 import Words from '../../Components/Words/Words';
-
+import fetchData from '../../Utils/fetchData';
 
 class Dictionary extends Component {
   constructor(props) {
@@ -29,6 +29,7 @@ class Dictionary extends Component {
     this.dictionary = this.dictionary.bind(this);
     this.deleteDictionary = this.deleteDictionary.bind(this);
     this.showModal = this.showModal.bind(this);
+    this.fetchData = fetchData.bind(this);
   }
   
   componentDidMount() {
@@ -58,62 +59,34 @@ class Dictionary extends Component {
   }
   
   dictionary() {
-    this.setState({requestingData: true});
+    this.setState({ requestingData: true });
     if (isNaN(this.state.id)) {
       console.log('Incorrect dictionary id '.concat(this.state.id));
       this.props.history.push('/dictionaries');
     }
     
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    myHeaders.append('dictionary_id', this.state.id);  
-    fetch('/dicts/dictionary', {
-      method: 'GET',
-      headers: myHeaders
-    })
-      .then(res => res.json())
-      .then(
-      (data) => {
-        if ('error' in data) {
-          console.log(data);
-          return;
-        }         
+    let myHeaders = new Headers();
+    myHeaders.append('dictionary_id', this.state.id); 
+
+    this.fetchData('/dicts/dictionary', 'GET', myHeaders)
+      .then((data) => {         
         this.setState({
           name: data.dictionary_name,
           description: data.description,
           namePopover: false,
           requestingData: false
         });        
-      },
-      (error) => {
-        console.log(error);
       }
     );    
   }
 
   deleteDictionary() {
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/dicts/delete_dictionary', {
-      method: 'DELETE',
-      headers: myHeaders,
-      body: JSON.stringify({
-        'dictionary_id': this.state.id
-      })
+    const body = JSON.stringify({
+      'dictionary_id': this.state.id
     })
-      .then(res => res.json())
-      .then(
-      (data) => {
-        if ('error' in data) {
-          console.log(data);
-          return;
-        }        
+    this.fetchData('/dicts/dictionary', 'DELETE', [], body) 
+      .then(() => {                
         this.props.history.push('/dictionaries');
-      },
-      (error) => {
-        console.log(error);
       }
     ); 
   }
@@ -123,30 +96,15 @@ class Dictionary extends Component {
       this.setState({namePopover: true});
       return;
     }
-    var myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
-    fetch('/dicts/update_dictionary', {
-      method: 'POST',
-      headers: myHeaders,
-      body: JSON.stringify({
-        'dictionary_id': this.state.id,  
-        'dictionary_name': this.state.name,  
-        'description': this.state.description
-      })
-    })
-      .then(res => res.json())
-      .then(
-      (data) => {
-        if ('error' in data) {
-          console.log(data);
-          return;
-        }        
+    const body = JSON.stringify({
+      'dictionary_id': this.state.id,  
+      'dictionary_name': this.state.name,  
+      'description': this.state.description
+    });
+    this.fetchData('/dicts/update_dictionary', 'POST', [], body) 
+      .then(() => {                
         this.props.history.push('/dictionaries');
       },
-      (error) => {
-        console.log(error);
-      }
     );  
   }
 
