@@ -4,7 +4,7 @@ import logging
 from flask import request
 from flask_httpauth import HTTPTokenAuth
 
-from app.models import Word, User, Dictionary, LearningIndex
+from app.models import Word, User, Dictionary, LearningIndex, CurrentGame, Statistic
 from app.models import Synonyms, Definitions
 from app.words import bp
 from app import db
@@ -256,6 +256,22 @@ def update_defitions_table1():
     for word in definitions:
         word.spelling = word.spelling.lower()
         word.definition = word.definition.lower()
+    db.session.commit()
+
+    return {'result': 'success'}
+
+@bp.route('/update_statistic', methods=['GET'])
+def update_statistic():
+    current_game = CurrentGame.query.all()        
+    for game in current_game:
+        statistic_entry = Statistic(user_id=game.user_id)
+        statistic_entry.game_type = game.game_type
+        statistic_entry.total_rounds = game.total_rounds
+        statistic_entry.correct_answers = game.correct_answers
+
+        db.session.add(statistic_entry)
+        db.session.delete(game)
+
     db.session.commit()
 
     return {'result': 'success'}

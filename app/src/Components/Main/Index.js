@@ -7,6 +7,7 @@ import NewWord from '../Words/NewWord';
 import NewDictionary from '../Dictionaries/NewDictionary';
 
 import fetchData from '../../Utils/fetchData';
+import TestComponent from './Test';
 
 class Index extends Component {
   
@@ -91,7 +92,8 @@ class Index extends Component {
             />
           }
         <h6>Random word</h6>
-        
+        <bb />
+        <TestComponent />
       </Container>
     );
   }
