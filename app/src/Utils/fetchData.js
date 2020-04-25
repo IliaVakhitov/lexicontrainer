@@ -4,7 +4,12 @@ export default async function fetchData(url, method = 'GET', headers = [], body 
   let myHeaders = new Headers();
   myHeaders.append('Content-Type', 'application/json');
   myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'));  
+  // DEBUG
+  myHeaders.append('Access-Control-Allow-Origin', '*');  
   headers.forEach(header => {
+    if (myHeaders.has(header.name)) {
+      myHeaders.delete(header.name);
+    }
     myHeaders.append(header.name, header.value);  
   });
   

@@ -21,6 +21,7 @@ class Login extends Component {
       this.handleOnClickRememberMe = this.handleOnClickRememberMe.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
       this.handleRegisterOnClick = this.handleRegisterOnClick.bind(this);
+      this.fetchData = fetchData.bind(this);
   }
 
   updateState(event) {
@@ -51,8 +52,11 @@ class Login extends Component {
       });
       return;
     }
-    let myHeaders = new Headers();
-    myHeaders.append('Authorization', 'Basic ' + btoa(this.state.username+':'+this.state.password));
+    let myHeaders = [];
+    myHeaders.push({
+      'name': 'Authorization', 
+      'value': 'Basic ' + btoa(this.state.username+':'+this.state.password)
+    });
     const body = JSON.stringify({
       username: this.state.username
     });

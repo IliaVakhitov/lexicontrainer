@@ -131,7 +131,7 @@ class Games extends Component {
       'include_learned_words':this.state.includeLearned,
       'dictionaries':this.state.selectedDictionaries,
     });
-    this.fetchData('/games/check_current_game', 'POST', [], body)
+    this.fetchData('/games/define_game', 'POST', [], body)
       .then(() => {
         this.props.history.push('/play');
       }

@@ -6,6 +6,8 @@ import { ListGroup, ListGroupItem } from 'reactstrap';
 import Word from './Word';
 import NewWord from './NewWord';
 
+import fetchData from '../../Utils/fetchData';
+
 class Words extends Component {
   constructor(props) {
     super(props);

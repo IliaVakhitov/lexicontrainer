@@ -60,9 +60,11 @@ class EditWord extends Component {
 
   updateSynonyms(newSynonyms) {
     let synonyms = [];
-    newSynonyms.forEach(synonym => {
-      synonyms.push(synonym.value);
-    });
+    if (newSynonyms) {    
+      newSynonyms.forEach(synonym => {
+        synonyms.push(synonym.value);
+      });
+    }
     this.setState({ 
       synonyms: synonyms,
       saved: false

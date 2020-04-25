@@ -65,8 +65,11 @@ class Dictionary extends Component {
       this.props.history.push('/dictionaries');
     }
     
-    let myHeaders = new Headers();
-    myHeaders.append('dictionary_id', this.state.id); 
+    let myHeaders = [];
+    myHeaders.push({
+      'name': 'dictionary_id',
+      'value': this.state.id
+    });
 
     this.fetchData('/dicts/dictionary', 'GET', myHeaders)
       .then((data) => {         
