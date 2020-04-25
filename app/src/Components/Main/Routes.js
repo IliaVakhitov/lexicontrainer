@@ -14,7 +14,7 @@ import PlayGame from '../../Components/Games/PlayGame';
 import Statistic from '../../Components/Games/Statistic';
 import Error from '../../Utils/Error';
 
-import Main from './Main';
+import Index from './Index';
 
 
 class Routes extends Component {
@@ -24,7 +24,8 @@ class Routes extends Component {
       <Switch>
         <Route exact path='/' 
           render={(props) => 
-            <Main {...props} 
+            <Index {...props} 
+              isLoggedIn={this.props.isLoggedIn} 
               username={this.props.username} 
             />
           } 

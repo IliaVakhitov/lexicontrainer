@@ -1,7 +1,10 @@
 
-export default function fetchData(url, method = 'GET', headers = [], body = null) {
-  
-  //return url;
+function handleErrors(response){
+  console.log(response.statusText)
+  return {'error' : response.statusText};   
+}
+
+async function fetchData(url, method = 'GET', headers = [], body = null) {
 
   var myHeaders = new Headers();
   myHeaders.append('Content-Type', 'application/json');
@@ -9,15 +12,26 @@ export default function fetchData(url, method = 'GET', headers = [], body = null
   headers.forEach(header => {
     myHeaders.append(header.name, header.value);  
   });
-
-  return fetch(url, {
-    method: method,
-    headers: myHeaders,
-    body: body
-  })
-    .then((response) => response.json())
-    .catch(function(err) {
-      console.log('Fetch Error :-S', err);
-    }
-  );  
+  
+  const response = await fetch(url, {
+      method: method,
+      headers: myHeaders,
+      body: body
+  });    
+  if (!response.ok || response.status !== 200) {
+    return handleErrors(response);
+  }
+  return response.json();
 }
+
+
+function checkError(data) {    
+  if ('error' in data) {
+    this.props.history.push({
+      pathname:'/error', 
+      state: { error: data.error}
+    });
+  }    
+}
+
+export { checkError, fetchData };

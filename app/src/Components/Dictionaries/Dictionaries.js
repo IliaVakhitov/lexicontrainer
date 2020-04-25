@@ -8,7 +8,7 @@ import { Container, Spinner,
 import { withRouter } from 'react-router-dom';
 
 import NewDictionary from './NewDictionary';
-import fetchData from "../../Utils/fetchData";
+import { fetchData, checkError } from '../../Utils/fetchData';
 
 class Dictionaries extends Component {
 
@@ -28,6 +28,7 @@ class Dictionaries extends Component {
     this.getDictionaiesList = this.getDictionaiesList.bind(this);
     this.getDictionary = this.getDictionary.bind(this);
     this.getDictionaries = this.getDictionaries.bind(this);
+    this.checkError = checkError.bind(this);
   }
 
   componentDidMount() {
@@ -39,22 +40,8 @@ class Dictionaries extends Component {
     this._isMounted = false;
   }
 
-  checkError(data) {
-    if ('error' in data) {
-      console.log(data);
-      this.props.history.push('/error');
-    }
-  }
-
   getDictionaries() {
-    if (!this.props.isLoggedIn) {
-      // TODO
-      this.setState({
-        dictionaries: [],
-        requestingData: false
-      });
-      return;
-    }
+    
     this.setState({requestingData: true});
      
     fetchData('/dicts/dictionaries')
@@ -182,9 +169,11 @@ class Dictionaries extends Component {
     return (
       <Container>             
         <h3>Dictionaries</h3>
-        <NewDictionary 
-          onSaveDictionary={this.onSaveDictionary}
-        />
+        {this.props.isLoggedIn &&
+          <NewDictionary 
+            onSaveDictionary={this.onSaveDictionary}
+          />
+        }
         {this.state.requestingData && <Spinner type='grow' color='dark' />}
         {this.getDictionaiesList()}      
       </Container>        

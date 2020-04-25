@@ -6,10 +6,14 @@ import { Container } from 'reactstrap';
 class Error extends Component {
 
   render() {
-    // TODO
-    return (      
+    const error = this.props.location.state.error;
+    
+    return (
       <Container>
-        Error occurred!
+        <h3>Server Error</h3>
+        <p>
+          <code>{error}</code>
+        </p>
       </Container>
     );
   }
