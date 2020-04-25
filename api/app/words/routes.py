@@ -63,8 +63,9 @@ def all_words():
             'dictionary_name': dictionary.dictionary_name, 
             'spelling': word.spelling,
             'definition': word.definition,
-            'definitions': definitions,
-            'synonyms': synonyms,
+            'synonyms': [] if word.synonyms is None else json.loads(word.synonyms),
+            'all_definitions': definitions,
+            'all_synonyms': synonyms,
             'progress': 0 if word.learning_index is None else word.learning_index.index
         })
 
@@ -225,6 +226,7 @@ def update_word():
     word_entry = Word.query.filter_by(id=request_data.get('word_id')).first_or_404()
     word_entry.spelling = request_data.get('spelling').strip()
     word_entry.definition = request_data.get('definition').strip()
+    word_entry.synonyms = json.dumps(request_data.get('synonyms'))
     word_entry.dictionary_id = int(request_data.get('dictionary_id'))
     if word_entry.learning_index is None:
         learning_index = LearningIndex(word_id=word_entry.id, index=0)

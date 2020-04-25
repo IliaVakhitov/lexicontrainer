@@ -25,8 +25,13 @@ class Symonyms extends Component {
   }
 
   componentDidMount() {
+    let value = [];
+    this.props.synonyms.forEach(synonym => {
+      value.push(this.createOption(synonym));
+    });
     this.setState({
-      synonyms: this.props.synonyms
+      synonyms: this.props.allSynonyms.concat(this.props.synonyms),
+      value: value
     }); 
     this.updateOptions();
   }
@@ -113,6 +118,7 @@ class Symonyms extends Component {
     this.setState({
       value: newValue
     });
+    this.props.updateSynonyms(newValue === null ? '' : newValue);
   }
 
   handleCreate(inputValue) {
@@ -127,6 +133,7 @@ class Symonyms extends Component {
       synonyms: synonyms,
       value: value
     });
+    this.props.updateSynonyms(value === null ? '' : value);
     this.updateOptions();
   }
 

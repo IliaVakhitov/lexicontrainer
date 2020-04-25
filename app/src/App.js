@@ -89,6 +89,7 @@ class App extends Component {
         <MyNavBar isLoggedIn={this.state.isLoggedIn}/>     
         <Routes 
           username={this.state.username} 
+          isLoggedIn={this.state.isLoggedIn} 
           onLogout={() => this.onLogout} 
           onLogin={() => this.onLogin} />;
       </div>

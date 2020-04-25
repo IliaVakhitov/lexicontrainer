@@ -12,6 +12,7 @@ import Words from '../../Components/Words/Words';
 import Games from '../../Components/Games/Games';
 import PlayGame from '../../Components/Games/PlayGame';
 import Statistic from '../../Components/Games/Statistic';
+import Error from '../../Utils/Error';
 
 import Main from './Main';
 
@@ -58,14 +59,14 @@ class Routes extends Component {
         />
         <Route path='/dictionaries' 
           render={(props) => 
-            <Dictionaries 
+            <Dictionaries {... props}
               isLoggedIn={this.props.isLoggedIn} 
             />
           } 
         />
         <Route path='/dictionary' 
           render={(props) => 
-            <Dictionary 
+            <Dictionary {... props}
               isLoggedIn={this.props.isLoggedIn} 
             />
           } 
@@ -98,6 +99,7 @@ class Routes extends Component {
             /> 
           }
         />
+        <Route path='/error' component={Error}/>
       </Switch>
     );
   }

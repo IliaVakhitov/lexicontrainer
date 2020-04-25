@@ -56,7 +56,11 @@ class EditWord extends Component {
     });     
   }
 
-  updateSynonyms(synonyms) {
+  updateSynonyms(newSynonyms) {
+    let synonyms = [];
+    newSynonyms.forEach(synonym => {
+      synonyms.push(synonym.value);
+    });
     this.setState({ 
       synonyms: synonyms,
       saved: false
@@ -123,7 +127,8 @@ class EditWord extends Component {
         'dictionary_id': this.state.dictionaryId,
         'word_id': this.props.word.id,  
         'spelling': this.state.spelling,  
-        'definition': this.state.definition  
+        'definition': this.state.definition,  
+        'synonyms': this.state.synonyms  
       })
     })
       .then(res => res.json())
@@ -173,7 +178,7 @@ class EditWord extends Component {
           id={this.props.word.id}
           spelling={this.props.word.spelling}
           definition={this.props.word.definition} 
-          definitions={this.props.word.definitions} 
+          definitions={this.props.word.all_definitions} 
         />  
         <span               
           hidden={this.state.definition}
@@ -186,6 +191,7 @@ class EditWord extends Component {
           key={'synonyms'.concat(this.props.word.id)} 
           id={this.props.word.id}
           spelling={this.props.word.spelling}
+          allSynonyms={this.props.word.all_synonyms} 
           synonyms={this.props.word.synonyms} 
         />  
         <WordDictionary 

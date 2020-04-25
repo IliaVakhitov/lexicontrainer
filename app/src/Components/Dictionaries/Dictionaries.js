@@ -47,6 +47,14 @@ class Dictionaries extends Component {
   }
 
   getDictionaries() {
+    if (!this.props.isLoggedIn) {
+      // TODO
+      this.setState({
+        dictionaries: [],
+        requestingData: false
+      });
+      return;
+    }
     this.setState({requestingData: true});
      
     fetchData('/dicts/dictionaries')

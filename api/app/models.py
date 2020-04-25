@@ -72,6 +72,7 @@ class Word(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     spelling = db.Column(db.String(128))
     definition = db.Column(db.String(550))
+    synonyms = db.Column(db.Text)
     dictionary_id = db.Column(db.Integer, db.ForeignKey('dictionaries.id'))
     learning_index = db.relationship(
         'LearningIndex',
@@ -86,6 +87,7 @@ class Word(db.Model):
         return {'id': self.id,
                 'spelling': self.spelling,
                 'definition': self.definition,
+                'synonyms': json.loads(self.synonyms),
                 'dictionary_id': self.dictionary_id,
                 'learning_index': 0 if self.learning_index is None else self.learning_index.index}
 
