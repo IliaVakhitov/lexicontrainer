@@ -102,7 +102,7 @@ class PlayGame extends Component {
       correctAnswers: correctAnswers,
       answerIndex: answerIndex,
       currentRound: currentRound,
-      progress: progress,
+      progress: progress.toFixed(2),
       userResult: userResult
     });
   }

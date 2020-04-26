@@ -92,7 +92,7 @@ class Index extends Component {
             />
           }
         <h6>Random word</h6>
-        <bb />
+        <br />
         <TestComponent />
       </Container>
     );

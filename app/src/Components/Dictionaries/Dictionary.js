@@ -86,7 +86,7 @@ class Dictionary extends Component {
     const body = JSON.stringify({
       'dictionary_id': this.props.location.state.id
     })
-    this.fetchData('/dicts/dictionary', 'DELETE', [], body) 
+    this.fetchData('/dicts/delete_dictionary', 'DELETE', [], body) 
       .then(() => {                
         this.props.history.push('/dictionaries');
       }

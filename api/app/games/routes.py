@@ -74,8 +74,8 @@ def save_current_game():
             learning_index.index += 10 if learning_index.index <= 90 else 0
         else:
             learning_index.index -= 10 if learning_index.index > 10 else 0
-        logger.info(f'Word: {word_entry.spelling} ' +
-             'new index: {learning_index.index}')
+        logger.info(f'Word: {word_entry.spelling}, ' +
+             f'new index: {learning_index.index}')
 
     db.session.commit()
 
