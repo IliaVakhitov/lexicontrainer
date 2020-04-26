@@ -9,7 +9,7 @@ class PlayGame extends Component {
     super(props);
 
     this.state = {
-      gameType: 'Find Definition',
+      gameType: '',
       progress: 0,
       value: '',
       answers: [],

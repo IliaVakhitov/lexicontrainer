@@ -42,7 +42,7 @@ def check_current_game():
 
     return {'current_game': True,
             'progress': revision_game_entry.get_progress(),
-            'game_type': revision_game_entry.game_type}
+            'game_type': GameType[revision_game_entry.game_type].value}
 
 
 @bp.route('/remove_game', methods=['DELETE'])
@@ -135,9 +135,9 @@ def next_round():
     if game_ended:
         return {'redirect': '/statistic'}
 
-    return {'game_type':revision_game_entry.game_type,
-            'progress':revision_game_entry.get_progress(),
-            'game_round':revision_game_entry.get_current_round(False)}
+    return {'game_type': GameType[revision_game_entry.game_type].value,
+            'progress': revision_game_entry.get_progress(),
+            'game_round': revision_game_entry.get_current_round(False)}
 
 
 @bp.route('/current_round', methods=['GET'])
@@ -149,9 +149,9 @@ def current_round():
 
     user = User.check_request(request)
     revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
-    return {'game_type':revision_game_entry.game_type,
-            'progress':revision_game_entry.get_progress(),
-            'game_round':revision_game_entry.get_current_round(False)}
+    return {'game_type': GameType[revision_game_entry.game_type].value,
+            'progress': revision_game_entry.get_progress(),
+            'game_round': revision_game_entry.get_current_round(False)}
 
 
 @bp.route('/check_answer', methods=['POST'])
@@ -168,7 +168,7 @@ def check_answer():
             'progress': revision_game_entry.get_progress()}
 
 
-@bp.route('/statistic/', methods=['GET'])
+@bp.route('/statistic', methods=['POST'])
 @token_auth.login_required
 def statistic():
 
@@ -198,7 +198,7 @@ def statistic():
 
     return {'total_rounds': total_rounds,
             'correct_answers': correct_answers,
-            'game_type': revision_game_entry.game_type}
+            'game_type': GameType[revision_game_entry.game_type].value}
 
 
 logger = logging.getLogger(__name__)
