@@ -14,11 +14,7 @@ class GameRound:
         self.answers: List[str] = dict_data.get('answers')
         self.correct_index: int = dict_data.get('correct_index')
         self.correct_answer: str = self.answers[self.correct_index]
-        self.learning_index_id: int = dict_data.get('learning_index_id')
-        self.learning_index_value: int = dict_data.get('learning_index_value')
-        self.new_learning_index_value: int = dict_data.get('learning_index_value')
-        self.learning_index_changed: bool = False
-
+        
     def is_answer_correct(self, answer) -> bool:
         return answer == self.correct_answer
 

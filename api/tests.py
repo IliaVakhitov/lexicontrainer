@@ -95,14 +95,7 @@ class WordModelCase(unittest.TestCase):
 
         self.assertEqual(loaded_round.correct_index, self.round_i.correct_index, f'Correct_index should be equal')
 
-        self.assertEqual(loaded_round.learning_index_id,
-                         self.round_i.learning_index_id,
-                         f'Learning_index_id should be equal')
-
-        self.assertEqual(loaded_round.learning_index_value,
-                         self.round_i.learning_index_value,
-                         f'Learning_index_value should be equal')
-
+        
     def test_game_generator(self):
         # Arrange
         # data filled in SetUp()

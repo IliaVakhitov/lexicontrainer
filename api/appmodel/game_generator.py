@@ -110,13 +110,6 @@ class GameGenerator:
             round_data['value'] = next_word.definition
             round_data['answers'] = spellings
             round_data['correct_index'] = correct_index
-            round_data['learning_index_id'] = 0 \
-                if next_word.learning_index is None \
-                else next_word.learning_index.id
-
-            round_data['learning_index_value'] = 0 \
-                if next_word.learning_index is None \
-                else next_word.learning_index.index
 
             game_rounds.append(GameRound(round_data))
 
@@ -164,13 +157,6 @@ class GameGenerator:
             round_data['value'] = next_word.spelling
             round_data['answers'] = definitions
             round_data['correct_index'] = correct_index
-            round_data['learning_index_id'] = 0 \
-                if next_word.learning_index is None \
-                else next_word.learning_index.id
-
-            round_data['learning_index_value'] = 0 \
-                if next_word.learning_index is None \
-                else next_word.learning_index.index
 
             game_rounds.append(GameRound(round_data))
 
@@ -207,6 +193,8 @@ class GameGenerator:
             return RevisionGame(game_type, GameGenerator.game_find_definition(words_list, words_limit))
         elif game_type == GameType.FindSpelling:
             return RevisionGame(game_type, GameGenerator.game_find_spelling(words_list, words_limit))
+        else:
+            pass
 
 
 logger = logging.getLogger(__name__)
