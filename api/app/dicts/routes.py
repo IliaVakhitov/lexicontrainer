@@ -101,6 +101,9 @@ def delete_dictionary():
     user = User.check_request(request)
     dictionary_id = request.get_json().get('dictionary_id')
     dictionary_entry = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
+    
+    logger.info(f'Dictionary {dictionary_entry.dictionary_name} deleted')
+    
     db.session.delete(dictionary_entry)
     db.session.commit()
 
@@ -118,6 +121,8 @@ def update_dictionary():
     dictionary_entry.dictionary_name = request_data.get('dictionary_name').strip()
     dictionary_entry.description = request_data.get('description').strip()
     db.session.commit()
+
+    logger.info(f'Dictionary {dictionary_entry.dictionary_name} updated')
 
     return {'result': 'Dictionary updated successfully'}
 
