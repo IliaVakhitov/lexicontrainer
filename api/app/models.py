@@ -6,7 +6,8 @@ import base64
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app.errors.handlers import error_response
+from appmodel.game_type import GameType
+
 from app import db
 
 
@@ -180,31 +181,14 @@ class CurrentGame(db.Model):
     __tablename__ = 'current_game'
 
     id = db.Column(db.Integer, primary_key=True)
-    game_date_started = db.Column(db.DateTime, default=datetime.utcnow)
-    game_date_completed = db.Column(db.DateTime)
-    game_completed = db.Column(db.Boolean, default=False)
     game_type = db.Column(db.String(30))
+    game_date_started = db.Column(db.DateTime, default=datetime.utcnow)
     total_rounds = db.Column(db.Integer)
     correct_answers = db.Column(db.Integer, default=0)
     current_round = db.Column(db.Integer, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship('User', back_populates='current_game')
     game_data = db.Column(db.Text)
-
-    def get_next_round(self) -> bool:
-        """
-        Set +1 to current_round
-        :return:
-            True - game completed (previous was last round)
-            False - game could be resumed
-        """
-        if self.total_rounds == self.current_round:
-            self.game_completed = True
-            self.game_date_completed = datetime.utcnow()
-            db.session.commit()
-            return True
-
-        return False
 
     def get_progress(self):
         return int(self.current_round / self.total_rounds * 100)
@@ -228,21 +212,21 @@ class CurrentGame(db.Model):
         db.session.commit()
         return int(current_round['correct_index'])
 
-    def get_current_round(self, only_answers):
+    def get_current_game(self):
+        """TODO"""
+
         if self is None:
             return None
         if self.game_data is None:
             return None
-        if self.game_completed:
-            return None
-
-        json_rounds = json.loads(self.game_data)
-        current_round = json.loads(json_rounds['game_rounds'][self.current_round])
-
-        if only_answers:
-            return {'value': current_round['value'],
-                    'answers': current_round['answers']
-                    }
-        else:
-            return current_round
+        
+        game_data = json.loads(self.game_data)
+                
+        return {'game_data': game_data['game_rounds'],
+                'game_type': GameType[self.game_type].value,
+                'progress': self.get_progress(),
+                'total_rounds': self.total_rounds,
+                'current_round': self.current_round,
+                'correct_answers': self.correct_answers
+                }
 

@@ -1,6 +1,5 @@
 import json
 import logging
-import time
 
 from flask import request
 from flask_httpauth import HTTPTokenAuth
@@ -33,7 +32,7 @@ def token_auth_error():
 def check_current_game():
     user = User.check_request(request)
     revision_game_entry = CurrentGame.query.filter_by(
-        user_id=user.id, game_completed=False).first()
+        user_id=user.id).first()
 
     if revision_game_entry is None:
         return {'current_game' : False,
@@ -42,15 +41,73 @@ def check_current_game():
 
     return {'current_game': True,
             'progress': revision_game_entry.get_progress(),
+            'date_started': revision_game_entry.game_date_started,
             'game_type': GameType[revision_game_entry.game_type].value}
 
+
+@bp.route('/save_current_game', methods=['POST'])
+@token_auth.login_required
+def save_current_game():
+    user = User.check_request(request)
+    revision_game_entry = CurrentGame.query.filter_by(
+        user_id=user.id).first()
+
+    if revision_game_entry is None:
+        return {'result': 'Error! No current game!'}
+
+    request_data = request.get_json()
+    current_round = request_data.get('current_round')
+    correct_answers = request_data.get('correct_answers')
+
+    # Update learning index for given answers
+    logger.info('Saving words')
+    words_update = request_data.get('words_update')
+    for word in words_update:
+        
+        word_entry = Word.query.filter_by(id=word['word_id']).first()
+        correct = word['correct']
+        learning_index = word_entry.learning_index
+        if learning_index is None:
+            learning_index = LearningIndex(word_id=word_entry.word_id, index=0)
+            db.session.add(learning_index)
+        if correct:
+            learning_index.index += 10 if learning_index.index <= 90 else 0
+        else:
+            learning_index.index -= 10 if learning_index.index > 10 else 0
+        logger.info(f'Word: {word_entry.spelling} ' +
+             'new index: {learning_index.index}')
+
+    db.session.commit()
+
+    # Save state to continue
+    if (current_round < revision_game_entry.total_rounds):
+        revision_game_entry.current_round = current_round
+        revision_game_entry.correct_answers = correct_answers
+        db.session.commit()
+        logger.info('Game saved')
+        return {'result': 'Game saved'}
+    
+    #Update statistic table and delete current game
+    total_rounds = revision_game_entry.total_rounds
+    
+    statistic_entry = Statistic(user_id=user.id)
+    statistic_entry.game_type = revision_game_entry.game_type
+    statistic_entry.total_rounds = total_rounds
+    statistic_entry.correct_answers = correct_answers
+
+    db.session.add(statistic_entry)
+    db.session.delete(revision_game_entry)
+    db.session.commit()
+    logger.info('Game finished. Statistic updated.')
+
+    return {'result': 'Game finished'}
 
 @bp.route('/remove_game', methods=['DELETE'])
 @token_auth.login_required
 def remove_game():
     user = User.check_request(request)
     revision_game_entry = CurrentGame.query.filter_by(
-        user_id=user.id, game_completed=False).first()
+        user_id=user.id).first()
 
     if revision_game_entry is not None:
         db.session.delete(revision_game_entry)
@@ -61,11 +118,11 @@ def remove_game():
 @bp.route('/define_game', methods=['POST'])
 @token_auth.login_required
 def define_game():
+    """TODO"""
 
     user = User.check_request(request)
     revision_game_entry = CurrentGame.query.filter_by(
-        user_id=user.id, game_completed=False).first()
-
+        user_id=user.id).first()
 
     # Remove previous game
     if revision_game_entry is not None:
@@ -120,52 +177,17 @@ def define_game():
     db.session.add(revision_game_entry)
     db.session.commit()
 
-    return {'result': 'result'}
+    return {'result': 'Success'}
 
-@bp.route('/next_round', methods=['GET'])
+
+@bp.route('/current_game', methods=['GET'])
 @token_auth.login_required
-def next_round():
-
-    # System delay
-    time.sleep(0.1)
-
+def current_game():
+    """TODO"""
+    
     user = User.check_request(request)
-    revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
-    game_ended = revision_game_entry.get_next_round()
-    if game_ended:
-        return {'redirect': '/statistic'}
-
-    return {'game_type': GameType[revision_game_entry.game_type].value,
-            'progress': revision_game_entry.get_progress(),
-            'game_round': revision_game_entry.get_current_round(False)}
-
-
-@bp.route('/current_round', methods=['GET'])
-@token_auth.login_required
-def current_round():
-
-    # System delay
-    time.sleep(0.3)
-
-    user = User.check_request(request)
-    revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
-    return {'game_type': GameType[revision_game_entry.game_type].value,
-            'progress': revision_game_entry.get_progress(),
-            'game_round': revision_game_entry.get_current_round(False)}
-
-
-@bp.route('/check_answer', methods=['POST'])
-@token_auth.login_required
-def check_answer():
-
-    # System delay
-    #time.sleep(0.5)
-
-    user = User.check_request(request)
-    answer_index = request.get_json().get('answer_index')
-    revision_game_entry = CurrentGame.query.filter_by(user_id=user.id, game_completed=False).first()
-    return {'correct_index': revision_game_entry.get_correct_index(answer_index),
-            'progress': revision_game_entry.get_progress()}
+    revision_game_entry = CurrentGame.query.filter_by(user_id=user.id).first()
+    return revision_game_entry.get_current_game()
 
 
 @bp.route('/statistic', methods=['POST'])
@@ -174,10 +196,10 @@ def statistic():
 
     user = User.check_request(request)
     revision_game_entry = CurrentGame.query.\
-        filter_by(user_id=user.id, game_completed=True).first()
+        filter_by(user_id=user.id).first()
     if revision_game_entry is None:
         revision_game_entry = CurrentGame.query.\
-            filter_by(user_id=user.id, game_completed=False).first()
+            filter_by(user_id=user.id).first()
         if revision_game_entry is None:
             return {'redirect': '/games'}
         else:
