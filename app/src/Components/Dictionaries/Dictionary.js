@@ -15,7 +15,6 @@ class Dictionary extends Component {
 
     this.state = {
       name: '',
-      id: this.props.location.state.id,
       description: '',
       requestingData: true,
       modal: false
@@ -60,15 +59,15 @@ class Dictionary extends Component {
   
   dictionary() {
     this.setState({ requestingData: true });
-    if (isNaN(this.state.id)) {
-      console.log('Incorrect dictionary id '.concat(this.state.id));
+    if (isNaN(this.props.location.state.id)) {
+      console.log('Incorrect dictionary id '.concat(this.props.location.state.id));
       this.props.history.push('/dictionaries');
     }
     
     let myHeaders = [];
     myHeaders.push({
       'name': 'dictionary_id',
-      'value': this.state.id
+      'value': this.props.location.state.id
     });
 
     this.fetchData('/dicts/dictionary', 'GET', myHeaders)
@@ -85,7 +84,7 @@ class Dictionary extends Component {
 
   deleteDictionary() {
     const body = JSON.stringify({
-      'dictionary_id': this.state.id
+      'dictionary_id': this.props.location.state.id
     })
     this.fetchData('/dicts/dictionary', 'DELETE', [], body) 
       .then(() => {                
@@ -100,7 +99,7 @@ class Dictionary extends Component {
       return;
     }
     const body = JSON.stringify({
-      'dictionary_id': this.state.id,  
+      'dictionary_id': this.props.location.state.id,  
       'dictionary_name': this.state.name,  
       'description': this.state.description
     });
@@ -192,7 +191,7 @@ class Dictionary extends Component {
         {requestingData && <Spinner type='grow' color='dark' />}
         <Words 
           dictionaryName={this.state.name}
-          dictionaryId={this.state.id}
+          dictionaryId={this.props.location.state.id}
           dictionaries={this.props.dictionaries}
           updateDictionary={this.dictionary}
           onDeleteWord={this.dictionary}

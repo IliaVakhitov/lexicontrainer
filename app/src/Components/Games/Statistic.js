@@ -26,7 +26,7 @@ class Statistic extends Component {
   }
 
   get_statistic() {
-    this.fetchData('/games/statistic') 
+    this.fetchData('/games/statistic', 'POST') 
       .then((data) => {
         if ('redirect' in data) {
           this.props.history.push(data.redirect);  

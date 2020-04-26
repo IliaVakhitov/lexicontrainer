@@ -54,9 +54,12 @@ class Words extends Component {
 
   getWords() {
     
-    let myHeaders = new Headers();
+    let myHeaders = [];
     if (!isNaN(this.props.dictionaryId)) {      
-      myHeaders.append('dictionary_id', this.props.dictionaryId);  
+      myHeaders.push({
+        'name':'dictionary_id', 
+        'value' : this.props.dictionaryId
+      });  
     }
     this.fetchData('/words/all_words', 'GET', myHeaders)
       .then((data) => {        

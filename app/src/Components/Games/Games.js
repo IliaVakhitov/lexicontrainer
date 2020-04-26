@@ -93,7 +93,7 @@ class Games extends Component {
   checkCurrentGame() {
     this.fetchData('/games/check_current_game')
       .then((data) => {
-        if( 'currentGame' in data) {
+        if( 'current_game' in data) {
           this.setState({
             currentGame: data.current_game,
             currentGameType: data.game_type,
@@ -158,21 +158,23 @@ class Games extends Component {
         <div>
           <p>
             Found incompleted game. 
-            Game type {this.state.currentGameType}. 
-            Progress {this.state.progress}%.</p>
+            Game type: {this.state.currentGameType}. 
+            Progress: {this.state.progress}%.</p>
           <p>
             Would you like to continue?
           </p>
           <p> 
             <Button 
               outline 
+              className='mx-1 my-1'
               color='secondary' 
               onClick={this.resumeGame}
             >
               Continue
-            </Button>{' '}
+            </Button>
             <Button 
               outline 
+              className='mx-1 my-1'
               color='danger'
               onClick={this.removeGame}
             >
