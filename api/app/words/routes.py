@@ -9,7 +9,7 @@ from app.models import Synonyms, Definitions
 from app.words import bp
 from app import db
 from appmodel.words_api import WordsApi
-from datetime import datetime
+
 from app.errors.handlers import error_response
 
 token_auth = HTTPTokenAuth()
@@ -200,6 +200,8 @@ def add_word():
     db.session.add(learning_index)
     db.session.commit()
 
+    logger.info(f'Added word: {new_word.spelling}')
+
     return {'new_word_id': new_word.id}
 
 
@@ -212,8 +214,12 @@ def delete_word():
     word_entry = Word.query.filter_by(id=request_data.get('word_id')).first_or_404()
     if word_entry.learning_index is not None:
         db.session.delete(word_entry.learning_index)
+    
+    logger.info(f'Deleted word: {word_entry.spelling}')
+
     db.session.delete(word_entry)
     db.session.commit()
+    
 
     return {'success': True}
 
@@ -222,6 +228,7 @@ def delete_word():
 @token_auth.login_required
 def update_word():
     user = User.check_request(request)
+    
     request_data = request.get_json()
     word_entry = Word.query.filter_by(id=request_data.get('word_id')).first_or_404()
     word_entry.spelling = request_data.get('spelling').strip()
@@ -234,6 +241,7 @@ def update_word():
     else:
         word_entry.learning_index.index = 0
     db.session.commit()
+    logger.info(f'Updated word: {word_entry.spelling}')
 
     return {'success': True}
 
@@ -275,4 +283,7 @@ def update_statistic():
     db.session.commit()
 
     return {'result': 'success'}
+
+
+logger = logging.getLogger(__name__)
 

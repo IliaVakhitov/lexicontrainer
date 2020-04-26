@@ -58,10 +58,8 @@ def create_app(config_class=Config):
         '[in %(pathname)s:%(lineno)d]'))
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
-
     app.logger.setLevel(logging.INFO)
-    # app.logger.info('Words learning startup')
-
+    
     return app
 
 

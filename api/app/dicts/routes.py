@@ -88,7 +88,7 @@ def add_dictionary():
         user_id=user.id)
     db.session.add(dictionary_entry)
     db.session.commit()
-    # logger.info(f'Dictionary {dictionary_entry.dictionary_name} saved')
+    logger.info(f'Dictionary {dictionary_entry.dictionary_name} saved')
 
     return {'result': 'Dictionary added successfully'}
 
@@ -139,3 +139,7 @@ def check_dictionary_name():
     dictionary_name = request.get_json().get('dictionary_name')
     dictionary_entry = Dictionary.query.filter_by(dictionary_name=dictionary_name).first()
     return {'name_available': dictionary_entry is None}
+
+
+logger = logging.getLogger(__name__)
+
