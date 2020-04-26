@@ -3,6 +3,7 @@ import { Component } from 'react';
 import { Input,InputGroup, InputGroupAddon, InputGroupText, 
   Button, Collapse,PopoverHeader,PopoverBody, Popover } from 'reactstrap';
 
+import Symonyms from './Symonyms';
 import Definition from './Definition';
 import WordDictionary from './WordDictionary';
 import fetchData from '../../Utils/fetchData';
@@ -16,6 +17,7 @@ class NewWord extends Component {
       showDictionary: isNaN(this.props.dictionaryId),
       spelling: '',
       definition: '',
+      synonyms: [],
       collapseOpen: false,
       popoverText: '',
       showPopover: false
@@ -82,13 +84,15 @@ class NewWord extends Component {
     const body = JSON.stringify({
       'dictionary_id': this.state.dictionaryId,  
       'spelling': this.state.spelling,  
-      'definition': this.state.definition
+      'definition': this.state.definition,
+      'synonyms': this.state.synonyms
     });
     this.fetchData('/words/add_word', 'POST', [], body)
       .then(() => {        
         this.setState({
           spelling: '',
           definition: '',
+          synonyms: []
         });
         this.props.updateList();
       }
@@ -105,6 +109,18 @@ class NewWord extends Component {
     this.setState({
       definition: definition
     });
+  }
+
+  updateSynonyms(newSynonyms) {
+    let synonyms = [];
+    if (newSynonyms) {    
+      newSynonyms.forEach(synonym => {
+        synonyms.push(synonym.value);
+      });
+    }
+    this.setState({ 
+      synonyms: synonyms,
+    });     
   }
 
   render() {
@@ -172,12 +188,20 @@ class NewWord extends Component {
           </InputGroup>            
           <Definition 
             updateDefinition={(value) => this.updateDefinition(value)}
-            key={'definition0'} 
-            id={'newWord'}
+            key='definition0'
+            id='newDefinition'
             spelling={this.state.spelling}
             definition={this.state.definition} 
             definitions={[]}
-          />    
+          />  
+          <Symonyms 
+            updateSynonyms={(value) => this.updateSynonyms(value)}
+            key='synonyms0'
+            id='newSynonyms'
+            spelling={this.state.spelling}
+            allSynonyms={[]} 
+            synonyms={[]} 
+          />  
           {this.state.showDictionary &&
             <WordDictionary
               id={0}

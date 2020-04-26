@@ -193,6 +193,7 @@ def add_word():
     new_word = Word(
         spelling=request_data.get('spelling').strip(),
         definition=request_data.get('definition').strip(),
+        synonyms=json.dumps(request_data.get('synonyms')),
         dictionary_id=request_data.get('dictionary_id'))
     db.session.add(new_word)
     db.session.commit()
