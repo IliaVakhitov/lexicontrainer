@@ -8,6 +8,7 @@ import NewDictionary from '../Dictionaries/NewDictionary';
 
 import fetchData from '../../Utils/fetchData';
 import TestComponent from './Test';
+import RandomWords from '../Words/RandomWords';
 
 class Index extends Component {
   
@@ -21,7 +22,6 @@ class Index extends Component {
 
     this._isMounted = false;
 
-    this.handleClick = this.handleClick.bind(this);
     this.onSaveDictionary = this.onSaveDictionary.bind(this);
     this.onSaveWord = this.onSaveWord.bind(this);
     this.fetchData = fetchData.bind(this);
@@ -30,10 +30,6 @@ class Index extends Component {
   componentDidMount() {
     this._isMounted = true;
     this._isMounted && this.getDictionaries();
-  }
-
-  handleClick(button) {
-    this.props.history.push('/'.concat([button.target.name]));
   }
 
   onSaveDictionary() {
@@ -91,7 +87,7 @@ class Index extends Component {
               updateList={this.onSaveWord}
             />
           }
-        <h6>Random word</h6>
+        <RandomWords />
         <br />
         <TestComponent />
       </Container>

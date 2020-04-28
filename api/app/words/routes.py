@@ -3,14 +3,15 @@ import json
 import logging
 from flask import request
 from flask_httpauth import HTTPTokenAuth
+from sqlalchemy import func
+from app import db
 
 from app.models import Word, User, Dictionary, LearningIndex, CurrentGame, Statistic
 from app.models import Synonyms, Definitions
 from app.words import bp
-from app import db
 from appmodel.words_api import WordsApi
-
 from app.errors.handlers import error_response
+
 
 token_auth = HTTPTokenAuth()
 
@@ -26,17 +27,33 @@ def token_auth_error():
     return error_response(401)
 
 
+@bp.route('/random_words', methods=['GET'])
+@token_auth.login_required
+def random_words():
+    db_user = User.check_request(request)
+    dictionaries = Dictionary.query.filter_by(user_id=db_user.id).all()
+    dict_ids = [d.id for d in dictionaries]    
+    words_query = db.session.query(Word).filter(Word.dictionary_id.in_(dict_ids)).\
+        order_by(func.random()).limit(5).all()
+    
+    words = []
+    for word in words_query:
+        words.append(word.to_dict())
+    
+    return {'words': words}
+
+
 @bp.route('/all_words', methods=['GET'])
 @token_auth.login_required
 def all_words():
     
-    user = User.check_request(request)
+    db_user = User.check_request(request)
 
     if 'dictionary_id' in request.headers:
         dictionary_id = request.headers.get('dictionary_id')
         dict_ids = [dictionary_id]
     else:
-        dictionaries = Dictionary.query.filter_by(user_id=user.id).all()
+        dictionaries = Dictionary.query.filter_by(user_id=db_user.id).all()
         dict_ids = [d.id for d in dictionaries]
     
     words_query = db.session.query(Word, Dictionary).\
@@ -76,7 +93,7 @@ def all_words():
 @token_auth.login_required
 def words_list():
     
-    user = User.check_request(request)
+    db_user = User.check_request(request)
 
     words = []
     if 'dictionary_id' not in request.headers:
@@ -104,7 +121,7 @@ def get_definition():
     # System delay
     time.sleep(0.3)
 
-    user = User.check_request(request)
+    db_user = User.check_request(request)
     request_data = request.get_json()
 
     spelling = request_data.get('spelling').lower()
@@ -148,7 +165,7 @@ def get_synonyms():
     # System delay
     time.sleep(0.3)
 
-    user = User.check_request(request)
+    db_user = User.check_request(request)
     request_data = request.get_json()
 
     spelling = request_data.get('spelling').lower()
@@ -188,7 +205,7 @@ def get_synonyms():
 @bp.route('/add_word', methods=['POST'])
 @token_auth.login_required
 def add_word():
-    user = User.check_request(request)
+    db_user = User.check_request(request)
     request_data = request.get_json()
     new_word = Word(
         spelling=request_data.get('spelling').strip(),
@@ -209,14 +226,14 @@ def add_word():
 @bp.route('/delete_word', methods=['DELETE'])
 @token_auth.login_required
 def delete_word():
-    user = User.check_request(request)
+    db_user = User.check_request(request)
     request_data = request.get_json()
     
     word_entry = Word.query.filter_by(id=request_data.get('word_id')).first_or_404()
     if word_entry.learning_index is not None:
         db.session.delete(word_entry.learning_index)
     
-    logger.info(f'Deleted word: {word_entry.spelling}')
+    logger.info(f'Word deleted: {word_entry.spelling}')
 
     db.session.delete(word_entry)
     db.session.commit()
@@ -228,7 +245,7 @@ def delete_word():
 @bp.route('/update_word', methods=['POST'])
 @token_auth.login_required
 def update_word():
-    user = User.check_request(request)
+    db_user = User.check_request(request)
     
     request_data = request.get_json()
     word_entry = Word.query.filter_by(id=request_data.get('word_id')).first_or_404()
@@ -242,7 +259,7 @@ def update_word():
     else:
         word_entry.learning_index.index = 0
     db.session.commit()
-    logger.info(f'Updated word: {word_entry.spelling}')
+    logger.info(f'Word updated: {word_entry.spelling}')
 
     return {'success': True}
 

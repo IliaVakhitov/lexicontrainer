@@ -88,7 +88,7 @@ class Word(db.Model):
         return {'id': self.id,
                 'spelling': self.spelling,
                 'definition': self.definition,
-                'synonyms': json.loads(self.synonyms),
+                'synonyms': json.loads(self.synonyms) if self.synonyms else [],
                 'dictionary_id': self.dictionary_id,
                 'learning_index': 0 if self.learning_index is None else self.learning_index.index}
 
