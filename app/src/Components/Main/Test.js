@@ -1,6 +1,7 @@
 import React from 'react';
 import { Component } from 'react';
 import { Input, Button, InputGroupAddon, InputGroup, Container } from 'reactstrap';
+import fetchData from '../../Utils/fetchData';
 
 class TestComponent extends Component {
   constructor(props){
@@ -12,7 +13,7 @@ class TestComponent extends Component {
     };
 
     this.handleClick = this.handleClick.bind(this);
-
+    this.fetchData = fetchData.bind(this);
     this.updateState = this.updateState.bind(this);
   }
 
@@ -23,18 +24,12 @@ class TestComponent extends Component {
   }
 
   handleClick() {
-    fetch('/'.concat(this.state.request))
-      .then(res => res.json())
-      .then(
-      (data) => {
+    this.fetchData('/'.concat(this.state.request))
+      .then((data) => {
         console.log(data);
         this.setState({
-          requestResult: "Success"
+          requestResult: 'Success'
         });
-      },
-      (error) => {
-        console.log(error);
-        this.setState({requestResult: 'Error'})
       }
     );
   }

@@ -48,6 +48,8 @@ def check_current_game():
 @bp.route('/save_current_game', methods=['POST'])
 @token_auth.login_required
 def save_current_game():
+    """TODO"""
+
     user = User.check_request(request)
     revision_game_entry = CurrentGame.query.filter_by(
         user_id=user.id).first()

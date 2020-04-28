@@ -82,8 +82,7 @@ class Words extends Component {
             updateList={this.getWords}
             word={word} 
           />            
-        </ListGroupItem>  
-      
+        </ListGroupItem>        
     );
     
     return (

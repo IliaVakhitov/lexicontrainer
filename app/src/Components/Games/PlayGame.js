@@ -1,6 +1,7 @@
 import React from 'react';
 import { Component } from 'react';
 import { Button, Container, Progress, Spinner } from 'reactstrap';
+import { withRouter } from 'react-router-dom';
 
 import fetchData from '../../Utils/fetchData';
 
@@ -200,4 +201,4 @@ class PlayGame extends Component {
   }
 }
 
-export default PlayGame;
+export default withRouter(PlayGame);
