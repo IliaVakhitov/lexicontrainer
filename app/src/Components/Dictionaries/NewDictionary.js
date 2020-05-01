@@ -34,6 +34,9 @@ class NewDictionary extends Component {
       description:'',
       collapseOpen: !this.state.collapseOpen
     });  
+    if ('isOpen' in this.props) {
+      this.props.isOpen(!this.state.collapseOpen);
+    }
   }
 
   saveDictionary() {

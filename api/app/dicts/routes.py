@@ -58,15 +58,24 @@ def dictionaries():
 
     dicts = []
     for dictionary in dictionaries:
-        words = [{
-            'id': w.id, 
-            'spelling': w.spelling
-        } for w in dictionary.words.all()]
+        progress = 0
+        words = []
+        for w in dictionary.words.all():
+            progress += w.learning_index.index \
+                if w.learning_index is not None else 0
+            words.append({
+                'id': w.id, 
+                'spelling': w.spelling
+            })
+        if len(words) > 0 :
+            progress = progress / len(words)
 
         dict_entry = {
             'id': dictionary.id,
             'dictionary_name': dictionary.dictionary_name,
-            'words': words
+            'description': dictionary.description,
+            'words': words,
+            'progress': progress
         }        
         dicts.append(dict_entry)
         

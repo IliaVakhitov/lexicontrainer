@@ -75,7 +75,7 @@ class Dictionaries extends Component {
             className='mx-1 my-1'
             outline 
             color='dark'
-            onClick={() => this.openDictionary(dictionaryId)}    
+            onClick={() => this.openDictionary(dictionaryId)}
           >
             New word
           </Button>
@@ -88,6 +88,7 @@ class Dictionaries extends Component {
         className='mx-1 my-1'
         outline 
         color='dark'
+        onClick={() => this.openDictionary(dictionaryId)}
       >
         {word.spelling}
       </Button>     
@@ -116,7 +117,7 @@ class Dictionaries extends Component {
           </CardHeader>
           <CardBody>
             <CardTitle>{dict.description}</CardTitle>
-            <CardText>Progress: TODO</CardText>  
+            <CardText>Progress: {dict.progress.toFixed(2)}%</CardText>  
             <Button outline 
               id={'words_togger'.concat(dict.id)} 
               color='info'

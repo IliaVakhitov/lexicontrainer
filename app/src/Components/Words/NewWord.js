@@ -38,6 +38,9 @@ class NewWord extends Component {
       definition:'',
       collapseOpen: !this.state.collapseOpen
     });  
+    if ('isOpen' in this.props) {
+      this.props.isOpen(!this.state.collapseOpen);
+    }
   }
 
   updateState(event) {
