@@ -1,9 +1,11 @@
 """ Database model and methods to handle data """
 
+
 import json
 import os
 import base64
 from datetime import datetime, timedelta
+from typing import List
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from appmodel.game_type import GameType
@@ -19,7 +21,6 @@ class LearningIndex(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     index = db.Column(db.Integer, default=0)
     word_id = db.Column(db.Integer, db.ForeignKey('words.id'))
-    word = db.relationship('Word', back_populates='learning_index')
 
 
 class Synonyms(db.Model):
@@ -31,6 +32,18 @@ class Synonyms(db.Model):
     spelling = db.Column(db.String(250), index=True)
     synonym = db.Column(db.String(250))
 
+    @staticmethod
+    def synonyms(limit: int = 0) -> List[str]:
+        """Return list of synonyms as list of string"""
+        
+        if limit and limit > 0:
+            query_result = Synonyms.query.limit(limit).all()
+        else:
+            query_result = Synonyms.query.all()
+
+        result = [entry.synonym for entry in query_result]
+        return result
+
 
 class Definitions(db.Model):
     """Definitions from words api for cache"""
@@ -40,6 +53,18 @@ class Definitions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     spelling = db.Column(db.String(250), index=True)
     definition = db.Column(db.String(550))
+    
+    @staticmethod
+    def definitions(limit: int = 0):
+        """Return list of definitions as list of string"""
+
+        if limit and limit > 0:
+            query_result = Definitions.query.limit(limit).all()
+        else:
+            query_result = Definitions.query.all()
+
+        result = [entry.definition for entry in query_result]
+        return result
 
 
 class Dictionary(db.Model):
@@ -51,10 +76,10 @@ class Dictionary(db.Model):
     dictionary_name = db.Column(db.String(128))
     description = db.Column(db.String(250))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    words = db.relationship('Word', cascade="all,delete",
-                            backref='Dictionary',
+    words = db.relationship('Word', 
+                            cascade='all,delete',
                             lazy='dynamic',
-                            order_by="Word.spelling")
+                            order_by='Word.spelling')            
 
     def __repr__(self):
         return f'{self.dictionary_name}'
@@ -71,15 +96,18 @@ class Word(db.Model):
     __tablename__ = 'words'
 
     id = db.Column(db.Integer, primary_key=True)
+    dictionary_id = db.Column(db.Integer, db.ForeignKey('dictionaries.id'))
     spelling = db.Column(db.String(128))
     definition = db.Column(db.String(550))
-    synonyms = db.Column(db.Text)
-    dictionary_id = db.Column(db.Integer, db.ForeignKey('dictionaries.id'))
-    learning_index = db.relationship(
-        'LearningIndex',
-        cascade="all,delete",
-        uselist=False,
-        back_populates='word')
+    synonyms = db.Column(db.Text)    
+    synonyms_new = db.relationship('WordSynonyms', 
+                                     cascade='all,delete',
+                                     lazy='dynamic')
+
+    learning_index = db.relationship('LearningIndex',
+                                     cascade='all,delete',
+                                     uselist=False,
+                                     back_populates='word')
 
     def __repr__(self):
         return f'<{self.spelling}>'
@@ -90,7 +118,30 @@ class Word(db.Model):
                 'definition': self.definition,
                 'synonyms': json.loads(self.synonyms) if self.synonyms else [],
                 'dictionary_id': self.dictionary_id,
-                'learning_index': 0 if self.learning_index is None else self.learning_index.index}
+                'learning_index': 0 if self.learning_index is None else self.learning_index.index
+                }
+
+    def update_learning_index(self, correct):
+        """Update learning index. Create entry if it is None"""
+
+        learning_index = self.learning_index
+        if learning_index is None:
+            learning_index = LearningIndex(word_id=self.word_id, index=0)
+            db.session.add(learning_index)
+        if correct:
+            learning_index.index += 10 if learning_index.index <= 90 else 0
+        else:
+            learning_index.index -= 10 if learning_index.index > 10 else 0    
+     
+
+class WordSynonyms(db.Model):
+    """Synonyms for words, which user selected"""
+
+    __tablename__ = 'word_synonyms'
+
+    id = db.Column(db.Integer, primary_key=True)
+    word_id = db.Column(db.Integer, db.ForeignKey('words.id'))
+    synonym = db.Column(db.String(250))
 
 
 class User(db.Model):
@@ -106,12 +157,12 @@ class User(db.Model):
     secret_question = db.Column(db.String(128))
     secret_answer_hash = db.Column(db.String(128))
     dictionaries = db.relationship('Dictionary',
-                                   cascade="all,delete",
+                                   cascade='all,delete',
                                    backref='Owner',
                                    lazy='dynamic',
                                    order_by="Dictionary.id")
     current_game = db.relationship('CurrentGame',
-                                   cascade="all,delete",
+                                   cascade='all,delete',
                                    uselist=False,
                                    back_populates='user')
 
@@ -187,33 +238,30 @@ class CurrentGame(db.Model):
     correct_answers = db.Column(db.Integer, default=0)
     current_round = db.Column(db.Integer, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user = db.relationship('User', back_populates='current_game')
-    game_data = db.Column(db.Text)
+    game_rounds = db.relationship('GameRound',
+                                   cascade='all,delete',
+                                   lazy='dynamic',
+                                   order_by="GameRound.order")
 
     def get_progress(self):
         return int(self.current_round / self.total_rounds * 100)
 
-    def get_correct_index(self, answer_index: int) -> int:
-        current_round = self.get_current_round(False)
-        learning_index = LearningIndex.query.\
-            filter_by(id=current_round['learning_index_id']).first()
-        if learning_index is None:
-            learning_index = LearningIndex(word_id=current_round['word_id'], index=0)
-            db.session.add(learning_index)
-            db.session.commit()
+    def update_statistic(self, correct_answers):
+        """Update statistic table and delete current game"""
 
-        if int(current_round['correct_index']) == int(answer_index):
-            self.correct_answers += 1
-            learning_index.index += 10 if learning_index.index <= 90 else 0
-        else:
-            learning_index.index -= 10 if learning_index.index > 10 else 0
+        total_rounds = self.total_rounds
+        
+        statistic_entry = Statistic(user_id=self.user_id)
+        statistic_entry.game_type = self.game_type
+        statistic_entry.total_rounds = total_rounds
+        statistic_entry.correct_answers = correct_answers
 
-        self.current_round += 1
+        db.session.add(statistic_entry)
+        db.session.delete(self)
         db.session.commit()
-        return int(current_round['correct_index'])
 
     def get_current_game(self):
-        """TODO"""
+        """Return json data for current game entry"""
 
         if self is None:
             return None
@@ -229,4 +277,21 @@ class CurrentGame(db.Model):
                 'current_round': self.current_round,
                 'correct_answers': self.correct_answers
                 }
+
+class GameRound(db.Model):
+    """Game round for current game"""
+
+    __tablename__ = 'game_round'
+
+    id = db.Column(db.Integer, primary_key=True)
+    order = db.Column(db.Integer, index=True)
+    word_id = db.Column(db.Integer)
+    current_game_id = db.Column(db.Integer, db.ForeignKey('current_game.id'))
+    value = db.Column(db.String(550))
+    correct_answer = db.Column(db.String(550))
+    answer0 = db.Column(db.String(550))
+    answer1 = db.Column(db.String(550))
+    answer2 = db.Column(db.String(550))
+    answer3 = db.Column(db.String(550))
+    correct_index = db.Column(db.Integer)
 
