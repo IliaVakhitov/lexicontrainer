@@ -1,4 +1,3 @@
-import time
 import json
 import logging
 from flask import request
@@ -6,11 +5,12 @@ from flask_httpauth import HTTPTokenAuth
 from sqlalchemy import func
 from app import db
 
-from app.models import Word, User, Dictionary, LearningIndex, CurrentGame, Statistic
+from app.models import Word, User, Dictionary, LearningIndex
+from app.models import WordSynonyms
 from app.models import Synonyms, Definitions
 from app.words import bp
-from appmodel.words_api import WordsApi
 from app.errors.handlers import error_response
+from appmodel.words_api import WordsApi
 
 
 token_auth = HTTPTokenAuth()
@@ -18,19 +18,27 @@ token_auth = HTTPTokenAuth()
 
 @token_auth.verify_token
 def verify_token(token):
+    """TODO"""
+
     curr_user = User.check_token(token) if token else None
     return curr_user is not None
 
 
 @token_auth.error_handler
 def token_auth_error():
+    """TODO"""
+
     return error_response(401)
 
 
 @bp.route('/random_words', methods=['GET'])
 @token_auth.login_required
 def random_words():
+    """ Return 5 random words for current user """
+
     db_user = User.check_request(request)
+    logger.info(f'User {db_user.username} auth successful')
+
     dictionaries = Dictionary.query.filter_by(user_id=db_user.id).all()
     dict_ids = [d.id for d in dictionaries]    
     words_query = db.session.query(Word).filter(Word.dictionary_id.in_(dict_ids)).\
@@ -46,9 +54,12 @@ def random_words():
 @bp.route('/all_words', methods=['GET'])
 @token_auth.login_required
 def all_words():
-    
-    db_user = User.check_request(request)
+    """ Return words for current user.
+        All or for given dictionaries 
+    """
 
+    db_user = User.check_request(request)
+    
     if 'dictionary_id' in request.headers:
         dictionary_id = request.headers.get('dictionary_id')
         dict_ids = [dictionary_id]
@@ -65,22 +76,22 @@ def all_words():
     for word_entry in words_query:
         word = word_entry[0]
         dictionary = word_entry[1]
-        definitions = []
-        synonyms = []
+        
         definitions_query = Definitions.query.filter_by(spelling=word.spelling).all()
         synonyms_query = Synonyms.query.filter_by(spelling=word.spelling).all()
-        for definition in definitions_query:
-            definitions.append(definition.definition)
-        for synonym in synonyms_query:
-            synonyms.append(synonym.synonym)
         
+        definitions = [d.definition for d in definitions_query]
+        synonyms = [s.synonym for s in synonyms_query]
+
+        word_synonyms = [s.synonym for s in word.synonyms.all()]
+
         words.append({
             'id': word.id, 
             'dictionary_id': word.dictionary_id, 
             'dictionary_name': dictionary.dictionary_name, 
             'spelling': word.spelling,
             'definition': word.definition,
-            'synonyms': [] if word.synonyms is None else json.loads(word.synonyms),
+            'synonyms': word_synonyms,
             'all_definitions': definitions,
             'all_synonyms': synonyms,
             'progress': 0 if word.learning_index is None else word.learning_index.index
@@ -92,12 +103,14 @@ def all_words():
 @bp.route('/words_list', methods=['GET'])
 @token_auth.login_required
 def words_list():
-    
-    db_user = User.check_request(request)
+    """ Return words' spellings for given dictionary """
 
+    User.check_request(request)
+    
     words = []
     if 'dictionary_id' not in request.headers:
         return {'words': words}
+
     dictionary_id = request.headers.get('dictionary_id')
     dict_ids = [dictionary_id]
     
@@ -117,11 +130,13 @@ def words_list():
 @bp.route('/get_definition', methods=['POST'])
 @token_auth.login_required
 def get_definition():
+    """ Return definitions for current word from Definitions.
+        If not, request definitions for current word from WordsApi
+        Save result in Definitions
+    """
 
-    # System delay
-    time.sleep(0.3)
-
-    db_user = User.check_request(request)
+    User.check_request(request)
+    
     request_data = request.get_json()
 
     spelling = request_data.get('spelling').lower()
@@ -133,10 +148,9 @@ def get_definition():
         filter_by(spelling=spelling).\
         order_by('definition').all()
 
-    result = []
-    if definitions:        
-        for definition in definitions:
-            result.append(definition.definition)
+    
+    if definitions:  
+        result = [d.definition for d in definitions]      
         return json.dumps({'definitions': result})
 
     # Get definitions from online dictionary
@@ -161,11 +175,14 @@ def get_definition():
 @bp.route('/get_synonyms', methods=['POST'])
 @token_auth.login_required
 def get_synonyms():
+    """ Return synonyms for current word from Synonyms.
+        If not, request synonyms for current word from WordsApi
+        Save result in Synonyms
+    """
 
-    # System delay
-    time.sleep(0.3)
-
-    db_user = User.check_request(request)
+    
+    User.check_request(request)
+    
     request_data = request.get_json()
 
     spelling = request_data.get('spelling').lower()
@@ -179,9 +196,8 @@ def get_synonyms():
         filter_by(spelling=spelling).\
         order_by('synonym').all()
 
-    if synonyms:        
-        for synonym in synonyms:
-            result.append(synonym.synonym)
+    if synonyms:   
+        result = [s.synonym for s in synonyms]     
         return json.dumps({'synonyms': result})
     
     # Get synonyms from online dictionary
@@ -191,6 +207,7 @@ def get_synonyms():
 
     # Save synonyms in table for future requests
     synonyms = json.loads(result_query)
+    result = []
     for synonym in synonyms['synonyms']:
         result.append(synonym)
         synonym_entry = Synonyms(
@@ -205,17 +222,29 @@ def get_synonyms():
 @bp.route('/add_word', methods=['POST'])
 @token_auth.login_required
 def add_word():
-    db_user = User.check_request(request)
+    """ Add new word to db """
+
+    User.check_request(request)
+    
     request_data = request.get_json()
+    synonyms = request_data.get('synonyms')
     new_word = Word(
         spelling=request_data.get('spelling').strip(),
         definition=request_data.get('definition').strip(),
-        synonyms=json.dumps(request_data.get('synonyms')),
         dictionary_id=request_data.get('dictionary_id'))
     db.session.add(new_word)
+    # Commit to save new word
     db.session.commit()
+    
+    # Add learning index
     learning_index = LearningIndex(word_id=new_word.id, index=0)
     db.session.add(learning_index)
+
+    # Add synonyms
+    for synonym in synonyms:
+        db_synonym = WordSynonyms(word_id=new_word.id, synonym=synonym)
+        db.session.add(db_synonym)
+    
     db.session.commit()
 
     logger.info(f'Added word: {new_word.spelling}')
@@ -226,18 +255,20 @@ def add_word():
 @bp.route('/delete_word', methods=['DELETE'])
 @token_auth.login_required
 def delete_word():
-    db_user = User.check_request(request)
+    """ Delete word from DB """
+
+    User.check_request(request)
+    
     request_data = request.get_json()
     
-    word_entry = Word.query.filter_by(id=request_data.get('word_id')).first_or_404()
-    if word_entry.learning_index is not None:
-        db.session.delete(word_entry.learning_index)
-    
-    logger.info(f'Word deleted: {word_entry.spelling}')
+    word_entry = Word.query.\
+        filter_by(id=request_data.get('word_id')).\
+        first_or_404()
 
+    spelling = word_entry.spelling
     db.session.delete(word_entry)
     db.session.commit()
-    
+    logger.info(f'Word deleted: {spelling}')    
 
     return {'success': True}
 
@@ -245,62 +276,39 @@ def delete_word():
 @bp.route('/update_word', methods=['POST'])
 @token_auth.login_required
 def update_word():
-    db_user = User.check_request(request)
+    """ Update word data """
+
+    User.check_request(request)
     
     request_data = request.get_json()
-    word_entry = Word.query.filter_by(id=request_data.get('word_id')).first_or_404()
+    word_entry = Word.query.\
+        filter_by(id=request_data.get('word_id')).\
+        first_or_404()
+
+    
+    # Delete current synonyms
+    for db_synonym in word_entry.synonyms.all(): 
+        db.session.delete(db_synonym)   
+
+    # Add new synonyms
+    synonyms = request_data.get('synonyms')
+    for synonym in synonyms:
+        db_synonym = WordSynonyms(word_id=word_entry.id, synonym=synonym)
+        db.session.add(db_synonym)
+        
     word_entry.spelling = request_data.get('spelling').strip()
     word_entry.definition = request_data.get('definition').strip()
-    word_entry.synonyms = json.dumps(request_data.get('synonyms'))
     word_entry.dictionary_id = int(request_data.get('dictionary_id'))
     if word_entry.learning_index is None:
         learning_index = LearningIndex(word_id=word_entry.id, index=0)
         db.session.add(learning_index)
     else:
         word_entry.learning_index.index = 0
+
     db.session.commit()
     logger.info(f'Word updated: {word_entry.spelling}')
 
     return {'success': True}
-
-
-# Additional functions 
-#@bp.route('/update_defitions_table', methods=['GET'])
-def update_defitions_table():
-    definitions = db.session.query(Definitions, Word).\
-        filter(Definitions.word_id == Word.id).all()
-    for definition in definitions:
-        definition[0].spelling = definition[1].spelling
-    db.session.commit()
-    
-    return {'result': 'success'}
-
-# Additional functions 
-@bp.route('/update_defitions_table1', methods=['GET'])
-def update_defitions_table1():
-    definitions = Word.query.all()        
-    for word in definitions:
-        word.spelling = word.spelling.lower()
-        word.definition = word.definition.lower()
-    db.session.commit()
-
-    return {'result': 'success'}
-
-@bp.route('/update_statistic', methods=['GET'])
-def update_statistic():
-    current_game = CurrentGame.query.all()        
-    for game in current_game:
-        statistic_entry = Statistic(user_id=game.user_id)
-        statistic_entry.game_type = game.game_type
-        statistic_entry.total_rounds = game.total_rounds
-        statistic_entry.correct_answers = game.correct_answers
-
-        db.session.add(statistic_entry)
-        db.session.delete(game)
-
-    db.session.commit()
-
-    return {'result': 'success'}
 
 
 logger = logging.getLogger(__name__)
