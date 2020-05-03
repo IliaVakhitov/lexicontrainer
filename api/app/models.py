@@ -99,15 +99,13 @@ class Word(db.Model):
     dictionary_id = db.Column(db.Integer, db.ForeignKey('dictionaries.id'))
     spelling = db.Column(db.String(128))
     definition = db.Column(db.String(550))
-    synonyms = db.Column(db.Text)    
     synonyms_new = db.relationship('WordSynonyms', 
                                      cascade='all,delete',
                                      lazy='dynamic')
 
     learning_index = db.relationship('LearningIndex',
                                      cascade='all,delete',
-                                     uselist=False,
-                                     back_populates='word')
+                                     uselist=False)
 
     def __repr__(self):
         return f'<{self.spelling}>'
@@ -143,6 +141,8 @@ class WordSynonyms(db.Model):
     word_id = db.Column(db.Integer, db.ForeignKey('words.id'))
     synonym = db.Column(db.String(250))
 
+    def __repr__(self):
+        return f'{self.synonym}'
 
 class User(db.Model):
     """Users table. Methods used for auth"""
@@ -160,11 +160,10 @@ class User(db.Model):
                                    cascade='all,delete',
                                    backref='Owner',
                                    lazy='dynamic',
-                                   order_by="Dictionary.id")
+                                   order_by='Dictionary.id')
     current_game = db.relationship('CurrentGame',
                                    cascade='all,delete',
-                                   uselist=False,
-                                   back_populates='user')
+                                   uselist=False)
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -239,9 +238,9 @@ class CurrentGame(db.Model):
     current_round = db.Column(db.Integer, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     game_rounds = db.relationship('GameRound',
-                                   cascade='all,delete',
-                                   lazy='dynamic',
-                                   order_by="GameRound.order")
+                                  cascade='all,delete',
+                                  lazy='dynamic',
+                                  order_by='GameRound.order')
 
     def get_progress(self):
         return int(self.current_round / self.total_rounds * 100)
