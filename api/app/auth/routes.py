@@ -13,7 +13,7 @@ token_auth = HTTPTokenAuth()
 
 @token_auth.verify_token
 def verify_token(token):
-    """Basic auth method"""
+    """ Basic auth method """
 
     curr_user = User.check_token(token) if token else None
     
@@ -22,14 +22,14 @@ def verify_token(token):
 
 @token_auth.error_handler
 def token_auth_error():
-    """Basic auth method"""
+    """ Basic auth method """
 
     return error_response(401)
 
 
 @basic_auth.verify_password
 def verify_password(username, password):
-    """Basic auth method"""
+    """ Basic auth method """
 
     db_user = User.query.filter_by(username=username).first()
     if db_user is None:
@@ -41,7 +41,7 @@ def verify_password(username, password):
 
 @basic_auth.error_handler
 def auth_error():
-    """Basic auth method"""
+    """ Basic auth method """
 
     return error_response(401)
 
@@ -49,31 +49,33 @@ def auth_error():
 @bp.route('/token', methods=['POST'])
 @basic_auth.login_required
 def get_token():
-    """Create new token for user"""
+    """ Create new token for user """
 
     username = request.get_json().get('username')
     curr_user = User.query.filter_by(username=username).first()
     token = curr_user.get_token()
     db.session.commit()
     return {'token': token,
-            'username': curr_user.username}
+            'username': curr_user.username
+            }
 
 
 @bp.route('/is_authenticated', methods=['GET'])
 def is_authenticated():
-    """Check if token for is not expired"""
+    """ Check if token for is not expired """
 
     curr_user = User.check_request(request)
     user_is_authenticated = curr_user is not None
     username = curr_user.username if user_is_authenticated else None 
     return {'is_authenticated': user_is_authenticated,
-            'username': username}
+            'username': username
+            }
 
 
 @bp.route('/logout', methods=['POST'])
 @token_auth.login_required
 def logout():
-    """Revoke user token"""
+    """ Revoke user token """
 
     curr_user = User.check_request(request)
     if curr_user:
@@ -85,7 +87,7 @@ def logout():
 
 @bp.route('/register', methods=['POST'])
 def register():
-    """Create new user entry and new token for user"""
+    """ Create new user entry and new token for user """
 
     request_data = request.get_json()
     new_user = User(username=request_data.get('username'))
@@ -97,13 +99,14 @@ def register():
     token = new_user.get_token()
     db.session.commit()
     return {'token': token,
-            'username': new_user.username} 
+            'username': new_user.username
+            } 
 
 
 @bp.route('/user', methods=['GET'])
 @token_auth.login_required
 def user():
-    """Return information about user"""
+    """ Return information about user """
 
     db_user = User.check_request(request)
     
@@ -133,5 +136,6 @@ def user():
             'dictionaries': total_dictionaries,
             'words': total_words,
             'words_learned': words_learned,
-            'progress': progress}
+            'progress': progress
+            }
 

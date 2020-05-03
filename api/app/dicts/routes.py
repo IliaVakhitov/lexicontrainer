@@ -14,32 +14,35 @@ token_auth = HTTPTokenAuth()
 
 @token_auth.verify_token
 def verify_token(token):
-    """TODO"""
+    """Basic auth method"""
+
     curr_user = User.check_token(token) if token else None
     return curr_user is not None
 
 
 @token_auth.error_handler
 def token_auth_error():
-    """TODO"""
+    """Basic auth method"""
+
     return error_response(401)
 
 
 @bp.route('/dictionaries_list', methods=['GET'])
 @token_auth.login_required
 def dictionaries_list():
-    """List of dictionaries of current user"""
+    """ List of dictionaries of current user """
 
-    user = User.check_request(request)    
-    dictionaries = Dictionary.query\
-        .filter_by(user_id=user.id)\
+    db_user = User.check_request(request)   
+    
+    db_dictionaries = Dictionary.query\
+        .filter_by(user_id=db_user.id)\
         .order_by('dictionary_name')
 
     dicts = []
-    for dictionary in dictionaries:
+    for db_dictionary in db_dictionaries:
         dict_entry = {
-            'id': dictionary.id,
-            'dictionary_name': dictionary.dictionary_name,
+            'id': db_dictionary.id,
+            'dictionary_name': db_dictionary.dictionary_name,
         }        
         dicts.append(dict_entry)
         
@@ -49,31 +52,32 @@ def dictionaries_list():
 @bp.route('/dictionaries', methods=['GET'])
 @token_auth.login_required
 def dictionaries():
-    """List of dictionaries of current user with words"""
+    """ List of dictionaries of current user with words """
     
-    user = User.check_request(request)    
-    dictionaries = Dictionary.query\
-        .filter_by(user_id=user.id)\
+    db_user = User.check_request(request)  
+    
+    db_dictionaries = Dictionary.query\
+        .filter_by(user_id=db_user.id)\
         .order_by('dictionary_name')
 
     dicts = []
-    for dictionary in dictionaries:
+    for db_dictionary in db_dictionaries:
         progress = 0
         words = []
-        for w in dictionary.words.all():
+        for w in db_dictionary.words.all():
             progress += w.learning_index.index \
                 if w.learning_index is not None else 0
             words.append({
                 'id': w.id, 
                 'spelling': w.spelling
             })
-        if len(words) > 0 :
+        if len(words) > 0:
             progress = progress / len(words)
 
         dict_entry = {
-            'id': dictionary.id,
-            'dictionary_name': dictionary.dictionary_name,
-            'description': dictionary.description,
+            'id': db_dictionary.id,
+            'dictionary_name': db_dictionary.dictionary_name,
+            'description': db_dictionary.description,
             'words': words,
             'progress': progress
         }        
@@ -85,16 +89,17 @@ def dictionaries():
 @bp.route('/add_dictionary', methods=['POST'])
 @token_auth.login_required
 def add_dictionary():
-    """TODO"""
+    """ Add new dictionary into db """
 
-    user = User.check_request(request)
+    db_user = User.check_request(request)
+    
     request_data = request.get_json()
     dictionary_name = request_data.get('dictionary_name').strip()
     dictionary_description = request_data.get('dictionary_description').strip()
     dictionary_entry = Dictionary(
         dictionary_name=dictionary_name,
         description=dictionary_description,
-        user_id=user.id)
+        user_id=db_user.id)
     db.session.add(dictionary_entry)
     db.session.commit()
     logger.info(f'Dictionary {dictionary_entry.dictionary_name} saved')
@@ -105,9 +110,10 @@ def add_dictionary():
 @bp.route('/delete_dictionary', methods=['DELETE'])
 @token_auth.login_required
 def delete_dictionary():
-    """TODO"""
+    """ Delete dictionary from db """
 
-    user = User.check_request(request)
+    User.check_request(request)
+    
     dictionary_id = request.get_json().get('dictionary_id')
     dictionary_entry = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
     
@@ -121,9 +127,10 @@ def delete_dictionary():
 @bp.route('/update_dictionary', methods=['POST'])
 @token_auth.login_required
 def update_dictionary():
-    """TODO"""
+    """ Update dictioary inforamtion """
 
-    user = User.check_request(request)
+    User.check_request(request)
+    
     request_data = request.get_json()
     dictionary_id = request_data.get('dictionary_id')
     dictionary_entry = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
@@ -138,21 +145,26 @@ def update_dictionary():
 @bp.route('/dictionary', methods=['GET'])
 @token_auth.login_required
 def dictionary():
-    """TODO"""
+    """ Return dictionary inforamtion """
 
-    user = User.check_request(request)
+    User.check_request(request)
+    
     dictionary_id = request.headers.get('dictionary_id')
-    dictionary = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
-    dict_entry = dictionary.to_dict()  
+    db_dictionary = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
+    dict_entry = db_dictionary.to_dict()  
     
     return dict_entry
 
 
-@bp.route('/check_dictionary_name', methods=['GET'])
+@bp.route('/check_dictionary_name', methods=['POST'])
 def check_dictionary_name():
+    """ Check if new dictionary name is available"""
+
     dictionary_name = request.get_json().get('dictionary_name')
-    dictionary_entry = Dictionary.query.filter_by(dictionary_name=dictionary_name).first()
-    return {'name_available': dictionary_entry is None}
+    dictionary_entry = Dictionary.query.\
+        filter_by(dictionary_name=dictionary_name).first()
+        
+    return {'result': dictionary_entry is None}
 
 
 logger = logging.getLogger(__name__)
