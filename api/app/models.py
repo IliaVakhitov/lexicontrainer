@@ -99,7 +99,7 @@ class Word(db.Model):
     dictionary_id = db.Column(db.Integer, db.ForeignKey('dictionaries.id'))
     spelling = db.Column(db.String(128))
     definition = db.Column(db.String(550))
-    synonyms_new = db.relationship('WordSynonyms', 
+    synonyms = db.relationship('WordSynonyms', 
                                      cascade='all,delete',
                                      lazy='dynamic')
 

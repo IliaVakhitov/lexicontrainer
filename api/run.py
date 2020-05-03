@@ -62,7 +62,7 @@ def run_script():
     with app.app_context():
         words = Word.query.all()
         for word in words:
-            synonyms = word.synonyms_new.all()
+            synonyms = word.synonyms.all()
             if synonyms:
                 print(synonyms)
 
