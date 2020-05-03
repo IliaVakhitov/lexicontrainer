@@ -1,20 +1,19 @@
 """ Database model and methods to handle data """
 
-
 import json
 import os
 import base64
 from datetime import datetime, timedelta
 from typing import List
 from werkzeug.security import generate_password_hash, check_password_hash
+from app import db
 
 from appmodel.game_type import GameType
 
-from app import db
 
 
 class LearningIndex(db.Model):
-    """Shows user progress in emembering word 0 < index < 100"""
+    """ Shows user progress in emembering word 0 < index < 100 """
 
     __tablename__ = 'learning_index'
 
@@ -24,7 +23,7 @@ class LearningIndex(db.Model):
 
 
 class Synonyms(db.Model):
-    """Synonyms from words api for cache"""
+    """ Synonyms from words api for cache """
 
     __tablename__ = 'synonyms'
 
@@ -34,7 +33,7 @@ class Synonyms(db.Model):
 
     @staticmethod
     def synonyms(limit: int = 0) -> List[str]:
-        """Return list of synonyms as list of string"""
+        """ Return list of synonyms as list of string """
         
         if limit and limit > 0:
             query_result = Synonyms.query.limit(limit).all()
@@ -46,7 +45,7 @@ class Synonyms(db.Model):
 
 
 class Definitions(db.Model):
-    """Definitions from words api for cache"""
+    """ Definitions from words api for cache """
 
     __tablename__ = 'definitions'
 
@@ -56,7 +55,7 @@ class Definitions(db.Model):
     
     @staticmethod
     def definitions(limit: int = 0):
-        """Return list of definitions as list of string"""
+        """ Return list of definitions as list of string """
 
         if limit and limit > 0:
             query_result = Definitions.query.limit(limit).all()
@@ -68,7 +67,7 @@ class Definitions(db.Model):
 
 
 class Dictionary(db.Model):
-    """Stores words list. Owned by user"""
+    """ Stores words list. Owned by user """
 
     __tablename__ = 'dictionaries'
 
@@ -91,7 +90,7 @@ class Dictionary(db.Model):
 
 
 class Word(db.Model):
-    """Word represented as pair Spellng-Definition"""
+    """ Word represented as pair Spellng-Definition """
 
     __tablename__ = 'words'
 
@@ -100,8 +99,8 @@ class Word(db.Model):
     spelling = db.Column(db.String(128))
     definition = db.Column(db.String(550))
     synonyms = db.relationship('WordSynonyms', 
-                                     cascade='all,delete',
-                                     lazy='dynamic')
+                               cascade='all,delete',
+                               lazy='dynamic')
 
     learning_index = db.relationship('LearningIndex',
                                      cascade='all,delete',
@@ -111,16 +110,19 @@ class Word(db.Model):
         return f'<{self.spelling}>'
 
     def to_dict(self):
+        synonyms = []
+        if self.synonyms:
+            synonyms = [s.synonym for s in self.synonyms.all()]
         return {'id': self.id,
                 'spelling': self.spelling,
                 'definition': self.definition,
-                'synonyms': json.loads(self.synonyms) if self.synonyms else [],
+                'synonyms': synonyms,
                 'dictionary_id': self.dictionary_id,
                 'learning_index': 0 if self.learning_index is None else self.learning_index.index
                 }
 
     def update_learning_index(self, correct):
-        """Update learning index. Create entry if it is None"""
+        """ Update learning index. Create entry if it is None """
 
         learning_index = self.learning_index
         if learning_index is None:
@@ -133,7 +135,7 @@ class Word(db.Model):
      
 
 class WordSynonyms(db.Model):
-    """Synonyms for words, which user selected"""
+    """ Synonyms for words, which user selected """
 
     __tablename__ = 'word_synonyms'
 
@@ -145,7 +147,7 @@ class WordSynonyms(db.Model):
         return f'{self.synonym}'
 
 class User(db.Model):
-    """Users table. Methods used for auth"""
+    """ Users table. Methods used for auth """
 
     __tablename__ = 'users'
 
@@ -213,7 +215,7 @@ class User(db.Model):
 
 
 class Statistic(db.Model):
-    """Statistic to show progress"""
+    """ Statistic to show progress """
 
     __tablename__ = 'statistic'
     
@@ -226,7 +228,7 @@ class Statistic(db.Model):
 
 
 class CurrentGame(db.Model):
-    """Current game to continue. One for user"""
+    """ Current game to continue. One for user """
 
     __tablename__ = 'current_game'
 
@@ -246,7 +248,7 @@ class CurrentGame(db.Model):
         return int(self.current_round / self.total_rounds * 100)
 
     def update_statistic(self, correct_answers):
-        """Update statistic table and delete current game"""
+        """ Update statistic table and delete current game """
 
         total_rounds = self.total_rounds
         
@@ -260,7 +262,7 @@ class CurrentGame(db.Model):
         db.session.commit()
 
     def get_current_game(self):
-        """Return json data for current game entry"""
+        """ Return json data for current game entry """
 
         if self is None:
             return None
@@ -278,7 +280,7 @@ class CurrentGame(db.Model):
                 }
 
 class GameRound(db.Model):
-    """Game round for current game"""
+    """ Game round for current game """
 
     __tablename__ = 'game_round'
 

@@ -3,13 +3,13 @@ import logging
 
 from flask import request
 from flask_httpauth import HTTPTokenAuth
-from sqlalchemy import func
+
 
 from app import db
 from app.errors.handlers import error_response
 from app.games import bp
-from app.models import (CurrentGame, Dictionary, LearningIndex, Statistic,
-                        User, Word)
+from app.models import CurrentGame, Statistic, User, Word
+
 from appmodel.game_generator import GameGenerator
 from appmodel.game_type import GameType
 
@@ -18,21 +18,27 @@ token_auth = HTTPTokenAuth()
 
 @token_auth.verify_token
 def verify_token(token):
+    """Basic auth method"""
+
     curr_user = User.check_token(token) if token else None
     return curr_user is not None
 
 
 @token_auth.error_handler
 def token_auth_error():
+    """Basic auth method"""
+    
     return error_response(401)
 
 
 @bp.route('/check_current_game', methods=['GET'])
 @token_auth.login_required
 def check_current_game():
-    user = User.check_request(request)
+    """ Check if uncompleted game is saved """
+
+    db_user = User.check_request(request)
     revision_game_entry = CurrentGame.query.filter_by(
-        user_id=user.id).first()
+        user_id=db_user.id).first()
 
     if revision_game_entry is None:
         return {'current_game' : False,
@@ -42,13 +48,17 @@ def check_current_game():
     return {'current_game': True,
             'progress': revision_game_entry.get_progress(),
             'date_started': revision_game_entry.game_date_started,
-            'game_type': GameType[revision_game_entry.game_type].value}
+            'game_type': GameType[revision_game_entry.game_type].value
+            }
 
 
 @bp.route('/save_current_game', methods=['POST'])
 @token_auth.login_required
 def save_current_game():
-    """TODO"""
+    """ Save state for current game if not finished
+        Update learning index for words in the game
+        Update statistic table if game finished
+    """
 
     user = User.check_request(request)
     revision_game_entry = CurrentGame.query.filter_by(
@@ -65,24 +75,15 @@ def save_current_game():
     logger.info('Saving words')
     words_update = request_data.get('words_update')
     for word in words_update:
-        
         word_entry = Word.query.filter_by(id=word['word_id']).first()
-        correct = word['correct']
-        learning_index = word_entry.learning_index
-        if learning_index is None:
-            learning_index = LearningIndex(word_id=word_entry.word_id, index=0)
-            db.session.add(learning_index)
-        if correct:
-            learning_index.index += 10 if learning_index.index <= 90 else 0
-        else:
-            learning_index.index -= 10 if learning_index.index > 10 else 0
+        word_entry.update_learning_index(word['correct'])        
         logger.info(f'Word: {word_entry.spelling}, ' +
-             f'new index: {learning_index.index}')
+                    f'new index: {word_entry.learning_index.index}')
 
     db.session.commit()
 
     # Save state to continue
-    if (current_round < revision_game_entry.total_rounds):
+    if current_round < revision_game_entry.total_rounds:
         revision_game_entry.current_round = current_round
         revision_game_entry.correct_answers = correct_answers
         db.session.commit()
@@ -90,16 +91,7 @@ def save_current_game():
         return {'result': 'Game saved'}
     
     #Update statistic table and delete current game
-    total_rounds = revision_game_entry.total_rounds
-    
-    statistic_entry = Statistic(user_id=user.id)
-    statistic_entry.game_type = revision_game_entry.game_type
-    statistic_entry.total_rounds = total_rounds
-    statistic_entry.correct_answers = correct_answers
-
-    db.session.add(statistic_entry)
-    db.session.delete(revision_game_entry)
-    db.session.commit()
+    revision_game_entry.update_statistic(correct_answers)
     logger.info('Game finished. Statistic updated.')
 
     return {'result': 'Game finished'}
@@ -107,9 +99,11 @@ def save_current_game():
 @bp.route('/remove_game', methods=['DELETE'])
 @token_auth.login_required
 def remove_game():
-    user = User.check_request(request)
+    """ Delete current game entry """
+
+    db_user = User.check_request(request)
     revision_game_entry = CurrentGame.query.filter_by(
-        user_id=user.id).first()
+        user_id=db_user.id).first()
 
     if revision_game_entry is not None:
         db.session.delete(revision_game_entry)
@@ -120,11 +114,13 @@ def remove_game():
 @bp.route('/define_game', methods=['POST'])
 @token_auth.login_required
 def define_game():
-    """TODO"""
+    """ Create new game with user defined parameters """
 
-    user = User.check_request(request)
-    revision_game_entry = CurrentGame.query.filter_by(
-        user_id=user.id).first()
+    db_user = User.check_request(request)
+    logger.info(f'User {db_user.username} auth successful')
+
+    revision_game_entry = CurrentGame.query.\
+        filter_by(user_id=db_user.id).first()
 
     # Remove previous game
     if revision_game_entry is not None:
@@ -138,32 +134,15 @@ def define_game():
     include_learned_words = request_data.get('include_learned_words')
     dictionaries_list = request_data.get('dictionaries')
 
-    if len(dictionaries_list) == 0:
-        # All dictionaries
-        dictionaries = Dictionary.query.filter_by(
-            user_id=user.id).order_by('dictionary_name')
-        # IDs need to make filter in words query
-        dict_ids = [d.id for d in dictionaries]
-    else:
-        # If need to filter dictionaries
-        dict_ids = [dictionary['key'] for dictionary in dictionaries_list]
-        dictionaries = Dictionary.query.\
-            filter_by(user_id=user.id).\
-            filter(Dictionary.id.in_(dict_ids)).\
-            order_by('dictionary_name')
+    # Generate game
+    revision_game = GameGenerator.generate_game(
+        db_user.id,
+        game_type,
+        dictionaries_list,
+        word_limit,
+        include_learned_words,
+    )
 
-    words_query = db.session.query(Word).filter(Word.dictionary_id.in_(dict_ids))
-
-    if not include_learned_words:
-        words_query = words_query.\
-            join(LearningIndex, LearningIndex.word_id == Word.id).\
-            filter(LearningIndex.index < 100)
-
-    # Getting random order and limit is defined
-    words_query = words_query.order_by(func.random()).all()
-
-    # Generate game from given list of words
-    revision_game = GameGenerator.generate_game(words_query, game_type, word_limit)
     if revision_game is None:
         logger.info('Could not create game!')
         return {'result': 'Could not create game!'\
@@ -173,7 +152,7 @@ def define_game():
     revision_game_entry = CurrentGame()
     revision_game_entry.game_type = game_type.name
     revision_game_entry.game_data = json.dumps(revision_game.to_json())
-    revision_game_entry.user_id = user.id
+    revision_game_entry.user_id = db_user.id
     revision_game_entry.total_rounds = revision_game.total_rounds
     revision_game_entry.current_round = 0
     db.session.add(revision_game_entry)
