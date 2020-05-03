@@ -7,7 +7,6 @@ import NewWord from '../Words/NewWord';
 import NewDictionary from '../Dictionaries/NewDictionary';
 
 import fetchData from '../../Utils/fetchData';
-import TestComponent from './Test';
 import RandomWords from '../Words/RandomWords';
 
 class Index extends Component {

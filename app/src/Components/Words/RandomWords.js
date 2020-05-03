@@ -1,8 +1,7 @@
 import React from 'react';
 import { Component } from 'react';
 import { Carousel, CarouselIndicators, CarouselItem,
-  CarouselControl, Spinner, Container, 
-  Jumbotron} from 'reactstrap';
+  CarouselControl, Spinner, Container } from 'reactstrap';
  import { withRouter } from 'react-router-dom';
 
  import fetchData from '../../Utils/fetchData';
