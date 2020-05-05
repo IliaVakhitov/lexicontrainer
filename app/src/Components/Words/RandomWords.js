@@ -27,6 +27,7 @@ class RandomWords extends Component {
     this.goToIndex = this.goToIndex.bind(this);
     this.setActiveIndex = this.setActiveIndex.bind(this);
     this.getWordsItem = this.getWordsItem.bind(this);
+    this.getRandonWords = this.getRandonWords.bind(this);
   }
 
   componentDidMount() {
@@ -34,7 +35,14 @@ class RandomWords extends Component {
     this._isMounted && this.getRandonWords();
   }
 
+  componentWillUnmount() {
+    this._isMounted = false; 
+  }
+
   getRandonWords() {
+    if (!this.props.isLoggedIn) {
+      return;
+    }
     this.setState({ 
       requestingData: true
     });

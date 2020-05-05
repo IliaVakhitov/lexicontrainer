@@ -91,6 +91,9 @@ class Games extends Component {
   }
 
   checkCurrentGame() {
+    if (!this.props.isLoggedIn) {
+      return;
+    }
     this.fetchData('/games/check_current_game')
       .then((data) => {
         if( 'current_game' in data) {
@@ -139,7 +142,9 @@ class Games extends Component {
   }
 
   dictionaries() {
-
+    if (!this.props.isLoggedIn) {
+      return;
+    }
     this.fetchData('/dicts/dictionaries_list')
       .then((data) => {        
         this.setState({

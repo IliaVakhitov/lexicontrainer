@@ -32,6 +32,9 @@ class Words extends Component {
   }
 
   getDictionaries() {
+    if (!this.props.isLoggedIn) {
+      return;
+    }
     if (!isNaN(this.props.dictionaries)) {
       this.setState({
         dictionaries: this.props.dictionaries   
@@ -53,7 +56,9 @@ class Words extends Component {
   }
 
   getWords() {
-    
+    if (!this.props.isLoggedIn) {
+      return;
+    }
     let myHeaders = [];
     if (!isNaN(this.props.dictionaryId)) {      
       myHeaders.push({
@@ -64,9 +69,7 @@ class Words extends Component {
     this.fetchData('/words/all_words', 'GET', myHeaders)
       .then((data) => {        
         this.setState({ 
-          words: data.words,
-          wordsRender: [],
-          wordsRendered: 0      
+          words: data.words
         });
       }
     );   

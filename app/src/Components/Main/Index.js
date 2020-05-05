@@ -25,12 +25,17 @@ class Index extends Component {
 
     this.onSaveDictionary = this.onSaveDictionary.bind(this);
     this.onSaveWord = this.onSaveWord.bind(this);
+    this.getDictionaries = this.getDictionaries.bind(this);
     this.fetchData = fetchData.bind(this);
   }
 
   componentDidMount() {
     this._isMounted = true;
     this._isMounted && this.getDictionaries();
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   onSaveDictionary() {
@@ -63,7 +68,7 @@ class Index extends Component {
   getDictionaries() {
     // TODO
     if (!this.props.isLoggedIn) {
-      //return;
+      return;
     }
     this.setState({
       requestingData: true,
@@ -101,7 +106,7 @@ class Index extends Component {
               isOpen={(value) => this.isOpenNewWord(value)}
             />
           }
-        <RandomWords />        
+        <RandomWords isLoggedIn={this.props.isLoggedIn} />        
       </Container>
     );
   }

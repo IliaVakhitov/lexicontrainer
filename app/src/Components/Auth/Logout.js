@@ -1,8 +1,8 @@
 import React from 'react';
 import { Component } from 'react';
-import { Redirect } from 'react-router-dom';
 
 import fetchData from '../../Utils/fetchData';
+import { Container } from 'reactstrap';
 
 class Logout extends Component {
   constructor(props) {
@@ -18,13 +18,17 @@ class Logout extends Component {
   logout() {
     this.fetchData('/auth/logout', 'POST')
       .then(() => {
-        this.props.onLogout();        
+        this.props.onLogout();    
+        this.props.history.push('/');    
       }
     ); 
   }  
 
   render() {
-    return (<Redirect to='/' />);
+    return (
+      <Container>
+        Log out succeessful
+      </Container>);
   }
 }
 

@@ -49,13 +49,13 @@ class PlayGame extends Component {
     });
     this.fetchData('/games/current_game')
       .then((data) => {
-        if( 'game_data' in data) {
-          const gameRound = JSON.parse(data.game_data[data.current_round]);
+        if('game_rounds' in data) {
+          const gameRound = data.game_rounds[data.current_round];
           this.setState({
             value: gameRound.value,
             answers: gameRound.answers,
             gameType: data.game_type,
-            gameData: data.game_data,
+            gameData: data.game_rounds,
             progress: data.progress,
             currentRound: data.current_round,
             totalRounds: data.total_rounds,
@@ -83,7 +83,7 @@ class PlayGame extends Component {
 
   checkAnswer(answerIndex) {
     const currentRound = this.state.currentRound + 1;
-    const gameRound = JSON.parse(this.state.gameData[this.state.currentRound]);
+    const gameRound = this.state.gameData[this.state.currentRound];
     const isCorrect = answerIndex === gameRound.correct_index;
     const progress = 
       this.state.totalRounds > 0 
@@ -121,7 +121,7 @@ class PlayGame extends Component {
       return;
     }
 
-    const gameRound = JSON.parse(this.state.gameData[this.state.currentRound]);
+    const gameRound = this.state.gameData[this.state.currentRound];
     this.setState({
       value: gameRound.value,
       answers: gameRound.answers,
