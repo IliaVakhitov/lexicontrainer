@@ -1,8 +1,8 @@
 """ Database model and methods to handle data """
 
-import json
 import os
 import base64
+from random import randint
 from datetime import datetime, timedelta
 from typing import List
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -33,7 +33,7 @@ class Synonyms(db.Model):
 
     @staticmethod
     def synonyms(limit: int = 0) -> List[str]:
-        """ Return list of synonyms as list of string """
+        """ Return list of synonyms as list of strings """
         
         if limit and limit > 0:
             query_result = Synonyms.query.limit(limit).all()
@@ -41,6 +41,18 @@ class Synonyms(db.Model):
             query_result = Synonyms.query.all()
 
         result = [entry.synonym for entry in query_result]
+        return result
+
+    @staticmethod
+    def spellings(limit: int = 0) -> List[str]:
+        """ Return list of spellings as list of strings """
+        
+        if limit and limit > 0:
+            query_result = Synonyms.query.limit(limit).all()
+        else:
+            query_result = Synonyms.query.all()
+
+        result = [entry.spelling for entry in query_result]
         return result
 
 
@@ -63,6 +75,18 @@ class Definitions(db.Model):
             query_result = Definitions.query.all()
 
         result = [entry.definition for entry in query_result]
+        return result
+
+    @staticmethod
+    def spellings(limit: int = 0):
+        """ Return list of spellings as list of string """
+
+        if limit and limit > 0:
+            query_result = Definitions.query.limit(limit).all()
+        else:
+            query_result = Definitions.query.all()
+
+        result = [entry.spelling for entry in query_result]
         return result
 
 
@@ -109,7 +133,21 @@ class Word(db.Model):
     def __repr__(self):
         return f'<{self.spelling}>'
 
+
+    def word_synonyms_number(self):
+        """ Return number of synonyms """
+
+        return len(self.synonyms.all())
+
+    def word_synonyms(self):
+        """ Return synonyms as a list """
+        synonyms = []
+        if self.synonyms:
+            synonyms = [s.synonym for s in self.synonyms.all()]
+        return synonyms
+
     def to_dict(self):
+        """ Return entry as a dict """
         synonyms = []
         if self.synonyms:
             synonyms = [s.synonym for s in self.synonyms.all()]
@@ -132,7 +170,48 @@ class Word(db.Model):
             learning_index.index += 10 if learning_index.index <= 90 else 0
         else:
             learning_index.index -= 10 if learning_index.index > 10 else 0    
-     
+    
+    def random_synonym(self):
+        """ Return on of the word's synonyms if exist """
+
+        synonyms = self.word_synonyms()
+        if not synonyms:
+            return None
+        
+        return synonyms[randint(0, len(synonyms)-1)]
+
+
+    @staticmethod
+    def all_spellings():
+        """ Return all spelling from db 
+            Using SETs to exclude duplcates
+        """ 
+
+        # Words spellings
+        words = Word.query.all()
+        spellings = set(w.spelling for w in words)
+
+        # Synonyms spellings
+        spellings.update(set(Synonyms.spellings()))
+        # Definitions spellings
+        spellings.update(set(Definitions.spellings()))
+
+        return list(spellings)
+
+    @staticmethod
+    def all_definitions():
+        """ Return all definitions from db 
+            Using SETs to exclude duplcates
+        """ 
+
+        # Words definitions
+        words = Word.query.all()
+        definitions = set(w.definition for w in words)
+
+        # Definition definitions
+        definitions.update(set(Definitions.definitions()))
+
+        return list(definitions)
 
 class WordSynonyms(db.Model):
     """ Synonyms for words, which user selected """
@@ -144,7 +223,7 @@ class WordSynonyms(db.Model):
     synonym = db.Column(db.String(250))
 
     def __repr__(self):
-        return f'{self.synonym}'
+        return f'<{self.synonym}>'
 
 class User(db.Model):
     """ Users table. Methods used for auth """
@@ -242,7 +321,7 @@ class CurrentGame(db.Model):
     game_rounds = db.relationship('GameRound',
                                   cascade='all,delete',
                                   lazy='dynamic',
-                                  order_by='GameRound.order')
+                                  order_by='GameRound.round_order')
 
     def get_progress(self):
         return int(self.current_round / self.total_rounds * 100)
@@ -266,12 +345,12 @@ class CurrentGame(db.Model):
 
         if self is None:
             return None
-        if self.game_data is None:
+
+        game_rounds = self.get_game_rounds() 
+        if not game_rounds:
             return None
-        
-        game_data = json.loads(self.game_data)
                 
-        return {'game_data': game_data['game_rounds'],
+        return {'game_rounds': game_rounds,
                 'game_type': GameType[self.game_type].value,
                 'progress': self.get_progress(),
                 'total_rounds': self.total_rounds,
@@ -279,13 +358,17 @@ class CurrentGame(db.Model):
                 'correct_answers': self.correct_answers
                 }
 
+    def get_game_rounds(self):
+        """ Return game rounds as a list of dicts """
+        return [r.to_dict() for r in self.game_rounds.all()]
+
 class GameRound(db.Model):
     """ Game round for current game """
 
     __tablename__ = 'game_round'
 
     id = db.Column(db.Integer, primary_key=True)
-    order = db.Column(db.Integer, index=True)
+    round_order = db.Column(db.Integer, index=True)
     word_id = db.Column(db.Integer)
     current_game_id = db.Column(db.Integer, db.ForeignKey('current_game.id'))
     value = db.Column(db.String(550))
@@ -296,3 +379,21 @@ class GameRound(db.Model):
     answer3 = db.Column(db.String(550))
     correct_index = db.Column(db.Integer)
 
+    def to_dict(self):
+        """ Return instance as a dict """
+        answers = [
+            self.answer0,
+            self.answer1,
+            self.answer2,
+            self.answer3
+        ]
+        return {
+            'id': self.id,
+            'round_order': self.round_order,
+            'word_id': self.word_id,
+            'current_game_id': self.current_game_id,
+            'value': self.value,
+            'correct_answer': self.correct_answer,
+            'correct_index': self.correct_index,
+            'answers': answers
+        }

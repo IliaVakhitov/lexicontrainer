@@ -18,7 +18,7 @@ token_auth = HTTPTokenAuth()
 
 @token_auth.verify_token
 def verify_token(token):
-    """TODO"""
+    """ Basic auth method """
 
     curr_user = User.check_token(token) if token else None
     return curr_user is not None
@@ -26,7 +26,7 @@ def verify_token(token):
 
 @token_auth.error_handler
 def token_auth_error():
-    """TODO"""
+    """ Basic auth method """
 
     return error_response(401)
 
@@ -83,15 +83,13 @@ def all_words():
         definitions = [d.definition for d in definitions_query]
         synonyms = [s.synonym for s in synonyms_query]
 
-        word_synonyms = [s.synonym for s in word.synonyms.all()]
-
         words.append({
             'id': word.id, 
             'dictionary_id': word.dictionary_id, 
             'dictionary_name': dictionary.dictionary_name, 
             'spelling': word.spelling,
             'definition': word.definition,
-            'synonyms': word_synonyms,
+            'synonyms': word.word_synonyms(),
             'all_definitions': definitions,
             'all_synonyms': synonyms,
             'progress': 0 if word.learning_index is None else word.learning_index.index
@@ -284,7 +282,6 @@ def update_word():
     word_entry = Word.query.\
         filter_by(id=request_data.get('word_id')).\
         first_or_404()
-
     
     # Delete current synonyms
     for db_synonym in word_entry.synonyms.all(): 

@@ -18,7 +18,7 @@ token_auth = HTTPTokenAuth()
 
 @token_auth.verify_token
 def verify_token(token):
-    """Basic auth method"""
+    """ Basic auth method """
 
     curr_user = User.check_token(token) if token else None
     return curr_user is not None
@@ -26,7 +26,7 @@ def verify_token(token):
 
 @token_auth.error_handler
 def token_auth_error():
-    """Basic auth method"""
+    """ Basic auth method """
     
     return error_response(401)
 
@@ -114,7 +114,7 @@ def remove_game():
 @bp.route('/define_game', methods=['POST'])
 @token_auth.login_required
 def define_game():
-    """ Create new game with user defined parameters """
+    """ Create new game with defined parameters """
 
     db_user = User.check_request(request)
     logger.info(f'User {db_user.username} auth successful')
@@ -135,7 +135,7 @@ def define_game():
     dictionaries_list = request_data.get('dictionaries')
 
     # Generate game
-    revision_game = GameGenerator.generate_game(
+    result = GameGenerator.generate_game(
         db_user.id,
         game_type,
         dictionaries_list,
@@ -143,28 +143,18 @@ def define_game():
         include_learned_words,
     )
 
-    if revision_game is None:
+    if not result:
         logger.info('Could not create game!')
         return {'result': 'Could not create game!'\
                 'Not enough words to create game! Try to add dictionaries!'}
 
-    # Entry of current game to continue if not finished
-    revision_game_entry = CurrentGame()
-    revision_game_entry.game_type = game_type.name
-    revision_game_entry.game_data = json.dumps(revision_game.to_json())
-    revision_game_entry.user_id = db_user.id
-    revision_game_entry.total_rounds = revision_game.total_rounds
-    revision_game_entry.current_round = 0
-    db.session.add(revision_game_entry)
-    db.session.commit()
-
-    return {'result': 'Success'}
+    return {'result': result}
 
 
 @bp.route('/current_game', methods=['GET'])
 @token_auth.login_required
 def current_game():
-    """TODO"""
+    """ Return cirrent game entry"""
     
     user = User.check_request(request)
     revision_game_entry = CurrentGame.query.filter_by(user_id=user.id).first()
@@ -174,6 +164,10 @@ def current_game():
 @bp.route('/statistic', methods=['POST'])
 @token_auth.login_required
 def statistic():
+    """ Return statistic for current game.
+        Add entry to Statistic
+        Delete current game
+    """
 
     user = User.check_request(request)
     revision_game_entry = CurrentGame.query.\

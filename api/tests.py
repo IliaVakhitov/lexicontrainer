@@ -1,15 +1,13 @@
-import json
+""" Unittest for backend modules """
+
 import unittest
 from random import randint
 
-from sqlalchemy import func
-
 from app import create_app, db
-from app.models import Word, User, Dictionary, CurrentGame, Definitions, Synonyms
+from app.models import Definitions, Synonyms, WordSynonyms
+from app.models import Word, User, Dictionary, CurrentGame
 from appmodel.game_generator import GameGenerator
-from appmodel.game_round import GameRound
 from appmodel.game_type import GameType
-from appmodel.revision_game import RevisionGame
 from config import Config
 
 
@@ -54,26 +52,19 @@ class WordLearningCase(unittest.TestCase):
             db.session.add(word)
             db.session.add(definition)
             db.session.add(synonym)
-        db.session.commit()
-
-        # Add entry to current_game table
-        """
-        word_limit = 10
-        game_type = GameType.FindSpelling
-        words_query = Word.query.order_by(func.random()).all()
-        self.revision_game = GameGenerator.generate_game(words_query, game_type, word_limit)
-        curr_user = User.query.filter_by(username='Test').first()
-        self.round_index = randint(0, 9)
-        self.round_i = self.revision_game.game_rounds[self.round_index]
-        revision_game_entry = CurrentGame()
-        revision_game_entry.game_type = game_type.name
-        revision_game_entry.game_data = json.dumps(self.revision_game.to_json())
-        revision_game_entry.user_id = curr_user.id
-        revision_game_entry.total_rounds = self.revision_game.total_rounds
-        revision_game_entry.current_round = 0
-        db.session.add(revision_game_entry)
-        db.session.commit()
-        """
+            db.session.commit()
+            # Add synonyms to current word
+            synonym = WordSynonyms(
+                word_id=word.id,
+                synonym=f'synonym{i}1'
+            )
+            db.session.add(synonym)
+            synonym = WordSynonyms(
+                word_id=word.id,
+                synonym=f'synonym{i}2'
+            )
+            db.session.add(synonym)
+            db.session.commit()
 
     def tearDown(self):
         """ Delete DB """
@@ -100,71 +91,82 @@ class WordLearningCase(unittest.TestCase):
             'Dictionary name should be \'dictionary\''
         )
 
-    @unittest.skip('Skip current game test')
     def test_current_game(self):
         """ Test current game for user """
 
         # Arrange
-        curr_user = User.query.filter_by(username='Test').first()
         word_limit = 10
-        game_type = GameType.FindSpelling
-        revision_game_entry = CurrentGame.query.filter_by(user_id=curr_user.id).first()
+        game_type = GameType.FindSynonyms
+        curr_user = User.query.filter_by(username='Test').first()
+                
         # Act
-        json_rounds = json.loads(revision_game_entry.game_data)
-        loaded_round = GameRound(json.loads(json_rounds['game_rounds'][self.round_index]))
+        result = GameGenerator.generate_game(
+            curr_user.id,
+            game_type, 
+            [],
+            word_limit
+        )
+        # Assert
+        self.assertTrue(result, 'Generating result should be True')
+        
+        # Act
+        revision_game = CurrentGame.query.\
+            filter_by(user_id=curr_user.id).\
+            first().get_current_game()
 
         # Assert
-        self.assertEqual(revision_game_entry.game_type, game_type.name, 'Game type not equal')
-        self.assertIsNotNone(self.revision_game.game_rounds, 'Game rounds should not be None')
-        self.assertEqual(len(self.revision_game.game_rounds), word_limit)
-        self.assertEqual(len(json_rounds['game_rounds']), word_limit)
-        self.assertEqual(loaded_round.value, self.round_i.value, f'Value should be equal')
-
-        for i in range(4):
-            self.assertEqual(loaded_round.answers[i], 
-                            self.round_i.answers[i], 
-                            f'Answer should be equal')
-
-        self.assertEqual(loaded_round.correct_index, self.round_i.correct_index, f'Correct_index should be equal')
-
+        self.assertIsNotNone(revision_game, 'Current game is None')
         
-    @unittest.skip('Skip game generator test')
-    def test_game_generator(self):
-        """ Test game generator"""
-
-        # Arrange
-        # data filled in SetUp()
-
         # Act
-        words_limit = 10
-        words_list = Word.query.all()
-        list1 = GameGenerator.generate_game(words_list, GameType.FindSpelling, words_limit)
-        list2 = GameGenerator.generate_game(words_list, GameType.FindSpelling, words_limit)
-
+        game_rounds = revision_game['game_rounds']
         # Assert
-        self.assertEqual(len(list1.game_rounds), words_limit, 'Len of game should be equal')
-        self.assertEqual(len(list2.game_rounds), words_limit, 'Len of game should be equal')
+        self.assertIsNotNone(game_rounds, 'Game rounds is None')              
+        self.assertEqual(
+            revision_game['game_type'], 
+            game_type.value, 
+            'Game type not equal'
+        )
+        self.assertEqual(
+            len(game_rounds), 
+            word_limit, 
+            'Rounds number not equal'
+        )
+        self.assertEqual(
+            revision_game['total_rounds'], 
+            word_limit, 
+            'Rounds number not equal'
+        )
 
-    @unittest.skip('Skip game data test')
-    def test_game_data_json(self):
-        """ Test game data """
-        # Arrange
-        # data filled in SetUp()
-        word_limit = 5
-        game_type = GameType.FindDefinition
-        
         # Act
-        words_query = Word.query.order_by(func.random()).limit(word_limit).all()
-        revision_game = GameGenerator.generate_game(words_query, game_type, word_limit)
-        json_data = json.dumps(revision_game.to_json())
-        revision_game1 = RevisionGame(game_type, [])
-        revision_game1.load_game_rounds(json.loads(json_data))
-        
+        # Test random round
+        rnd_i = randint(0, 9)
+        game_round = game_rounds[rnd_i]
         # Assert
         self.assertEqual(
-            len(revision_game.game_rounds), 
-            len(revision_game1.game_rounds), 
-            'Len should be equal'
+            game_round['correct_answer'], 
+            game_round['answer{}'.format(game_round['correct_index'])], 
+            'Correct index is wrong')
+
+        self.assertNotEqual(
+            game_round['answer0'], 
+            game_round['answer1'],  
+            'Rounds answers are equal'
+        )
+
+        self.assertNotEqual(
+            game_round['answer2'], 
+            game_round['answer3'],  
+            'Rounds answers are equal'
+        )
+        self.assertNotEqual(
+            game_round['answer0'], 
+            game_round['answer3'],  
+            'Rounds answers are equal'
+        )
+        self.assertNotEqual(
+            game_round['answer1'], 
+            game_round['answer2'],  
+            'Rounds answers are equal'
         )
 
     @unittest.skip('Skip dicts routes')

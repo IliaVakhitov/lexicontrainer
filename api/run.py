@@ -2,7 +2,7 @@
 
 import json
 from app import db
-from app.models import User, Definitions, Word, CurrentGame, WordSynonyms, Statistic
+from app.models import Definitions, Word, CurrentGame, WordSynonyms, Statistic
 from app import create_app
 
 def update_defitions_table():
@@ -33,7 +33,7 @@ def fillout_newsynonyms():
         #print(f'word_id: {word.id}, spelling: {word.spelling}')
         #print(synonyms)
         for synonym in synonyms:
-            db_synonym = WordSynonyms(word_id=word.id,synonym=synonym)
+            db_synonym = WordSynonyms(word_id=word.id, synonym=synonym)
             db.session.add(db_synonym)
 
     #db.session.commit()
@@ -60,11 +60,8 @@ def run_script():
     app = create_app()
 
     with app.app_context():
-        words = Word.query.all()
-        for word in words:
-            synonyms = word.synonyms.all()
-            if synonyms:
-                print(synonyms)
+        revision_game_entry = CurrentGame.query.filter_by(user_id=2).first()    
+        print(revision_game_entry.get_current_game())
 
 
 if __name__ == '__main__':
