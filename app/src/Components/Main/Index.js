@@ -18,7 +18,8 @@ class Index extends Component {
       dictionaries: [],
       requestingData: false,
       isOpenNewDictionary: false,  
-      isOpenNewWord: false  
+      isOpenNewWord: false,
+      isLoggedIn: false  
     };
 
     this._isMounted = false;
@@ -66,10 +67,6 @@ class Index extends Component {
   }
 
   getDictionaries() {
-    // TODO
-    if (!this.props.isLoggedIn) {
-      return;
-    }
     this.setState({
       requestingData: true,
     });
@@ -78,7 +75,8 @@ class Index extends Component {
       .then((data) => {
         this.setState({
           dictionaries: data.dictionaries,
-          requestingData: false
+          requestingData: false,
+          isLoggedIn: true // TODO
         })        
       }
     );  
@@ -92,13 +90,13 @@ class Index extends Component {
     return (
       <Container>
         <h3>{welcomeString}</h3>
-          {this.props.isLoggedIn && !this.state.isOpenNewWord &&
+          {this.state.isLoggedIn && !this.state.isOpenNewWord &&
             <NewDictionary 
               onSaveDictionary={this.onSaveDictionary}
               isOpen={(value) => this.isOpenNewDictionary(value)}
             />
           }
-          {this.props.isLoggedIn && !this.state.isOpenNewDictionary &&
+          {this.state.isLoggedIn && !this.state.isOpenNewDictionary &&
             <NewWord  
               dictionaryId={undefined}
               dictionaries={this.state.dictionaries}
@@ -106,7 +104,7 @@ class Index extends Component {
               isOpen={(value) => this.isOpenNewWord(value)}
             />
           }
-        <RandomWords isLoggedIn={this.props.isLoggedIn} />        
+        <RandomWords />        
       </Container>
     );
   }

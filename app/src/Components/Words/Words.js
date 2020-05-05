@@ -1,6 +1,7 @@
 import React from 'react';
 import { Component } from 'react';
 import { Container } from 'reactstrap';
+import { withRouter } from 'react-router-dom';
 
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import Word from './Word';
@@ -32,9 +33,6 @@ class Words extends Component {
   }
 
   getDictionaries() {
-    if (!this.props.isLoggedIn) {
-      return;
-    }
     if (!isNaN(this.props.dictionaries)) {
       this.setState({
         dictionaries: this.props.dictionaries   
@@ -56,9 +54,6 @@ class Words extends Component {
   }
 
   getWords() {
-    if (!this.props.isLoggedIn) {
-      return;
-    }
     let myHeaders = [];
     if (!isNaN(this.props.dictionaryId)) {      
       myHeaders.push({
@@ -107,5 +102,5 @@ class Words extends Component {
 }
 
 
-export default Words;
+export default withRouter(Words);
 

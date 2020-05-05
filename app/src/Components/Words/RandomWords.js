@@ -40,9 +40,6 @@ class RandomWords extends Component {
   }
 
   getRandonWords() {
-    if (!this.props.isLoggedIn) {
-      return;
-    }
     this.setState({ 
       requestingData: true
     });

@@ -17,7 +17,8 @@ class Dictionaries extends Component {
 
     this.state = {
       dictionaries: [], 
-      requestingData: true
+      requestingData: true,
+      isLoggedIn: false
     };
 
     this._isMounted = false;
@@ -41,9 +42,6 @@ class Dictionaries extends Component {
   }
 
   getDictionaries() {
-    if (!this.props.isLoggedIn) {
-      return;
-    }
     this.setState({
       requestingData: true
     });
@@ -52,7 +50,8 @@ class Dictionaries extends Component {
       .then((data) => {
         this.setState({
           dictionaries: data.dictionaries,
-          requestingData: false
+          requestingData: false,
+          isLoggedIn: true // TODO
         });        
       }
     );    
@@ -173,7 +172,7 @@ class Dictionaries extends Component {
     return (
       <Container>             
         <h3>Dictionaries</h3>
-        {this.props.isLoggedIn &&
+        {this.state.isLoggedIn &&
           <NewDictionary 
             onSaveDictionary={this.onSaveDictionary}
           />

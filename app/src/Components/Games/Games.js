@@ -91,9 +91,6 @@ class Games extends Component {
   }
 
   checkCurrentGame() {
-    if (!this.props.isLoggedIn) {
-      return;
-    }
     this.fetchData('/games/check_current_game')
       .then((data) => {
         if( 'current_game' in data) {
@@ -142,9 +139,6 @@ class Games extends Component {
   }
 
   dictionaries() {
-    if (!this.props.isLoggedIn) {
-      return;
-    }
     this.fetchData('/dicts/dictionaries_list')
       .then((data) => {        
         this.setState({
@@ -212,6 +206,13 @@ class Games extends Component {
                   active={this.state.gameType === 'FindSpelling'}
                 >
                   Find spelling
+                </Button>
+                <Button 
+                  color='secondary' 
+                  onClick={() => this.setGameType('FindSynonyms')} 
+                  active={this.state.gameType === 'FindSynonyms'}
+                >
+                  Find synonyms
                 </Button>
               </ButtonGroup>
             </Col>

@@ -25,50 +25,7 @@ class Routes extends Component {
         <Route exact path='/' 
           render={(props) => 
             <Index {...props} 
-              isLoggedIn={this.props.isLoggedIn} 
               username={this.props.username} 
-            />
-          } 
-        />
-        <Route path='/words' 
-          render={(props) => 
-            <Words {...props} 
-              isLoggedIn={this.props.isLoggedIn} 
-            />
-          }
-        />
-        <Route path='/games' 
-          render={(props) => 
-            <Games {... props}
-              isLoggedIn={this.props.isLoggedIn} 
-            />
-          } 
-        />
-        <Route path='/statistic' 
-          render={(props) => 
-            <Statistic {... props}
-              isLoggedIn={this.props.isLoggedIn} 
-            />
-          } 
-        />
-        <Route path='/play' 
-          render={(props) => 
-            <PlayGame {... props}
-              isLoggedIn={this.props.isLoggedIn} 
-            />
-          } 
-        />
-        <Route path='/dictionaries' 
-          render={(props) => 
-            <Dictionaries {... props}
-              isLoggedIn={this.props.isLoggedIn} 
-            />
-          } 
-        />
-        <Route path='/dictionary' 
-          render={(props) => 
-            <Dictionary {... props}
-              isLoggedIn={this.props.isLoggedIn} 
             />
           } 
         />
@@ -100,7 +57,13 @@ class Routes extends Component {
             /> 
           }
         />
-        <Route path='/error' component={Error}/>
+        <Route path='/words' component={Words} />
+        <Route path='/games' component={Games} /> 
+        <Route path='/statistic' component={Statistic} />
+        <Route path='/play' component={PlayGame} /> 
+        <Route path='/dictionaries' component={Dictionaries} />
+        <Route path='/dictionary' component={Dictionary} />
+        <Route path='/error' component={Error} />        
       </Switch>
     );
   }

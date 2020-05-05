@@ -16,6 +16,7 @@ class Main extends Component {
     };
 
     this.onLogout = this.onLogout.bind(this);
+    this.loginCheck = this.loginCheck.bind(this);
     this.onLogin = this.onLogin.bind(this);   
     this.fetchData = fetchData.bind(this);   
   }
@@ -67,9 +68,9 @@ class Main extends Component {
         <MyNavBar isLoggedIn={this.state.isLoggedIn}/>     
         <Routes 
           username={this.state.username} 
-          isLoggedIn={this.state.isLoggedIn} 
           onLogout={() => this.onLogout} 
-          onLogin={() => this.onLogin} />;
+          onLogin={() => this.onLogin} 
+        />;
       </div>
     );
   }
