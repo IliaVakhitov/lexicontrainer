@@ -64,7 +64,8 @@ class Words extends Component {
     this.fetchData('/words/all_words', 'GET', myHeaders)
       .then((data) => {        
         this.setState({ 
-          words: data.words
+          words: data.words,
+          isLoggedIn: data.is_authenticated
         });
       }
     );   
@@ -78,7 +79,8 @@ class Words extends Component {
           <Word  
             dictionaries={this.state.dictionaries}   
             updateList={this.getWords}
-            word={word} 
+            word={word}
+            isLoggedIn={this.state.isLoggedIn} 
           />            
         </ListGroupItem>        
     );
@@ -86,11 +88,13 @@ class Words extends Component {
     return (
       
       <Container>
-        <NewWord 
-          dictionaryId={this.props.dictionaryId} 
-          dictionaries={this.state.dictionaries}
-          updateList={this.getWords}
-        />
+        {this.state.isLoggedIn && 
+          <NewWord 
+            dictionaryId={this.props.dictionaryId} 
+            dictionaries={this.state.dictionaries}
+            updateList={this.getWords}
+          />
+        }
         <h3>Words</h3>
         <ListGroup>
           {listItems}          

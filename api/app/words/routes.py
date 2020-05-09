@@ -95,7 +95,9 @@ def all_words():
             'progress': 0 if word.learning_index is None else word.learning_index.index
         })
 
-    return {'words': words}
+    return {'words': words,
+            'is_authenticated': db_user.is_authenticated()
+            }
 
 
 @bp.route('/words_list', methods=['GET'])
@@ -133,8 +135,10 @@ def get_definition():
         Save result in Definitions
     """
 
-    User.check_request(request)
-    
+    db_user = User.check_request(request)
+    if not db_user or not db_user.is_authenticated():
+        return {'message': 'Demo mode'}
+
     request_data = request.get_json()
 
     spelling = request_data.get('spelling').lower()
@@ -179,7 +183,9 @@ def get_synonyms():
     """
 
     
-    User.check_request(request)
+    db_user = User.check_request(request)
+    if not db_user or not db_user.is_authenticated():
+        return {'message': 'Demo mode'}
     
     request_data = request.get_json()
 
@@ -222,8 +228,10 @@ def get_synonyms():
 def add_word():
     """ Add new word to db """
 
-    User.check_request(request)
-    
+    db_user = User.check_request(request)
+    if not db_user or not db_user.is_authenticated():
+        return {'message': 'Demo mode'}
+        
     request_data = request.get_json()
     synonyms = request_data.get('synonyms')
     new_word = Word(
@@ -256,7 +264,9 @@ def add_word():
 def delete_word():
     """ Delete word from DB """
 
-    User.check_request(request)
+    db_user = User.check_request(request)
+    if not db_user or not db_user.is_authenticated():
+        return {'message': 'Demo mode'}
     
     request_data = request.get_json()
     
@@ -277,7 +287,9 @@ def delete_word():
 def update_word():
     """ Update word data """
 
-    User.check_request(request)
+    db_user = User.check_request(request)
+    if not db_user or not db_user.is_authenticated():
+        return {'message': 'Demo mode'}
     
     request_data = request.get_json()
     word_entry = Word.query.\

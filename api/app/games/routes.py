@@ -60,9 +60,10 @@ def save_current_game():
         Update statistic table if game finished
     """
 
-    user = User.check_request(request)
+    db_user = User.check_request(request)
+    
     revision_game_entry = CurrentGame.query.filter_by(
-        user_id=user.id).first()
+        user_id=db_user.id).first()
 
     if revision_game_entry is None:
         return {'result': 'Error! No current game!'}
@@ -72,15 +73,16 @@ def save_current_game():
     correct_answers = request_data.get('correct_answers')
 
     # Update learning index for given answers
-    logger.info('Saving words')
-    words_update = request_data.get('words_update')
-    for word in words_update:
-        word_entry = Word.query.filter_by(id=word['word_id']).first()
-        word_entry.update_learning_index(word['correct'])        
-        logger.info(f'Word: {word_entry.spelling}, ' +
-                    f'new index: {word_entry.learning_index.index}')
+    if db_user.is_authenticated():
+        logger.info('Saving words')
+        words_update = request_data.get('words_update')
+        for word in words_update:
+            word_entry = Word.query.filter_by(id=word['word_id']).first()
+            word_entry.update_learning_index(word['correct'])        
+            logger.info(f'Word: {word_entry.spelling}, ' +
+                        f'new index: {word_entry.learning_index.index}')
 
-    db.session.commit()
+        db.session.commit()
 
     # Save state to continue
     if current_round < revision_game_entry.total_rounds:
@@ -102,6 +104,7 @@ def remove_game():
     """ Delete current game entry """
 
     db_user = User.check_request(request)
+    
     revision_game_entry = CurrentGame.query.filter_by(
         user_id=db_user.id).first()
 
@@ -117,7 +120,7 @@ def define_game():
     """ Create new game with defined parameters """
 
     db_user = User.check_request(request)
-    logger.info(f'User {db_user.username} auth successful')
+    logger.info(f'User \'{db_user.username}\' auth successful')
 
     revision_game_entry = CurrentGame.query.\
         filter_by(user_id=db_user.id).first()
@@ -154,10 +157,13 @@ def define_game():
 @bp.route('/current_game', methods=['GET'])
 @token_auth.login_required
 def current_game():
-    """ Return cirrent game entry"""
+    """ Return current game entry"""
     
-    user = User.check_request(request)
-    revision_game_entry = CurrentGame.query.filter_by(user_id=user.id).first()
+    db_user = User.check_request(request)
+    revision_game_entry = CurrentGame.query.filter_by(user_id=db_user.id).first()
+    if revision_game_entry is None:
+        return {'error': 'No current game!'}
+
     return revision_game_entry.get_current_game()
 
 
@@ -169,12 +175,12 @@ def statistic():
         Delete current game
     """
 
-    user = User.check_request(request)
+    db_user = User.check_request(request)
     revision_game_entry = CurrentGame.query.\
-        filter_by(user_id=user.id).first()
+        filter_by(user_id=db_user.id).first()
     if revision_game_entry is None:
         revision_game_entry = CurrentGame.query.\
-            filter_by(user_id=user.id).first()
+            filter_by(user_id=db_user.id).first()
         if revision_game_entry is None:
             return {'redirect': '/games'}
         else:
@@ -184,12 +190,14 @@ def statistic():
     correct_answers = revision_game_entry.correct_answers
 
     # Update statistic table
-    statistic_entry = Statistic(user_id=user.id)
+    statistic_entry = Statistic(user_id=db_user.id)
     statistic_entry.game_type = revision_game_entry.game_type
     statistic_entry.total_rounds = total_rounds
     statistic_entry.correct_answers = correct_answers
-
-    db.session.add(statistic_entry)
+    
+    if db_user and db_user.is_authenticated():
+        db.session.add(statistic_entry)
+    
     db.session.delete(revision_game_entry)
     db.session.commit()
 

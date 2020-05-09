@@ -19,7 +19,7 @@ class Games extends Component {
       currentGameType: '',
       gameType: 'FindDefinition',
       gameRounds: 10,
-      includeLearned: false,
+      includeLearned: true,
       dictionaries: [],
       options: [],
       selectedDictionaries: []      
@@ -143,6 +143,7 @@ class Games extends Component {
       .then((data) => {        
         this.setState({
           dictionaries: data.dictionaries,
+          isLoggedIn: data.is_authenticated
         });
         this.updateOptions();
       }
@@ -250,16 +251,18 @@ class Games extends Component {
               />
             </Col>
           </FormGroup> 
-          <FormGroup check>
-            <Input 
-              type='checkbox' 
-              id='includeLearned'
-              value={this.state.includeLearned} 
-              onClick={this.changeIncludeLearned} 
-            />
-            {' '} 
-            <Label for='includeLearned'>Include learned words</Label>
-          </FormGroup>            
+          {this.state.isLoggedIn && 
+            <FormGroup check>
+              <Input 
+                type='checkbox' 
+                id='includeLearned'
+                value={this.state.includeLearned} 
+                onClick={this.changeIncludeLearned} 
+              />
+              {' '} 
+              <Label for='includeLearned'>Include learned words</Label>
+            </FormGroup>    
+          }        
           <FormGroup row>
             <Col>
               <Button 

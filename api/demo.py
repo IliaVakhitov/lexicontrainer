@@ -55,8 +55,12 @@ def fill_out_demo_data():
             db.session.add(demo_word)
             db.session.commit()
             for synonym in word['synonyms']:
-                demo_synonym = WordSynonyms(word_id=demo_word.id, synonym=synonym)
-                db.session.add(demo_synonym)
+                demo_synonym = WordSynonyms.query.\
+                    filter_by(word_id=demo_word.id).\
+                    filter_by(synonym=synonym).first()
+                if not demo_synonym:
+                    demo_synonym = WordSynonyms(word_id=demo_word.id, synonym=synonym)
+                    db.session.add(demo_synonym)
             db.session.commit()
                 
 

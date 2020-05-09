@@ -174,31 +174,45 @@ class EditWord extends Component {
           id={this.props.word.id} 
           dictionaryName={this.props.word.dictionary_name}
           dictionaryId={this.state.dictionaryId}
-        />           
-        <Button 
-          className='mx-1 my-1'
-          outline
-          color='success'
-          onClick={this.saveWord}
-        >
-          Save
-        </Button>
-        <Button 
-          className='mx-1 my-1'
-          outline
-          olor="secondary" 
-          onClick={this.cancelEdit}
-        >
-          Cancel
-        </Button>      
-        <Button 
-          className='float-right'
-          outline 
-          onClick={this.showModal}
-          color='danger'
-        >
-          Delete word
-        </Button>            
+        />  
+        {this.props.isLoggedIn && 
+          <div>         
+            <Button 
+              className='mx-1 my-1'
+              outline
+              color='success'
+              onClick={this.saveWord}
+            >
+              Save
+            </Button>
+            <Button 
+              className='mx-1 my-1'
+              outline
+              olor="secondary" 
+              onClick={this.cancelEdit}
+            >
+              Cancel
+            </Button>                
+            <Button 
+              className='float-right'
+              outline 
+              onClick={this.showModal}
+              color='danger'
+            >
+              Delete word
+            </Button> 
+          </div>   
+        }  
+        {!this.props.isLoggedIn &&   
+          <Button 
+            className='mx-1 my-1'
+            outline
+            olor="secondary" 
+            onClick={this.cancelEdit}
+          >
+            Close
+          </Button>
+        }    
         <Modal isOpen={this.state.modal} toggle={this.showModal}>
             <ModalHeader>Delete word {this.state.spelling}?</ModalHeader>
             <ModalBody>This cannot be undone!</ModalBody>

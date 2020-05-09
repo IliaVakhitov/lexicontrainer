@@ -65,7 +65,7 @@ def is_authenticated():
     """ Check if token for is not expired """
 
     curr_user = User.check_request(request)
-    user_is_authenticated = curr_user is not None
+    user_is_authenticated = curr_user.is_authenticated()
     username = curr_user.username if user_is_authenticated else None 
     return {'is_authenticated': user_is_authenticated,
             'username': username

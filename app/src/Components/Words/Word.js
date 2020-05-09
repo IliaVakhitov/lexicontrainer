@@ -54,6 +54,7 @@ class Word extends Component {
                 onCancelEdit={this.showModal}
                 word={this.props.word} 
                 onExit={this.onExit}
+                isLoggedIn={this.props.isLoggedIn}
               /> 
             </ModalBody>            
         </Modal>

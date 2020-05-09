@@ -4,6 +4,8 @@ import json
 from app import db
 from app.models import Definitions, Word, CurrentGame, WordSynonyms, Statistic, User
 from app.models import Dictionary
+from appmodel.game_type import GameType
+from appmodel.game_generator import GameGenerator
 from app import create_app
 
 
@@ -82,12 +84,22 @@ def delete_demo():
         db.session.delete(demo_user)
         db.session.commit()
 
+def check_game_generator():
+
+    result = GameGenerator.generate_game(
+        7,
+        GameType.FindDefinition,
+        [],
+        10,
+        False
+    )
+    print(result)
 
 def run_script():
     app = create_app()
 
     with app.app_context():
-        save_dictionary()
+        check_game_generator()
 
 
 if __name__ == '__main__':

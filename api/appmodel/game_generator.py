@@ -159,13 +159,13 @@ class GameGenerator:
         words_list = []
         if len(dictionaries_list) == 0:
             # All dictionaries
-            dictionaries = Dictionary.query.filter_by(user_id=user_id)
+            dictionaries = Dictionary.query.filter_by(user_id=user_id).all()
             # IDs need to make filter in words query
             dict_ids = [d.id for d in dictionaries]
         else:
             # If need to filter dictionaries
             dict_ids = [dictionary['key'] for dictionary in dictionaries_list]
-
+        
         words_query = db.session.query(Word).\
             filter(Word.dictionary_id.in_(dict_ids))
 

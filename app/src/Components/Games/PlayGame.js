@@ -63,6 +63,10 @@ class PlayGame extends Component {
             answerGiven: false,
             requestingData: false
           }); 
+        }
+        else {
+          // TODO Show message
+          this.props.history.push('/games')   
         }        
       }
     );    

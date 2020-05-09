@@ -76,7 +76,8 @@ class Dictionary extends Component {
           name: data.dictionary_name,
           description: data.description,
           namePopover: false,
-          requestingData: false
+          requestingData: false,
+          isLoggedIn: data.is_authenticated
         });        
       }
     );    
@@ -115,27 +116,40 @@ class Dictionary extends Component {
     return (
       <Container>
         <div>
-          <Button outline 
-            color='success' 
-            onClick={this.saveDictionary}
-            className='mx-1 my-1'
-          >
-            Save
-          </Button>
-          <Button outline 
-            color='secondary' 
-            onClick={this.cancelEdit}
-            className='mx-1 my-1'
-          >
-            Cancel
-          </Button>
-          <Button outline 
-            color='danger' 
-            onClick={this.showModal}
-            className='float-right mx-1 my-1'
-          >
-            Delete dictionary
-          </Button>
+          {this.state.isLoggedIn && 
+          <div>
+            <Button outline 
+              color='success' 
+              onClick={this.saveDictionary}
+              className='mx-1 my-1'
+            >
+              Save
+            </Button>
+            <Button outline 
+              color='secondary' 
+              onClick={this.cancelEdit}
+              className='mx-1 my-1'
+            >
+              Cancel
+            </Button>         
+            <Button outline 
+                color='danger' 
+                onClick={this.showModal}
+                className='float-right mx-1 my-1'
+              >
+                Delete dictionary
+              </Button>
+            </div>
+          }
+          {!this.state.isLoggedIn &&   
+            <Button outline 
+              color='secondary' 
+              onClick={this.cancelEdit}
+              className='mx-1 my-1'
+            >
+              Close
+            </Button>
+          }
           <Modal isOpen={this.state.modal} toggle={this.showModal}>
             <ModalHeader>Delete dictionary {this.state.name}?</ModalHeader>
             <ModalBody>This cannot be undone!</ModalBody>

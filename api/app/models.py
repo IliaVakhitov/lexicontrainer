@@ -110,7 +110,8 @@ class Dictionary(db.Model):
     def to_dict(self):
         return {'id': self.id,
                 'dictionary_name': self.dictionary_name,
-                'description': self.description}
+                'description': self.description if self.description else ''
+                }
 
 
 class Word(db.Model):
@@ -276,16 +277,28 @@ class User(db.Model):
         db.session.add(self)
 
     @staticmethod
+    def demo_user():
+        demo_user = User.query.filter_by(username='Demo').first()
+
+        return demo_user 
+
+    
+    def is_authenticated(self):
+        return self is not None and self.username != "Demo"
+
+    @staticmethod
     def check_token(token):
         user = User.query.filter_by(token=token).first()
         if user is None or user.token is None or user.token_expiration < datetime.utcnow():
-            return None
+            # Return demo user
+            return User.demo_user()
+            
         return user
 
     @staticmethod
     def check_request(request):
         if not 'Authorization' in request.headers:
-            return None
+            return User.demo_user()
 
         request_token = request.headers.get('Authorization').replace('Bearer ', '')
         user = User.check_token(request_token)

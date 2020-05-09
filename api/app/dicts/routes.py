@@ -46,7 +46,9 @@ def dictionaries_list():
         }        
         dicts.append(dict_entry)
         
-    return {'dictionaries': dicts}
+    return {'dictionaries': dicts,
+            'is_authenticated': db_user.is_authenticated()
+            }
 
 
 @bp.route('/dictionaries', methods=['GET'])
@@ -83,7 +85,9 @@ def dictionaries():
         }        
         dicts.append(dict_entry)
         
-    return {'dictionaries': dicts}
+    return {'dictionaries': dicts,
+            'is_authenticated': db_user.is_authenticated()
+            }
 
 
 @bp.route('/add_dictionary', methods=['POST'])
@@ -91,8 +95,10 @@ def dictionaries():
 def add_dictionary():
     """ Add new dictionary into db """
 
-    db_user = User.check_request(request)
-    
+    db_user = User.check_request(request)    
+    if not db_user or not db_user.is_authenticated():
+        return {'message': 'Demo mode'}
+
     request_data = request.get_json()
     dictionary_name = request_data.get('dictionary_name').strip()
     dictionary_description = request_data.get('dictionary_description').strip()
@@ -112,8 +118,10 @@ def add_dictionary():
 def delete_dictionary():
     """ Delete dictionary from db """
 
-    User.check_request(request)
-    
+    db_user = User.check_request(request)
+    if not db_user or not db_user.is_authenticated():
+        return {'message': 'Demo mode'}
+
     dictionary_id = request.get_json().get('dictionary_id')
     dictionary_entry = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
     
@@ -129,8 +137,10 @@ def delete_dictionary():
 def update_dictionary():
     """ Update dictioary inforamtion """
 
-    User.check_request(request)
-    
+    db_user = User.check_request(request)
+    if not db_user or not db_user.is_authenticated():
+        return {'message': 'Demo mode'}
+
     request_data = request.get_json()
     dictionary_id = request_data.get('dictionary_id')
     dictionary_entry = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
@@ -147,12 +157,12 @@ def update_dictionary():
 def dictionary():
     """ Return dictionary inforamtion """
 
-    User.check_request(request)
+    db_user = User.check_request(request)
     
     dictionary_id = request.headers.get('dictionary_id')
     db_dictionary = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
     dict_entry = db_dictionary.to_dict()  
-    
+    dict_entry['is_authenticated'] = db_user.is_authenticated()
     return dict_entry
 
 

@@ -51,7 +51,7 @@ class Dictionaries extends Component {
         this.setState({
           dictionaries: data.dictionaries,
           requestingData: false,
-          isLoggedIn: true // TODO
+          isLoggedIn: data.is_authenticated
         });        
       }
     );    
