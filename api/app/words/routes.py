@@ -239,9 +239,10 @@ def add_word():
     db.session.add(learning_index)
 
     # Add synonyms
-    for synonym in synonyms:
-        db_synonym = WordSynonyms(word_id=new_word.id, synonym=synonym)
-        db.session.add(db_synonym)
+    if synonyms:
+        for synonym in synonyms:
+            db_synonym = WordSynonyms(word_id=new_word.id, synonym=synonym)
+            db.session.add(db_synonym)
     
     db.session.commit()
 

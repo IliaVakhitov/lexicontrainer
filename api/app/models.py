@@ -201,7 +201,7 @@ class Word(db.Model):
     @staticmethod
     def all_definitions():
         """ Return all definitions from db 
-            Using SETs to exclude duplcates
+            Using Set to exclude duplcates
         """ 
 
         # Words definitions
@@ -397,3 +397,4 @@ class GameRound(db.Model):
             'correct_index': self.correct_index,
             'answers': answers
         }
+

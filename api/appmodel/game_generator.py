@@ -31,15 +31,6 @@ class GameGenerator:
         db.session.commit()
         return revision_game_entry
     
-    @staticmethod 
-    def game_find_spelling(revision_game_entry, words_list, words_limit):
-        """ Generate game Find Definition 
-            Return:
-                True - success
-                False - error in generating
-        """
-        # TODO
-        return False
     
     @staticmethod
     def get_random_value(
@@ -59,10 +50,10 @@ class GameGenerator:
 
     @staticmethod
     def generate_game_rounds(
-        revision_game_entry, 
-        game_type, 
-        words_list, 
-        words_limit):
+            revision_game_entry, 
+            game_type, 
+            words_list, 
+            words_limit):
         """ Generate game Find Definition 
             Return:
                 True - success

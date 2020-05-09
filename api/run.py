@@ -2,8 +2,10 @@
 
 import json
 from app import db
-from app.models import Definitions, Word, CurrentGame, WordSynonyms, Statistic
+from app.models import Definitions, Word, CurrentGame, WordSynonyms, Statistic, User
+from app.models import Dictionary
 from app import create_app
+
 
 def update_defitions_table():
     definitions = db.session.query(Definitions, Word).\
@@ -23,6 +25,7 @@ def words_data_lower():
     db.session.commit()
 
     return {'result': 'success'}
+
 
 def fillout_newsynonyms():
     words = Word.query.all()
@@ -56,12 +59,35 @@ def update_statistic():
 
     return {'result': 'success'}
 
+
+def save_dictionary():
+    dictionary = Dictionary.query.filter_by(id=2).first()
+    data = {'name':dictionary.dictionary_name}
+    data['words'] = []
+    for word in dictionary.words.all():
+        data['words'].append(
+            {'spelling': word.spelling,
+             'definition': word.definition,
+             'synonyms': [s for s in word.word_synonyms()]
+            }
+        )
+
+    with open('data.json', 'w') as fout:
+        json.dump(data, fout, indent=4)
+
+
+def delete_demo():
+    demo_user = User.query.filter_by(username='Demo').first()
+    if demo_user:
+        db.session.delete(demo_user)
+        db.session.commit()
+
+
 def run_script():
     app = create_app()
 
     with app.app_context():
-        revision_game_entry = CurrentGame.query.filter_by(user_id=2).first()    
-        print(revision_game_entry.get_current_game())
+        save_dictionary()
 
 
 if __name__ == '__main__':
