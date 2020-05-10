@@ -55,6 +55,7 @@ class NewDictionary extends Component {
           collapseOpen: false
         });
         this.props.onSaveDictionary();
+        this.props.showMessage('Dictionary saved!');
       }
     ); 
   }

@@ -40,18 +40,16 @@ class Index extends Component {
   }
 
   onSaveDictionary() {
-    // TODO
-    // show message
-    // TODO
-    //this.props.history.push('/dictionaries');
+    this.props.showMessage('Dictionary saved!');
+    this.isOpenNewDictionary(false);
+    this.isOpenNewWord(false);
   }
   
   
   onSaveWord() {
-    // TODO
-    // show message
-    // TODO
-    //this.props.history.push('/words');
+    this.props.showMessage('Word saved!');
+    this.isOpenNewDictionary(false);
+    this.isOpenNewWord(false);
   }
   
   isOpenNewDictionary(value) {
@@ -94,6 +92,7 @@ class Index extends Component {
             <NewDictionary 
               onSaveDictionary={this.onSaveDictionary}
               isOpen={(value) => this.isOpenNewDictionary(value)}
+              showMessage={(message) => this.props.showMessage(message)}  
             />
           }
           {this.state.isLoggedIn && !this.state.isOpenNewDictionary &&
@@ -102,6 +101,7 @@ class Index extends Component {
               dictionaries={this.state.dictionaries}
               updateList={this.onSaveWord}
               isOpen={(value) => this.isOpenNewWord(value)}
+              showMessage={(message) => this.props.showMessage(message)}  
             />
           }
         <RandomWords />        

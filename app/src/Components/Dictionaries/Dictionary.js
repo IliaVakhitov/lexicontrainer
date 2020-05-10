@@ -90,6 +90,7 @@ class Dictionary extends Component {
     this.fetchData('/dicts/delete_dictionary', 'DELETE', [], body) 
       .then(() => {                
         this.props.history.push('/dictionaries');
+        this.props.showMessage('Dictionary deleted!');
       }
     ); 
   }
@@ -107,6 +108,7 @@ class Dictionary extends Component {
     this.fetchData('/dicts/update_dictionary', 'POST', [], body) 
       .then(() => {                
         this.props.history.push('/dictionaries');
+        this.props.showMessage('Dictionary saved!');
       },
     );  
   }
@@ -209,6 +211,7 @@ class Dictionary extends Component {
           dictionaries={this.props.dictionaries}
           updateDictionary={this.dictionary}
           onDeleteWord={this.dictionary}
+          showMessage={(message) => this.props.showMessage(message)} 
         />
       </Container>
     );

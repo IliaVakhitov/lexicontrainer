@@ -65,7 +65,7 @@ class PlayGame extends Component {
           }); 
         }
         else {
-          // TODO Show message
+          this.props.showMessage('Game error! ' + data.error);
           this.props.history.push('/games')   
         }        
       }
@@ -80,7 +80,7 @@ class PlayGame extends Component {
     });
     this.fetchData('/games/save_current_game', 'POST', [], body)
       .then((data) => {
-        // TODO show message
+        this.props.showMessage(data.result);
         console.log(data);
       });   
   }  

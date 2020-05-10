@@ -62,7 +62,7 @@ class Profile extends Component {
             }
           {!requestingData &&
            <Container>
-            <h3>{this.state.username} user information</h3>            
+            <h3>{this.state.username}</h3>            
             <p>Dictionaries: {this.state.dictionaries}</p>
             <p>Total words: {this.state.words}</p>
             <p>Words learned: {this.state.wordsLearned}</p>

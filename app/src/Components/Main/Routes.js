@@ -22,48 +22,97 @@ class Routes extends Component {
   render() {
     return(
       <Switch>
-        <Route exact path='/' 
+        <Route  
+          exact
+          path='/' 
           render={(props) => 
             <Index {...props} 
               username={this.props.username} 
+              showMessage={(message) => this.props.showMessage(message)} 
             />
           } 
         />
-        <Route path='/login' 
+        <Route 
+          path='/login' 
           render={(props) => 
             <Login {...props} 
               onLogin={this.props.onLogin()} 
             />
           } 
         />
-        <Route path='/logout' 
+        <Route 
+          path='/logout' 
           render={(props) => 
             <Logout {...props} 
               onLogout={this.props.onLogout()} 
             />
           } 
         />
-        <Route path='/profile' 
+        <Route 
+          path='/profile' 
           render={(props) => 
             <Profile {...props}  
               username={this.props.username}
             />
           } 
         />
-        <Route path='/register' 
+        <Route 
+          path='/register' 
           render={(props) => 
             <Register {...props}  
               onLogin={this.props.onLogin()} 
             /> 
           }
         />
-        <Route path='/words' component={Words} />
-        <Route path='/games' component={Games} /> 
-        <Route path='/statistic' component={Statistic} />
-        <Route path='/play' component={PlayGame} /> 
-        <Route path='/dictionaries' component={Dictionaries} />
-        <Route path='/dictionary' component={Dictionary} />
-        <Route path='/error' component={Error} />        
+        <Route 
+          path='/words' 
+          render={(props) => 
+            <Words {...props} 
+              showMessage={(message) => this.props.showMessage(message)} 
+            /> 
+          }
+        />
+        <Route 
+          path='/games' 
+          render={(props) => 
+            <Games {...props}  
+              showMessage={(message) => this.props.showMessage(message)} 
+            /> 
+          }
+        /> 
+        <Route 
+          path='/statistic' 
+          render={(props) => 
+            <Statistic {...props}  
+              showMessage={(message) => this.props.showMessage(message)} 
+            /> 
+          }
+        />
+        <Route 
+          path='/play' 
+          render={(props) => 
+            <PlayGame {...props}   
+              showMessage={(message) => this.props.showMessage(message)} 
+            /> 
+          }
+        /> 
+        <Route 
+          path='/dictionaries' 
+          render={(props) => 
+            <Dictionaries {...props} 
+              showMessage={(message) => this.props.showMessage(message)}  
+            /> 
+          }
+        />
+        <Route 
+          path='/dictionary' 
+          render={(props) => 
+            <Dictionary {...props}   
+              showMessage={(message) => this.props.showMessage(message)}  
+            /> 
+          }
+        />
+        <Route path='/error' component={Error} />                   
       </Switch>
     );
   }

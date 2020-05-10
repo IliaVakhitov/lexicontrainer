@@ -86,6 +86,7 @@ class EditWord extends Component {
     this.fetchData('/words/delete_word', 'DELETE', [], body)
       .then(() => {        
         this.props.onExit();
+        this.props.showMessage('Word deleted!');
       }
     );       
   }

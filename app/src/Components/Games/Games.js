@@ -121,7 +121,6 @@ class Games extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    // TODO validate form data
     if (this.state.gameRounds < 4) {
       return;
     }

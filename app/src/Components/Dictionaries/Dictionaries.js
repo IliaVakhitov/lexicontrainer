@@ -120,7 +120,15 @@ class Dictionaries extends Component {
           </CardHeader>
           <CardBody>
             <CardTitle>{dict.description}</CardTitle>
-            <CardText>Progress: {dict.progress.toFixed(2)}%</CardText>  
+            <CardText>
+              Words: {dict.words.length}
+              {this.state.isLoggedIn && 
+                <i>
+                  <br/>
+                  Progress: {dict.progress.toFixed(2)}%
+                </i>
+              }
+              </CardText>
             <Button outline 
               id={'words_togger'.concat(dict.id)} 
               color='info'
@@ -175,6 +183,7 @@ class Dictionaries extends Component {
         {this.state.isLoggedIn &&
           <NewDictionary 
             onSaveDictionary={this.onSaveDictionary}
+            showMessage={(message) => this.props.showMessage(message)} 
           />
         }
         {this.state.requestingData && <Spinner type='grow' color='dark' />}

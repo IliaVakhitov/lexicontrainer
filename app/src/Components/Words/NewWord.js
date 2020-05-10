@@ -98,6 +98,7 @@ class NewWord extends Component {
           synonyms: []
         });
         this.props.updateList();
+        this.props.showMessage('Word saved!');
       }
     );     
   }

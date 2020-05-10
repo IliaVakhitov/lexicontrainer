@@ -81,6 +81,7 @@ class Words extends Component {
             updateList={this.getWords}
             word={word}
             isLoggedIn={this.state.isLoggedIn} 
+            showMessage={(message) => this.props.showMessage(message)} 
           />            
         </ListGroupItem>        
     );
@@ -93,6 +94,7 @@ class Words extends Component {
             dictionaryId={this.props.dictionaryId} 
             dictionaries={this.state.dictionaries}
             updateList={this.getWords}
+            showMessage={(message) => this.props.showMessage(message)} 
           />
         }
         <h3>Words</h3>

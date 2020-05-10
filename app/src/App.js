@@ -16,7 +16,4 @@ class App extends Component {
 
 export default App;
 // TODO
-// 1. Make standart fetch requests
-// 2. Handle errors in requests on client side
-// 3. Make available demo version, without login
 // 4. Print statistic from statistic table

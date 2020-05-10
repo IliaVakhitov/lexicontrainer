@@ -39,7 +39,9 @@ class Word extends Component {
         >
           <b>{this.props.word.spelling}</b>{'  '}
           <i color='secondary' style={{fontSize:'15px'}}>{this.props.word.definition}{'. '}</i>
-          <span style={{fontSize:'16px'}}>{'Progress: '}{this.props.word.progress}{'%'}</span>
+          {this.props.isLoggedIn && 
+            <span style={{fontSize:'16px'}}>{'Progress: '}{this.props.word.progress}{'%'}</span>
+          }
         </h5>                  
         <Modal 
             size='lg'
@@ -55,6 +57,7 @@ class Word extends Component {
                 word={this.props.word} 
                 onExit={this.onExit}
                 isLoggedIn={this.props.isLoggedIn}
+                showMessage={(message) => this.props.showMessage(message)} 
               /> 
             </ModalBody>            
         </Modal>
