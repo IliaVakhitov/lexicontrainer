@@ -90,13 +90,13 @@ def save_current_game():
         revision_game_entry.correct_answers = correct_answers
         db.session.commit()
         logger.info('Game saved')
-        return {'result': 'Game saved'}
+        return {'result': 'Game saved!'}
     
     #Update statistic table and delete current game
     revision_game_entry.update_statistic(correct_answers)
     logger.info('Game finished. Statistic updated.')
 
-    return {'result': 'Game finished'}
+    return {'result': 'Game finished!'}
 
 @bp.route('/remove_game', methods=['DELETE'])
 @token_auth.login_required
