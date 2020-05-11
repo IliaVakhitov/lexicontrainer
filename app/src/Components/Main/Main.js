@@ -4,7 +4,7 @@ import MyNavBar from './MyNavBar';
 import Routes from './Routes';
 import MyAlert from './MyAlert';
 
-import fetchData from "../../Utils/fetchData";
+import fetchData from '../../Utils/fetchData';
 
 class Main extends Component {
   
@@ -58,6 +58,7 @@ class Main extends Component {
   }
 
   showMessage(message) {
+  
     this.setState({
       message: message
     });
@@ -65,6 +66,7 @@ class Main extends Component {
     this.myInterval = setInterval(() => {
       this.hideMessage();
     }, 3000);
+  
   }
 
   hideMessage() {

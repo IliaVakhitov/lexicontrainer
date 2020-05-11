@@ -44,9 +44,9 @@ class Definition extends Component {
     this.updateOptions();
   }
 
+
+
   checkOptions() {
-    // TODO 
-    //reset definitons when new word has been saved
     if (!this.props.spelling) {
       this.setState({ 
         value:'',

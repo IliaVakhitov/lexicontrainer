@@ -192,7 +192,7 @@ class NewWord extends Component {
           </InputGroup>            
           <Definition 
             updateDefinition={(value) => this.updateDefinition(value)}
-            key='definition0'
+            key={'definition'.concat(this.state.spelling)}
             id='newDefinition'
             spelling={this.state.spelling}
             definition={this.state.definition} 
@@ -200,7 +200,7 @@ class NewWord extends Component {
           />  
           <Symonyms 
             updateSynonyms={(value) => this.updateSynonyms(value)}
-            key='synonyms0'
+            key={'synonyms0'.concat(this.state.spelling)}
             id='newSynonyms'
             spelling={this.state.spelling}
             allSynonyms={[]} 
