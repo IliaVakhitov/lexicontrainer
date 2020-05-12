@@ -1,0 +1,99 @@
+{
+    "name": "Dictionary",
+    "words": [
+        {
+            "spelling": "apt",
+            "definition": "being of striking appropriateness and pertinence",
+            "synonyms": [
+                "tending",
+                "apposite",
+                "pertinent"
+            ]
+        },
+        {
+            "spelling": "bizarre",
+            "definition": "conspicuously or grossly unconventional or unusual",
+            "synonyms": [
+                "eccentric",
+                "freaky"
+            ]
+        },
+        {
+            "spelling": "compulsory",
+            "definition": "required by rule",
+            "synonyms": [
+                "mandatory",
+                "required"
+            ]
+        },
+        {
+            "spelling": "hitch",
+            "definition": "the state of inactivity following an interruption",
+            "synonyms": [
+                "snag"
+            ]
+        },
+        {
+            "spelling": "leash",
+            "definition": "a figurative restraint",
+            "synonyms": [
+                "rope"
+            ]
+        },
+        {
+            "spelling": "lumpy",
+            "definition": "having lumps; not smooth and even in texture",
+            "synonyms": [
+                "chunky"
+            ]
+        },
+        {
+            "spelling": "proneness",
+            "definition": "being disposed to do something",
+            "synonyms": []
+        },
+        {
+            "spelling": "reluctant",
+            "definition": "unwillingness to do something contrary to your custom",
+            "synonyms": [
+                "loath"
+            ]
+        },
+        {
+            "spelling": "restrain",
+            "definition": "prevent the action or expression of",
+            "synonyms": [
+                "hold back",
+                "keep back"
+            ]
+        },
+        {
+            "spelling": "sift",
+            "definition": "separate by passing through a sieve or other straining device to separate out coarser elements",
+            "synonyms": [
+                "sieve",
+                "strain"
+            ]
+        },
+        {
+            "spelling": "snag",
+            "definition": "an unforeseen obstacle",
+            "synonyms": [
+                "hitch"
+            ]
+        },
+        {
+            "spelling": "suspend",
+            "definition": "stop a process or a habit by imposing a freeze on it",
+            "synonyms": [
+                "freeze",
+                "set aside"
+            ]
+        },
+        {
+            "spelling": "veracity",
+            "definition": "unwillingness to tell lies",
+            "synonyms": []
+        }
+    ]
+}
