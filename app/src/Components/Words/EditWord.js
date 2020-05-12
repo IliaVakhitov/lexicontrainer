@@ -1,8 +1,7 @@
 import React from 'react';
 import { Component } from 'react';
-import { Input, Button, 
-  InputGroup, InputGroupAddon, InputGroupText,
-  FormFeedback, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'; 
+import { Input, Button, Label, FormFeedback, 
+  Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'; 
 
 import Symonyms from './Symonyms';
 import Definition from './Definition';
@@ -135,18 +134,15 @@ class EditWord extends Component {
 
     return ( 
       <div>
-        <InputGroup >
-          <InputGroupAddon  style={{width:'15%'}} addonType='prepend'>
-            <InputGroupText className='w-100'>Spelling</InputGroupText>
-          </InputGroupAddon>         
-          <Input 
-            invalid={!this.state.spelling}
-            value={this.state.spelling}
-            name='spelling' 
-            id='spelling' 
-            onChange={this.updateState}/>
-          <FormFeedback>Please, fill out this field!</FormFeedback>
-        </InputGroup>            
+        <Label className='my-1' for='spelling'>Spelling</Label>          
+        <Input 
+          id='spelling'
+          invalid={!this.state.spelling}
+          value={this.state.spelling}
+          name='spelling' 
+          id='spelling' 
+          onChange={this.updateState}/>
+        <FormFeedback>Please, fill out this field!</FormFeedback>      
         <Definition 
           updateDefinition={(value) => this.updateDefinition(value)}
           key={'definition'.concat(this.props.word.id)} 
@@ -161,7 +157,7 @@ class EditWord extends Component {
         >
           Please, fill out this field!
         </span>        
-        <Symonyms 
+        <Symonyms
           updateSynonyms={(value) => this.updateSynonyms(value)}
           key={'synonyms'.concat(this.props.word.id)} 
           id={this.props.word.id}
@@ -195,7 +191,7 @@ class EditWord extends Component {
               Cancel
             </Button>                
             <Button 
-              className='float-right'
+              className='float-right mx-1 my-1'
               outline 
               onClick={this.showModal}
               color='danger'

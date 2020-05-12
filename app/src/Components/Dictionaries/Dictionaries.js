@@ -109,7 +109,7 @@ class Dictionaries extends Component {
       <ListGroupItem 
         style={{borderStyle: 'none'}}
         key={dict.id} 
-        className='w-50'>
+        className='w-100'>
         <Card>
           <CardHeader
             tag='a' 

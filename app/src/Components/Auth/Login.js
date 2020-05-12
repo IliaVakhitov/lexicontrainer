@@ -1,7 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { Input, InputGroupAddon, InputGroup, InputGroupText, Container,
-  FormGroup, Label, Form, Button } from 'reactstrap';
+import { Input, Label, Container, FormGroup, Form, Button } from 'reactstrap';
 
 import { withRouter } from 'react-router-dom';
 import fetchData from '../../Utils/fetchData';
@@ -80,31 +79,27 @@ class Login extends Component {
     return (
       <Container>
         <Form onSubmit={this.handleSubmit}>
-        <InputGroup className='my-2'>
-            <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
-              <InputGroupText className='w-100'>Username</InputGroupText>
-            </InputGroupAddon>
-            <Input 
-              invalid={this.state.loginError 
-                || (this.state.showInvalid && !this.state.username)}
-              placeholder='username'  
-              value={this.state.username} 
-              name='username'            
-              onChange={this.updateState}/>
-          </InputGroup>
-          <InputGroup className='my-2'>
-            <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
-              <InputGroupText className='w-100'>Password</InputGroupText>
-            </InputGroupAddon>
-            <Input 
-              type='password'
-              invalid={this.state.loginError 
-                || (this.state.showInvalid && !this.state.password)} 
-              value={this.state.password} 
-              name='password'                        
-              placeholder='password'                
-              onChange={this.updateState}/>
-          </InputGroup>          
+          <Label for='username' className='my-1'>Username</Label>
+          <Input 
+            id='username'
+            invalid={this.state.loginError 
+              || (this.state.showInvalid && !this.state.username)}
+            placeholder='username'  
+            value={this.state.username} 
+            name='username'            
+            onChange={this.updateState}
+          />
+          <Label for='password' className='my-1'>Password</Label>
+          <Input 
+            id='password'
+            type='password'
+            invalid={this.state.loginError 
+              || (this.state.showInvalid && !this.state.password)} 
+            value={this.state.password} 
+            name='password'                        
+            placeholder='password'                
+            onChange={this.updateState}
+          />
           <FormGroup check className='my-2'>
             <Label for='rememberMe'>
               <Input 

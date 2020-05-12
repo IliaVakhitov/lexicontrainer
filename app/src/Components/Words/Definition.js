@@ -1,7 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { InputGroup, InputGroupAddon, InputGroupText,
-  Popover, PopoverBody } from 'reactstrap';
+import { Label, Popover, PopoverBody } from 'reactstrap';
 
 import CreatableSelect from 'react-select/creatable';
 
@@ -136,7 +135,7 @@ class Definition extends Component {
   render() {
 
     return (
-      <InputGroup className='my-2'>
+      <div className='my-2'>
         <Popover
           placement='top'
           isOpen={this.state.showPopover}
@@ -145,9 +144,7 @@ class Definition extends Component {
             Get definition from Words API
           </PopoverBody>
         </Popover>
-        <InputGroupAddon  style={{width:'15%'}} addonType='prepend'>
-          <InputGroupText 
-            className='w-100'
+        <Label className='my-2' for='definition'            
             tag='a' 
             name={'definitionText'.concat(this.props.id)}
             id={'definitionText'.concat(this.props.id)}
@@ -157,10 +154,11 @@ class Definition extends Component {
             style={{ cursor: 'pointer' }}
           >
             Definition 
-          </InputGroupText>
-        </InputGroupAddon>     
-        <div style={{width:'85%'}}>
-          <CreatableSelect              
+          </Label>
+          <br/>
+          <CreatableSelect  
+            className='w-100'
+            id='definition'            
             isClearable
             isDisabled={this.state.requestingData}
             isLoading={this.state.requestingData}
@@ -169,9 +167,8 @@ class Definition extends Component {
             onCreateOption={this.handleCreate}
             options={this.state.options}  
             value={this.state.value}       
-          />           
-        </div> 
-      </InputGroup>             
+          />
+      </div>             
     );
   }
 }

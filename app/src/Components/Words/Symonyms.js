@@ -1,7 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { InputGroup, InputGroupAddon, InputGroupText,
-  Popover, PopoverBody } from 'reactstrap';
+import { Label, Popover, PopoverBody } from 'reactstrap';
 
 import CreatableSelect from 'react-select/creatable';
 
@@ -121,7 +120,7 @@ class Symonyms extends Component {
   render() {
 
     return (
-      <InputGroup className='my-2'>
+      <div className='my-2'>
         <Popover
           placement='top'
           isOpen={this.state.showPopover}
@@ -130,35 +129,33 @@ class Symonyms extends Component {
             Get synonyms from Words API
           </PopoverBody>
         </Popover>
-        <InputGroupAddon style={{width:'15%'}} addonType='prepend'>
-          <InputGroupText 
-            className='w-100'
-            tag='a' 
-            name={'synonymsText'.concat(this.props.id)}
-            id={'synonymsText'.concat(this.props.id)}
-            onMouseOver={() => this.showPopover(true)}
-            onMouseLeave={() => this.showPopover(false)}
-            onClick={this.requestData}
-            style={{ cursor: 'pointer' }}
-          >
-            Symonyms
-          </InputGroupText>
-        </InputGroupAddon>              
-        <div style={{width:'85%'}}>
-          <CreatableSelect 
-            isClearable
-            isMulti
-            closeMenuOnSelect={false}
-            isDisabled={this.state.requestingData}
-            isLoading={this.state.requestingData}
-            onMenuOpen={this.checkOptions}
-            onChange={this.handleChange}          
-            onCreateOption={this.handleCreate}
-            options={this.state.options}  
-            value={this.state.value}       
-          />
-        </div>              
-      </InputGroup> 
+        <Label 
+          for='synonyms'
+          className='w-100'
+          tag='a' 
+          name={'synonymsText'.concat(this.props.id)}
+          id={'synonymsText'.concat(this.props.id)}
+          onMouseOver={() => this.showPopover(true)}
+          onMouseLeave={() => this.showPopover(false)}
+          onClick={this.requestData}
+          style={{ cursor: 'pointer' }}
+        >
+          Symonyms
+        </Label>
+        <CreatableSelect 
+          isClearable
+          isMulti
+          id='synonyms'
+          closeMenuOnSelect={false}
+          isDisabled={this.state.requestingData}
+          isLoading={this.state.requestingData}
+          onMenuOpen={this.checkOptions}
+          onChange={this.handleChange}          
+          onCreateOption={this.handleCreate}
+          options={this.state.options}  
+          value={this.state.value}       
+        />             
+      </div> 
     );
   }
 }

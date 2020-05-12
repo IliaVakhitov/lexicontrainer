@@ -49,7 +49,6 @@ class Profile extends Component {
     
   }
   
-
   render() {
     const requestingData = this.state.requestingData;
     return (      
@@ -67,7 +66,7 @@ class Profile extends Component {
             <p>Total words: {this.state.words}</p>
             <p>Words learned: {this.state.wordsLearned}</p>
             <p>Progres: {this.state.progress}%</p>
-          </Container>
+          </Container>          
           }
         </Container>        
       );

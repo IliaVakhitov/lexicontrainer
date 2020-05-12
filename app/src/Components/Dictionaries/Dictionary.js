@@ -1,7 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { Container, Input, InputGroup, 
-  InputGroupAddon, InputGroupText,
+import { Container, Input, Label,
   FormFeedback, Spinner, Button,
   Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap'
 import { withRouter } from 'react-router-dom';
@@ -177,32 +176,25 @@ class Dictionary extends Component {
         </div>
         {!requestingData &&
           <div>
-            <InputGroup className='my-2'>
-              <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
-                <InputGroupText className='w-100'>Name</InputGroupText>
-              </InputGroupAddon>
-              <Input
-                invalid={!this.state.name}
-                type='text'
-                name='name'
-                id='name'
-                value={this.state.name}
-                onChange={this.updateState}
-              />
-              <FormFeedback>Please, fill out this field!</FormFeedback>
-            </InputGroup>
-            <InputGroup className='my-2'>
-              <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
-                <InputGroupText className='w-100'>Description</InputGroupText>
-              </InputGroupAddon>        
-              <Input
-                type='text'
-                name='description'
-                value={this.state.description}
-                onChange={this.updateState}
-              />
-            </InputGroup>
-          </div>
+            <Label className='my-1' for='name'>Name</Label>
+            <Input
+              invalid={!this.state.name}
+              type='text'
+              name='name'
+              id='name'
+              value={this.state.name}
+              onChange={this.updateState}
+            />
+            <FormFeedback>Please, fill out this field!</FormFeedback>
+            <Label className='my-1' for='description'>Description</Label>
+            <Input
+              type='text'
+              name='description'
+              value={this.state.description}
+              onChange={this.updateState}
+            />  
+            <br/>        
+          </div>          
         }      
         {requestingData && <Spinner type='grow' color='dark' />}
         <Words 

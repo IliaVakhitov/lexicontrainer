@@ -15,5 +15,3 @@ class App extends Component {
 }
 
 export default App;
-// TODO
-// 4. Print statistic from statistic table

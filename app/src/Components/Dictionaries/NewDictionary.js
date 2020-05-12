@@ -1,7 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { Input, InputGroup, InputGroupAddon, InputGroupText,
-  Button, Collapse } from 'reactstrap'
+import { Input, Button, Collapse, Label } from 'reactstrap'
 
 import fetchData from '../../Utils/fetchData';
 
@@ -88,33 +87,26 @@ class NewDictionary extends Component {
             onClick={this.changeCollapseOpen}>
             Cancel
           </Button>
-          <InputGroup className='my-2'>
-            <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
-              <InputGroupText className='w-100'>Name</InputGroupText>
-            </InputGroupAddon>                
-            <Input 
-              invalid={!this.state.name}
-              type='text' 
-              value={this.state.name} 
-              name='name'
-              id='name'
-              placeholder='Type name for new dictionary'
-              onChange={this.updateState}
-            />
-          </InputGroup>          
-          <InputGroup className='my-2'>
-            <InputGroupAddon style={{width:'10%'}} addonType='prepend'>
-              <InputGroupText className='w-100'>Description</InputGroupText>
-            </InputGroupAddon>
-            <Input 
-              type='text'
-              name='description' 
-              id='description' 
-              value={this.state.description} 
-              placeholder='Type description for new dictionary'
-              onChange={this.updateState}
-            />
-          </InputGroup>
+          <br/>
+          <Label className='my-1' for='name'>Name</Label>
+          <Input 
+            invalid={!this.state.name}
+            type='text' 
+            value={this.state.name} 
+            name='name'
+            id='name'
+            placeholder='Type name for new dictionary'
+            onChange={this.updateState}
+          />
+          <Label className='my-1' for='description'>Description</Label>
+          <Input 
+            type='text'
+            name='description' 
+            id='description' 
+            value={this.state.description} 
+            placeholder='Type description for new dictionary'
+            onChange={this.updateState}
+          />
         </Collapse>
       </div>
     );

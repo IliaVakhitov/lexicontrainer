@@ -104,8 +104,7 @@ class Main extends Component {
           username={this.state.username} 
           onLogout={() => this.onLogout} 
           onLogin={() => this.onLogin} 
-        />;
-        
+        />        
       </div>
     );
   }

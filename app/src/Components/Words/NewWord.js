@@ -1,6 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { Input,InputGroup, InputGroupAddon, InputGroupText, 
+import { Input,Label, 
   Button, Collapse,PopoverHeader,PopoverBody, Popover } from 'reactstrap';
 
 import Symonyms from './Symonyms';
@@ -177,19 +177,17 @@ class NewWord extends Component {
           >
             Cancel
           </Button>
-          <InputGroup className='my-2'>
-            <InputGroupAddon style={{width:'15%'}} addonType='prepend'>
-              <InputGroupText className='w-100'>Spelling</InputGroupText>
-            </InputGroupAddon>        
-              <Input 
-                invalid={!this.state.spelling}
-                value={this.state.spelling}
-                name='spelling'
-                id='spelling'
-                onChange={this.updateState} 
-                placeholder='Type word or phrase '
-              />
-          </InputGroup>            
+          <br/>
+          <Label className='my-1'for='spelling'>Spelling</Label>
+          <Input 
+            invalid={!this.state.spelling}
+            value={this.state.spelling}
+            name='spelling'
+            id='spelling'
+            onChange={this.updateState} 
+            placeholder='Type word or phrase '
+          />
+          
           <Definition 
             updateDefinition={(value) => this.updateDefinition(value)}
             key={'definition'.concat(this.state.spelling)}

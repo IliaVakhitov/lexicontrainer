@@ -1,7 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { Input, InputGroupAddon, InputGroup, InputGroupText, 
-  Container, Form, Button } from 'reactstrap';
+import { Input, Label, Container, Form, Button } from 'reactstrap';
 
 import { withRouter } from 'react-router-dom';
 
@@ -66,53 +65,45 @@ class Register extends Component {
     return (
       <Container>
         <Form onSubmit={this.handleSubmit}>
-          <InputGroup className='my-2'>
-            <InputGroupAddon addonType='prepend' style={{width:'12%'}}>
-              <InputGroupText className='w-100'>Username</InputGroupText>
-            </InputGroupAddon>
-            <Input 
-              invalid={this.state.showInvalid && !this.state.username}
-              placeholder='username'  
-              value={this.state.username} 
-              name='username'            
-              onChange={this.updateState}/>
-          </InputGroup>
-          <InputGroup className='my-2'>
-            <InputGroupAddon addonType='prepend' style={{width:'12%'}}>
-              <InputGroupText className='w-100'>Password</InputGroupText>
-            </InputGroupAddon>
-            <Input 
-              invalid={this.state.showInvalid && !this.state.username}
-              type='password' 
-              value={this.state.password} 
-              name='password'                        
-              placeholder='password'                
-              onChange={this.updateState}/>
-          </InputGroup>
-          <InputGroup className='my-2'>
-            <InputGroupAddon addonType='prepend' style={{width:'12%'}}>
-              <InputGroupText className='w-100'>Secret question</InputGroupText>
-            </InputGroupAddon>
-            <Input 
-              placeholder='secret question' 
-              invalid={this.state.showInvalid && !this.state.secretQuestion} 
-              value={this.state.secretQuestion} 
-              name='secretQuestion'            
-              onChange={this.updateState}/>
-          </InputGroup>
-          <InputGroup className='my-2'>
-            <InputGroupAddon addonType='prepend' style={{width:'12%'}}>
-              <InputGroupText className='w-100'>Secret answer</InputGroupText>
-            </InputGroupAddon>
-            <Input 
-              type='password' 
-              invalid={this.state.showInvalid && !this.state.secretAnswer} 
-              value={this.state.secretAnswer} 
-              name='secretAnswer'                        
-              placeholder='secret answer'                
-              onChange={this.updateState}/>
-          </InputGroup>          
-          <Button outline>Register</Button>
+          <Label for='username' className='my-1'>Username</Label>
+          <Input 
+            id='username'
+            invalid={this.state.showInvalid && !this.state.username}
+            placeholder='username'  
+            value={this.state.username} 
+            name='username'            
+            onChange={this.updateState}
+          />
+          <Label for='password' className='my-1'>Password</Label>
+          <Input 
+            id='password'
+            invalid={this.state.showInvalid && !this.state.username}
+            type='password' 
+            value={this.state.password} 
+            name='password'                        
+            placeholder='password'                
+            onChange={this.updateState}
+          />
+          <Label for='secretQuestion' className='my-1'>Secret question</Label>
+          <Input 
+            id='secretQuestion'
+            placeholder='secret question' 
+            invalid={this.state.showInvalid && !this.state.secretQuestion} 
+            value={this.state.secretQuestion} 
+            name='secretQuestion'            
+            onChange={this.updateState}
+          />
+          <Label for='secretAnswer' className='my-1'>Secret answer</Label>
+          <Input 
+            id='secretAnswer'
+            type='password' 
+            invalid={this.state.showInvalid && !this.state.secretAnswer} 
+            value={this.state.secretAnswer} 
+            name='secretAnswer'                        
+            placeholder='secret answer'                
+            onChange={this.updateState}
+          />
+          <Button className='my-2' outline>Register</Button>
         </Form>
       </Container>
     );

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { InputGroup, InputGroupAddon, InputGroupText,
-  Popover, PopoverBody} from 'reactstrap'; 
+import { Label, Popover, PopoverBody} from 'reactstrap'; 
 
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
@@ -94,7 +93,7 @@ class WordDictionary extends Component {
 
   render() {
     return(
-      <InputGroup className='my-2'>
+      <div className='my-2'>
         <Popover
           placement='top'
           isOpen={this.state.showPopover}
@@ -103,32 +102,30 @@ class WordDictionary extends Component {
             Change dictionary
           </PopoverBody>
         </Popover>
-        <InputGroupAddon  style={{width:'15%'}} addonType='prepend'>
-          <InputGroupText 
-            className='w-100'
-            tag='a' 
-            name={'dictionary'.concat(this.props.id)}
-            id={'dictionary'.concat(this.props.id)}
-            onMouseOver={() => this.showPopover(true)}
-            onMouseLeave={() => this.showPopover(false)}
-            onClick={this.handleClick}
-            style={{ cursor: 'pointer' }}
-          >
-            Dictionary 
-          </InputGroupText>
-        </InputGroupAddon>     
-        <div style={{width:'85%'}}>
-          <Select    
-            components={animatedComponents}          
-            isDisabled={this.state.selectDisable}
-            isLoading={this.state.requestingData}
-            onChange={this.handleChange} 
-            onMenuOpen={this.checkOptions}
-            options={this.state.options}  
-            value={this.state.value}       
-          />           
-        </div> 
-      </InputGroup> 
+        <Label 
+          for='dictionary'
+          tag='a' 
+          name={'dictionary'.concat(this.props.id)}
+          id={'dictionary'.concat(this.props.id)}
+          onMouseOver={() => this.showPopover(true)}
+          onMouseLeave={() => this.showPopover(false)}
+          onClick={this.handleClick}
+          style={{ cursor: 'pointer' }}
+        >
+          Dictionary 
+        </Label>
+        <Select    
+          id='dictionary'
+          components={animatedComponents}          
+          isDisabled={this.state.selectDisable}
+          isLoading={this.state.requestingData}
+          onChange={this.handleChange} 
+          onMenuOpen={this.checkOptions}
+          options={this.state.options}  
+          value={this.state.value}       
+        />           
+      
+      </div> 
     );
   }
 }
