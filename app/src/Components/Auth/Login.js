@@ -21,6 +21,12 @@ class Login extends Component {
       this.handleSubmit = this.handleSubmit.bind(this);
       this.handleRegisterOnClick = this.handleRegisterOnClick.bind(this);
       this.fetchData = fetchData.bind(this);
+
+      this._isMounted = false;
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
   }
 
   updateState(event) {
@@ -59,12 +65,14 @@ class Login extends Component {
     const body = JSON.stringify({
       username: this.state.username
     });
-    this.fetchData('/auth/token', 'POST', myHeaders, body)
-      .then((data) => {         
-        this.setState({
-          username: '',
-          password: ''
-        });    
+    this.fetchData('/token', 'POST', myHeaders, body)
+      .then((data) => {      
+        if ('error' in data) {
+          this.setState({
+            loginError: true  
+          });
+          return;
+        }       
         localStorage.setItem('token', data.token);
         if (this.state.rememberMe) {
           localStorage.setItem('rememberMe', 'true');

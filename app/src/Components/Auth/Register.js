@@ -52,7 +52,7 @@ class Register extends Component {
       secret_answer: this.state.secretAnswer
     });
     
-    this.fetchData('/auth/register', 'POST', [], body)
+    this.fetchData('/register', 'POST', [], body)
       .then((data) => {        
         localStorage.setItem('token', data.token);        
         this.props.onLogin(data.username);
@@ -77,7 +77,7 @@ class Register extends Component {
           <Label for='password' className='my-1'>Password</Label>
           <Input 
             id='password'
-            invalid={this.state.showInvalid && !this.state.username}
+            invalid={this.state.showInvalid && !this.state.password}
             type='password' 
             value={this.state.password} 
             name='password'                        

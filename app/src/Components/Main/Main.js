@@ -41,6 +41,9 @@ class Main extends Component {
   }
 
   onLogin(newUsername) {
+    if (!newUsername) {
+      return;
+    }
     this.setState({
       isLoggedIn: true,
       username: newUsername
@@ -81,7 +84,7 @@ class Main extends Component {
       return;  
     }
 
-    this.fetchData('/auth/is_authenticated')
+    this.fetchData('/is_authenticated')
       .then((data) => {
         this.setState({
           isLoggedIn: data.is_authenticated,

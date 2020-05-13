@@ -1,4 +1,9 @@
+""" Auth methods """
+
+import logging
 from flask import request
+from flask import current_app
+from flask import current_app
 from flask_httpauth import HTTPBasicAuth
 from flask_httpauth import HTTPTokenAuth
 from app import db
@@ -23,8 +28,8 @@ def verify_token(token):
 @token_auth.error_handler
 def token_auth_error():
     """ Basic auth method """
-
-    return error_response(401)
+    logger.info('Token auth error')
+    return current_app.send_static_file('index.html')
 
 
 @basic_auth.verify_password
@@ -33,6 +38,7 @@ def verify_password(username, password):
 
     db_user = User.query.filter_by(username=username).first()
     if db_user is None:
+        logger.info(f'User not found {username}')
         return False
     password_check = db_user.check_password(password)
     
@@ -43,7 +49,9 @@ def verify_password(username, password):
 def auth_error():
     """ Basic auth method """
 
-    return error_response(401)
+    logger.info('Auth error')
+    return current_app.send_static_file('index.html')
+
 
 
 @bp.route('/token', methods=['POST'])
@@ -53,6 +61,7 @@ def get_token():
 
     username = request.get_json().get('username')
     curr_user = User.query.filter_by(username=username).first()
+    logger.info(f'Checking user token {username}')
     token = curr_user.get_token()
     db.session.commit()
     return {'token': token,
@@ -139,3 +148,5 @@ def user():
             'progress': progress
             }
 
+
+logger = logging.getLogger(__name__)

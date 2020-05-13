@@ -34,7 +34,7 @@ class Profile extends Component {
     this.setState({
       requestingData: true
     });
-    this.fetchData('/auth/user')
+    this.fetchData('/user')
       .then((data) => {
         this.setState({
           dictionaries: data.dictionaries,

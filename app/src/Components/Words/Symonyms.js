@@ -76,7 +76,7 @@ class Symonyms extends Component {
     const body = JSON.stringify({
       'spelling': spelling
     });
-    this.fetchData('/words/get_synonyms', 'POST', [], body)    
+    this.fetchData('/get_synonyms', 'POST', [], body)    
       .then((data) => {     
         if ('message' in data) {
           console.log(data);

@@ -90,7 +90,7 @@ class NewWord extends Component {
       'definition': this.state.definition,
       'synonyms': this.state.synonyms
     });
-    this.fetchData('/words/add_word', 'POST', [], body)
+    this.fetchData('/add_word', 'POST', [], body)
       .then(() => {        
         this.setState({
           spelling: '',

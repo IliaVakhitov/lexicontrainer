@@ -46,7 +46,7 @@ class NewDictionary extends Component {
       dictionary_name: this.state.name,  
       dictionary_description: this.state.description,  
     });
-    this.fetchData('/dicts/add_dictionary', 'POST', [], body)
+    this.fetchData('/add_dictionary', 'POST', [], body)
       .then(() => {        
         this.setState({
           newDicnametionaryName:'',

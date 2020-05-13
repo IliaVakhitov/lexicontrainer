@@ -1,8 +1,9 @@
+""" Dictionaries. Methos to handle dicrionaries requests """
+
 import logging
 from flask import request
-
+from flask import current_app
 from flask_httpauth import HTTPTokenAuth
-from app.errors.handlers import error_response
 
 from app.dicts import bp
 from app.models import User, Dictionary
@@ -24,7 +25,8 @@ def verify_token(token):
 def token_auth_error():
     """Basic auth method"""
 
-    return error_response(401)
+    logger.info('Token error')
+    return current_app.send_static_file('index.html')
 
 
 @bp.route('/dictionaries_list', methods=['GET'])

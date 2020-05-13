@@ -47,7 +47,7 @@ class PlayGame extends Component {
     this.setState({ 
       requestingData: true
     });
-    this.fetchData('/games/current_game')
+    this.fetchData('/current_game')
       .then((data) => {
         if('game_rounds' in data) {
           const gameRound = data.game_rounds[data.current_round];
@@ -78,7 +78,7 @@ class PlayGame extends Component {
       correct_answers: this.state.correctAnswers,
       words_update: this.state.userResult  
     });
-    this.fetchData('/games/save_current_game', 'POST', [], body)
+    this.fetchData('/save_current_game', 'POST', [], body)
       .then((data) => {
         this.props.showMessage(data.result);
         console.log(data);

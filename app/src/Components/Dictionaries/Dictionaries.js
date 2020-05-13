@@ -46,7 +46,7 @@ class Dictionaries extends Component {
       requestingData: true
     });
      
-    this.fetchData('/dicts/dictionaries')
+    this.fetchData('/dictionaries')
       .then((data) => {
         this.setState({
           dictionaries: data.dictionaries,

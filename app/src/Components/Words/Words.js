@@ -43,7 +43,7 @@ class Words extends Component {
       requestingData: true,
     });
 
-    this.fetchData('/dicts/dictionaries_list')
+    this.fetchData('/dictionaries_list')
       .then((data) => {
         this.setState({
           dictionaries: data.dictionaries,
@@ -61,7 +61,7 @@ class Words extends Component {
         'value' : this.props.dictionaryId
       });  
     }
-    this.fetchData('/words/all_words', 'GET', myHeaders)
+    this.fetchData('/all_words', 'GET', myHeaders)
       .then((data) => {        
         this.setState({ 
           words: data.words,

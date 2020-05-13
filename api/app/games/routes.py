@@ -1,12 +1,11 @@
-import json
-import logging
+""" Games. Methods  generate, delete, save games """
 
+import logging
+from flask import current_app
 from flask import request
 from flask_httpauth import HTTPTokenAuth
 
-
 from app import db
-from app.errors.handlers import error_response
 from app.games import bp
 from app.models import CurrentGame, Statistic, User, Word
 
@@ -28,7 +27,8 @@ def verify_token(token):
 def token_auth_error():
     """ Basic auth method """
     
-    return error_response(401)
+    logger.info('Token error')
+    return current_app.send_static_file('index.html')
 
 
 @bp.route('/check_current_game', methods=['GET'])

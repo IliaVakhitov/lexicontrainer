@@ -1,6 +1,9 @@
+""" Words. Methos to handle dicrionaries requests """
+
 import json
 import logging
 from flask import request
+from flask import current_app
 from flask_httpauth import HTTPTokenAuth
 from sqlalchemy import func
 from app import db
@@ -9,7 +12,7 @@ from app.models import Word, User, Dictionary, LearningIndex
 from app.models import WordSynonyms
 from app.models import Synonyms, Definitions
 from app.words import bp
-from app.errors.handlers import error_response
+
 from appmodel.words_api import WordsApi
 
 
@@ -28,7 +31,8 @@ def verify_token(token):
 def token_auth_error():
     """ Basic auth method """
 
-    return error_response(401)
+    logger.info('Token error')
+    return current_app.send_static_file('index.html')
 
 
 @bp.route('/random_words', methods=['GET'])

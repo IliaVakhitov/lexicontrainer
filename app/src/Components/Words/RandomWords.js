@@ -43,7 +43,7 @@ class RandomWords extends Component {
     this.setState({ 
       requestingData: true
     });
-    this.fetchData('/words/random_words')
+    this.fetchData('/random_words')
       .then((data) => {        
         this.setState({
           words: data.words,

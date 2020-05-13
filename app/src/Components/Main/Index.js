@@ -69,7 +69,7 @@ class Index extends Component {
       requestingData: true,
     });
 
-    this.fetchData('/dicts/dictionaries_list')
+    this.fetchData('/dictionaries_list')
       .then((data) => {
         this.setState({
           dictionaries: data.dictionaries,
@@ -81,7 +81,8 @@ class Index extends Component {
   }
 
   render() {
-    const welcomeString = this.props.username !== '' 
+    const welcomeString = 
+      (this.props.username !== '' && this.props.username !== null)
       ? 'Welcome, ' + this.props.username + '!' : 
       'Welcome!';
 

@@ -69,7 +69,7 @@ class Dictionary extends Component {
       'value': this.props.location.state.id
     });
 
-    this.fetchData('/dicts/dictionary', 'GET', myHeaders)
+    this.fetchData('/dictionary', 'GET', myHeaders)
       .then((data) => {         
         this.setState({
           name: data.dictionary_name,
@@ -86,7 +86,7 @@ class Dictionary extends Component {
     const body = JSON.stringify({
       'dictionary_id': this.props.location.state.id
     })
-    this.fetchData('/dicts/delete_dictionary', 'DELETE', [], body) 
+    this.fetchData('/delete_dictionary', 'DELETE', [], body) 
       .then(() => {                
         this.props.history.push('/dictionaries');
         this.props.showMessage('Dictionary deleted!');
@@ -104,7 +104,7 @@ class Dictionary extends Component {
       'dictionary_name': this.state.name,  
       'description': this.state.description
     });
-    this.fetchData('/dicts/update_dictionary', 'POST', [], body) 
+    this.fetchData('/update_dictionary', 'POST', [], body) 
       .then(() => {                
         this.props.history.push('/dictionaries');
         this.props.showMessage('Dictionary saved!');

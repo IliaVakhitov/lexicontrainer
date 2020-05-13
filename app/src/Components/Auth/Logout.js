@@ -16,7 +16,7 @@ class Logout extends Component {
   }
 
   logout() {
-    this.fetchData('/auth/logout', 'POST')
+    this.fetchData('/logout', 'POST')
       .then(() => {
         this.props.onLogout();    
         this.props.history.push('/');    

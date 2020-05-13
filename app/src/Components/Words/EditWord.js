@@ -82,7 +82,7 @@ class EditWord extends Component {
     const body = JSON.stringify({
       'word_id': word_id
     });
-    this.fetchData('/words/delete_word', 'DELETE', [], body)
+    this.fetchData('/delete_word', 'DELETE', [], body)
       .then(() => {        
         this.props.onExit();
         this.props.showMessage('Word deleted!');
@@ -113,7 +113,7 @@ class EditWord extends Component {
       'definition': this.state.definition,  
       'synonyms': this.state.synonyms  
     }); 
-    this.fetchData('/words/update_word', 'POST', [], body)
+    this.fetchData('/update_word', 'POST', [], body)
       .then(() => {    
         this.setState({
           saved: true,
@@ -139,8 +139,7 @@ class EditWord extends Component {
           id='spelling'
           invalid={!this.state.spelling}
           value={this.state.spelling}
-          name='spelling' 
-          id='spelling' 
+          name='spelling'  
           onChange={this.updateState}/>
         <FormFeedback>Please, fill out this field!</FormFeedback>      
         <Definition 

@@ -34,19 +34,19 @@ def create_app(config_class=Config):
 
     # Auth BP
     from app.auth import bp as auth_bp
-    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(auth_bp)
 
     # Dictionaries BP
     from app.dicts import bp as dicts_bp
-    app.register_blueprint(dicts_bp, url_prefix='/dicts')
+    app.register_blueprint(dicts_bp)
 
     # Words BP
     from app.words import bp as words_bp
-    app.register_blueprint(words_bp, url_prefix='/words')
+    app.register_blueprint(words_bp)
 
     # Games BP
     from app.games import bp as games_bp
-    app.register_blueprint(games_bp, url_prefix='/games')
+    app.register_blueprint(games_bp)
 
     # Log-files and logger
     if not os.path.exists('logs'):

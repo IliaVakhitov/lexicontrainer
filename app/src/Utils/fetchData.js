@@ -17,14 +17,20 @@ export default async function fetchData(url, method = 'GET', headers = [], body 
       headers: myHeaders,
       body: body
   });    
+  // To stay on the page
+  if (response.status === 401) {
+    return response.json();
+  }
+  // Redirect to error page
   if (!response.ok || response.status !== 200) {
     this.props.history.push({
       pathname:'/error', 
-      state: { error: response.statusText}
+      state: { error: response.statusText }
     });
   }
   const data = response.json();
   if ('error' in data) {
+    // Redirect to error page
     this.props.history.push({
       pathname:'/error', 
       state: { error: data.error}

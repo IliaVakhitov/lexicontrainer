@@ -81,7 +81,7 @@ class Games extends Component {
   }
 
   removeGame() {
-    this.fetchData('/games/remove_game', 'DELETE')
+    this.fetchData('/remove_game', 'DELETE')
       .then((data) => {
         if('result' in data) {
           this.setState({ currentGame: false });
@@ -91,7 +91,7 @@ class Games extends Component {
   }
 
   checkCurrentGame() {
-    this.fetchData('/games/check_current_game')
+    this.fetchData('/check_current_game')
       .then((data) => {
         if( 'current_game' in data) {
           this.setState({
@@ -130,7 +130,7 @@ class Games extends Component {
       'include_learned_words':this.state.includeLearned,
       'dictionaries':this.state.selectedDictionaries,
     });
-    this.fetchData('/games/define_game', 'POST', [], body)
+    this.fetchData('/define_game', 'POST', [], body)
       .then(() => {
         this.props.history.push('/play');
       }
@@ -138,7 +138,7 @@ class Games extends Component {
   }
 
   dictionaries() {
-    this.fetchData('/dicts/dictionaries_list')
+    this.fetchData('/dictionaries_list')
       .then((data) => {        
         this.setState({
           dictionaries: data.dictionaries,

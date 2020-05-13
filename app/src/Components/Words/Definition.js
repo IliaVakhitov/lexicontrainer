@@ -91,7 +91,7 @@ class Definition extends Component {
     const body = JSON.stringify({
       'spelling': spelling
     });
-    this.fetchData('/words/get_definition', 'POST', [], body) 
+    this.fetchData('/get_definition', 'POST', [], body) 
       .then((data) => {
         if ('message' in data) {
           console.log(data); 
