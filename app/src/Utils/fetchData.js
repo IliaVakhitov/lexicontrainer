@@ -7,7 +7,7 @@ export default async function fetchData(url, method = 'GET', headers = [], body 
   headers.forEach(header => {
     if (myHeaders.has(header.name)) {
       myHeaders.delete(header.name);
-    }
+    }    
     myHeaders.append(header.name, header.value);  
   });
   

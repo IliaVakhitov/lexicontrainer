@@ -41,7 +41,6 @@ def random_words():
     """ Return 5 random words for current user """
 
     db_user = User.check_request(request)
-    logger.info(f'User {db_user.username} auth successful')
 
     dictionaries = Dictionary.query.filter_by(user_id=db_user.id).all()
     dict_ids = [d.id for d in dictionaries]    
@@ -55,7 +54,7 @@ def random_words():
     return {'words': words}
 
 
-@bp.route('/all_words', methods=['GET'])
+@bp.route('/all_words', methods=['POST'])
 @token_auth.login_required
 def all_words():
     """ Return words for current user.
@@ -63,9 +62,10 @@ def all_words():
     """
 
     db_user = User.check_request(request)
+    request_data = request.get_json()    
     
-    if 'dictionary_id' in request.headers:
-        dictionary_id = request.headers.get('dictionary_id')
+    if 'dictionary_id' in request_data:
+        dictionary_id = request_data.get('dictionary_id')
         dict_ids = [dictionary_id]
     else:
         dictionaries = Dictionary.query.filter_by(user_id=db_user.id).all()
@@ -102,33 +102,6 @@ def all_words():
     return {'words': words,
             'is_authenticated': db_user.is_authenticated()
             }
-
-
-@bp.route('/words_list', methods=['GET'])
-@token_auth.login_required
-def words_list():
-    """ Return words' spellings for given dictionary """
-
-    User.check_request(request)
-    
-    words = []
-    if 'dictionary_id' not in request.headers:
-        return {'words': words}
-
-    dictionary_id = request.headers.get('dictionary_id')
-    dict_ids = [dictionary_id]
-    
-    words_query = db.session.query(Word).\
-        filter(Word.dictionary_id.in_(dict_ids)).\
-        order_by('spelling').all()
-
-    for word in words_query:
-        words.append({
-            'id': word.id, 
-            'spelling': word.spelling
-        })
-
-    return {'words': words}
 
 
 @bp.route('/get_definition', methods=['POST'])

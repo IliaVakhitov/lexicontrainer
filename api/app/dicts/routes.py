@@ -154,15 +154,14 @@ def update_dictionary():
 
     return {'result': 'Dictionary updated successfully'}
 
-@bp.route('/dictionary', methods=['GET'])
+@bp.route('/dictionary', methods=['POST'])
 @token_auth.login_required
 def dictionary():
     """ Return dictionary information """
 
     db_user = User.check_request(request)
-    logger.info(f'User {db_user.username} auth successful')
-    dictionary_id = request.headers.get('dictionary_id')
-    logger.info(f'Request dict {dictionary_id}')
+    request_data = request.get_json()
+    dictionary_id = request_data.get('dictionary_id')
     db_dictionary = Dictionary.query.filter_by(id=dictionary_id).first_or_404()
     dict_entry = db_dictionary.to_dict()  
     dict_entry['is_authenticated'] = db_user.is_authenticated()

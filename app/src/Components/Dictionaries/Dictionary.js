@@ -61,15 +61,11 @@ class Dictionary extends Component {
     if (isNaN(this.props.location.state.id)) {
       console.log('Incorrect dictionary id '.concat(this.props.location.state.id));
       this.props.history.push('/dictionaries');
-    }
-    
-    let myHeaders = [];
-    myHeaders.push({
-      'name': 'dictionary_id',
-      'value': this.props.location.state.id
+    }    
+    const body = JSON.stringify({
+      dictionary_id: this.props.location.state.id
     });
-
-    this.fetchData('/dictionary', 'GET', myHeaders)
+    this.fetchData('/dictionary', 'POST', [], body)
       .then((data) => {         
         this.setState({
           name: data.dictionary_name,

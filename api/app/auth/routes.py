@@ -3,13 +3,11 @@
 import logging
 from flask import request
 from flask import current_app
-from flask import current_app
 from flask_httpauth import HTTPBasicAuth
 from flask_httpauth import HTTPTokenAuth
 from app import db
 from app.models import User, Dictionary, Word, LearningIndex
 from app.auth import bp
-from app.errors.handlers import error_response
 
 
 basic_auth = HTTPBasicAuth()
@@ -150,3 +148,4 @@ def user():
 
 
 logger = logging.getLogger(__name__)
+
