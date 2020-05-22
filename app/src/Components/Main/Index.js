@@ -74,7 +74,9 @@ class Index extends Component {
         this.setState({
           dictionaries: data.dictionaries,
           requestingData: false,
-          isLoggedIn: this.props.username !== 'Guest'
+          isLoggedIn: this.props.username 
+            && this.props.username !== 'Guest' 
+            && this.props.username !== null
         })        
       }
     );  

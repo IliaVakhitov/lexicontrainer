@@ -1,7 +1,7 @@
 .vscode
 app/yarn.lock
-api/app/static/build/*
 .pylintrc
 pylint.res
 api/certs/*
 api/certs/
+api/app/static/build/*
