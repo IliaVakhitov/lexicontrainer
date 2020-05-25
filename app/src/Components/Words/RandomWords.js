@@ -132,7 +132,9 @@ class RandomWords extends Component {
     );
     return(
       <Container >
-        <h4 style={{textAlign: 'center'}}>Words of the day</h4>
+        {this.state.words.length > 0 &&
+          <h4 style={{textAlign: 'center'}}>Words of the day</h4>
+        }
         {this.state.requestingData && 
           <Spinner type='grow' color='dark' />
         }

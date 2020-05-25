@@ -98,7 +98,9 @@ class Index extends Component {
               showMessage={(message) => this.props.showMessage(message)}  
             />
           }
-          {this.state.isLoggedIn && !this.state.isOpenNewDictionary &&
+          {this.state.isLoggedIn &&
+            !this.state.isOpenNewDictionary &&
+            this.state.dictionaries.length > 0 &&
             <NewWord  
               dictionaryId={undefined}
               dictionaries={this.state.dictionaries}

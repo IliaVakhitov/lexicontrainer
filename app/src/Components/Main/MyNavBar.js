@@ -29,7 +29,7 @@ class MyNavBar extends Component {
       <Navbar color='light' light expand='md'>
         <div className='container'>
           <NavbarBrand onClick={this.closeNavBar} tag={RRNavLink} to='/'>
-            Words learning
+            Lexicon trainer
           </NavbarBrand>
           <NavbarToggler onClick={toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>

@@ -57,7 +57,7 @@ class Main extends Component {
       isLoggedIn: false,
       username: 'Guest'      
     });
-    this.showMessage('By!');
+    this.showMessage('Bye!');
   }
 
   showMessage(message) {
