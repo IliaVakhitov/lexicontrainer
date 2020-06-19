@@ -219,18 +219,26 @@ class User(db.Model):
         return f'<User {self.username}>'
 
     def set_password(self, password):
+        """ Save password hash """
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
+        """ Check password hash """
         return check_password_hash(self.password_hash, password)
 
     def set_secret_answer(self, secret_answer):
+        """ Set sa hash """
         self.secret_answer_hash = generate_password_hash(secret_answer)
 
     def check_secret_question(self, secret_answer):
+        """ Check sa hash """
         return check_password_hash(self.secret_answer_hash, secret_answer)
 
     def get_token(self, token_expires=3600*24):
+        """ Check token. Return existed if 
+            it valid for more than 10 minutes,
+            or generate new
+        """
         now = datetime.utcnow()
         if self.token and self.token_expiration > now + timedelta(seconds=600):
             return self.token
@@ -240,22 +248,28 @@ class User(db.Model):
         return self.token
 
     def revoke_token(self):
+        """ Set token expiration """
         self.token = None
         self.token_expiration = datetime.utcnow() - timedelta(seconds=1)
         db.session.add(self)
 
     @staticmethod
     def demo_user():
+        """ Return demo user """
         demo_user = User.query.filter_by(username='Demo').first()
 
         return demo_user 
 
     
     def is_authenticated(self):
+        """ Check user authentication """
         return self is not None and self.username != "Demo"
 
     @staticmethod
     def check_token(token):
+        """ Check user token 
+            Return demo if token expired
+        """
         user = User.query.filter_by(token=token).first()
         if user is None or user.token is None or user.token_expiration < datetime.utcnow():
             # Return demo user
@@ -265,6 +279,7 @@ class User(db.Model):
 
     @staticmethod
     def check_request(request):
+        """ Return demo user if no Auth in headers """
         if not 'Authorization' in request.headers:
             return User.demo_user()
 
@@ -305,6 +320,7 @@ class CurrentGame(db.Model):
                                   order_by='GameRound.round_order')
 
     def get_progress(self):
+        """ Return game progress """
         return int(self.current_round / self.total_rounds * 100)
 
     def update_statistic(self, correct_answers):
@@ -378,4 +394,11 @@ class GameRound(db.Model):
             'correct_index': self.correct_index,
             'answers': answers
         }
+
+class ApiRequests(db.Model):
+    """ Stores date and number of requests """
+    
+    __tablename__ = 'api_requests'
+    date = db.Column(db.Date, primary_key=True)
+    requests = db.Column(db.Integer, default=0)
 

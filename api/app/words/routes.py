@@ -110,6 +110,7 @@ def get_definition():
     """ Return definitions for current word from Definitions.
         If not, request definitions for current word from WordsApi
         Save result in Definitions
+        Save date of request in db
     """
 
     db_user = User.check_request(request)
@@ -132,7 +133,11 @@ def get_definition():
         result = [d.definition for d in definitions]      
         return json.dumps({'definitions': result})
 
-    # Get definitions from online dictionary
+    # Check number of requests
+    if not WordsApi.check_requests():
+        return {'message': 'Error in requesting words api'}   
+
+    # Get definitions from online dictionary    
     result_query = WordsApi.get_words_data(spelling, 'definitions')
     if not result_query:
         return {'message': 'Error in requesting words api'}
@@ -157,6 +162,7 @@ def get_synonyms():
     """ Return synonyms for current word from Synonyms.
         If not, request synonyms for current word from WordsApi
         Save result in Synonyms
+        Save date of request in db
     """
 
     
@@ -180,6 +186,10 @@ def get_synonyms():
     if synonyms:   
         result = [s.synonym for s in synonyms]     
         return json.dumps({'synonyms': result})
+    
+    # Check number of requests
+    if not WordsApi.check_requests():
+        return {'message': 'Error in requesting words api'}   
     
     # Get synonyms from online dictionary
     result_query = WordsApi.get_words_data(spelling, 'synonyms')
