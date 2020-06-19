@@ -108,6 +108,7 @@ class Dictionary(db.Model):
         return f'{self.dictionary_name}'
 
     def to_dict(self):
+        """ Return dictionary entry as Dict """
         return {'id': self.id,
                 'dictionary_name': self.dictionary_name,
                 'description': self.description if self.description else ''
@@ -137,7 +138,6 @@ class Word(db.Model):
 
     def word_synonyms_number(self):
         """ Return number of synonyms """
-
         return len(self.synonyms.all())
 
     def word_synonyms(self):
@@ -181,38 +181,6 @@ class Word(db.Model):
         
         return synonyms[randint(0, len(synonyms)-1)]
 
-
-    @staticmethod
-    def all_spellings():
-        """ Return all spelling from db 
-            Using SETs to exclude duplcates
-        """ 
-
-        # Words spellings
-        words = Word.query.all()
-        spellings = set(w.spelling for w in words)
-
-        # Synonyms spellings
-        spellings.update(set(Synonyms.spellings()))
-        # Definitions spellings
-        spellings.update(set(Definitions.spellings()))
-
-        return list(spellings)
-
-    @staticmethod
-    def all_definitions():
-        """ Return all definitions from db 
-            Using Set to exclude duplcates
-        """ 
-
-        # Words definitions
-        words = Word.query.all()
-        definitions = set(w.definition for w in words)
-
-        # Definition definitions
-        definitions.update(set(Definitions.definitions()))
-
-        return list(definitions)
 
 class WordSynonyms(db.Model):
     """ Synonyms for words, which user selected """

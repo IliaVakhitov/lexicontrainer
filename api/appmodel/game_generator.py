@@ -60,12 +60,13 @@ class GameGenerator:
                 False - error in generating
         """
 
+
         if game_type == GameType.FindDefinition:
-            values = Word.all_definitions()
+            values = [w.definition for w in words_list]
         if game_type == GameType.FindSpelling:
-            values = Word.all_spellings()
+            values = [w.spelling for w in words_list]
         if game_type == GameType.FindSynonyms:
-            values = Word.all_spellings()
+            values = [w.spelling for w in words_list]
 
         current_round_number = 0
         for next_word in words_list:
