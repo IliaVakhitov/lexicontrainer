@@ -2,6 +2,481 @@
     "name": "Dictionary",
     "words": [
         {
+            "spelling": "accede",
+            "definition": "to agree or express agreement",
+            "synonyms": [
+                "submit",
+                "acquiesce"
+            ]
+        },
+        {
+            "spelling": "acquiesce",
+            "definition": "to agree or express agreement",
+            "synonyms": [
+                "accede",
+                "assent"
+            ]
+        },
+        {
+            "spelling": "adjourn",
+            "definition": "close at the end of a session",
+            "synonyms": [
+                "break up",
+                "withdraw"
+            ]
+        },
+        {
+            "spelling": "adjourn",
+            "definition": "break from a meeting or gathering",
+            "synonyms": [
+                "recess"
+            ]
+        },
+        {
+            "spelling": "ailment",
+            "definition": "an often persistent bodily disorder or disease; a cause for complaining",
+            "synonyms": [
+                "ill",
+                "complaint"
+            ]
+        },
+        {
+            "spelling": "alleviate",
+            "definition": "provide physical relief, as from pain",
+            "synonyms": [
+                "ease",
+                "palliate"
+            ]
+        },
+        {
+            "spelling": "alleviate",
+            "definition": "make easier",
+            "synonyms": [
+                "ease",
+                "facilitate"
+            ]
+        },
+        {
+            "spelling": "aloof",
+            "definition": "remote in manner",
+            "synonyms": [
+                "distant",
+                "upstage"
+            ]
+        },
+        {
+            "spelling": "altercation",
+            "definition": "noisy quarrel",
+            "synonyms": []
+        },
+        {
+            "spelling": "appease",
+            "definition": "make peace with",
+            "synonyms": [
+                "propitiate",
+                "lenify"
+            ]
+        },
+        {
+            "spelling": "ardent",
+            "definition": "characterized by intense emotion",
+            "synonyms": [
+                "impassioned"
+            ]
+        },
+        {
+            "spelling": "ardently",
+            "definition": "in an ardent manner",
+            "synonyms": []
+        },
+        {
+            "spelling": "arrange",
+            "definition": "plan, organize, and carry out (an event)",
+            "synonyms": [
+                "set up",
+                "order"
+            ]
+        },
+        {
+            "spelling": "bulb",
+            "definition": "electric lamp consisting of a transparent or translucent glass housing containing a wire filament (usually tungsten) that emits light when heated by electricity",
+            "synonyms": [
+                "electric light",
+                "incandescent lamp"
+            ]
+        },
+        {
+            "spelling": "cease",
+            "definition": "put an end to a state or an activity",
+            "synonyms": [
+                "discontinue",
+                "give up",
+                "quit",
+                "stop"
+            ]
+        },
+        {
+            "spelling": "cloth",
+            "definition": "artifact made by weaving or felting or knitting or crocheting natural or synthetic fibers",
+            "synonyms": [
+                "fabric",
+                "material",
+                "textile"
+            ]
+        },
+        {
+            "spelling": "deceive",
+            "definition": "be false to; be dishonest with",
+            "synonyms": [
+                "betray"
+            ]
+        },
+        {
+            "spelling": "dedicate",
+            "definition": "give entirely to a specific person, activity, or cause",
+            "synonyms": [
+                "devote",
+                "give",
+                "consecrate"
+            ]
+        },
+        {
+            "spelling": "dedicated",
+            "definition": "devoted to a cause or ideal or purpose",
+            "synonyms": []
+        },
+        {
+            "spelling": "desire",
+            "definition": "expect and wish",
+            "synonyms": []
+        },
+        {
+            "spelling": "devote",
+            "definition": "give entirely to a specific person, activity, or cause",
+            "synonyms": [
+                "consecrate",
+                "dedicate",
+                "give"
+            ]
+        },
+        {
+            "spelling": "devoted",
+            "definition": "(followed by `to') dedicated exclusively to a purpose or use",
+            "synonyms": []
+        },
+        {
+            "spelling": "devouring",
+            "definition": "(often followed by `for') ardently or excessively desirous",
+            "synonyms": []
+        },
+        {
+            "spelling": "dodgy",
+            "definition": "of uncertain outcome; especially fraught with risk",
+            "synonyms": [
+                "tricksy",
+                "tricky"
+            ]
+        },
+        {
+            "spelling": "enduring",
+            "definition": "patiently bearing continual wrongs or trouble",
+            "synonyms": []
+        },
+        {
+            "spelling": "etch",
+            "definition": "carve or cut a design or letters into",
+            "synonyms": [
+                "engrave"
+            ]
+        },
+        {
+            "spelling": "exert",
+            "definition": "make a great effort at a mental or physical task",
+            "synonyms": [
+                "exercise"
+            ]
+        },
+        {
+            "spelling": "feed",
+            "definition": "take in food; used of animals only",
+            "synonyms": [
+                "give",
+                "provender"
+            ]
+        },
+        {
+            "spelling": "feverish",
+            "definition": "having or affected by a fever",
+            "synonyms": [
+                "feverous",
+                "hectic"
+            ]
+        },
+        {
+            "spelling": "flask",
+            "definition": "bottle that has a narrow neck",
+            "synonyms": []
+        },
+        {
+            "spelling": "flatter",
+            "definition": "praise somewhat dishonestly",
+            "synonyms": [
+                "blandish"
+            ]
+        },
+        {
+            "spelling": "flicker",
+            "definition": "move back and forth very rapidly",
+            "synonyms": [
+                "flitter"
+            ]
+        },
+        {
+            "spelling": "flicker",
+            "definition": "shine unsteadily",
+            "synonyms": [
+                "spark",
+                "flick"
+            ]
+        },
+        {
+            "spelling": "glare",
+            "definition": "look at with a fixed gaze",
+            "synonyms": [
+                "spotlight",
+                "limelight"
+            ]
+        },
+        {
+            "spelling": "gleam",
+            "definition": "shine brightly, like a star or a light",
+            "synonyms": [
+                "shine",
+                "glow"
+            ]
+        },
+        {
+            "spelling": "glimpse",
+            "definition": "a quick look",
+            "synonyms": [
+                "glance"
+            ]
+        },
+        {
+            "spelling": "gorge",
+            "definition": "overeat or eat immodestly; make a pig of oneself",
+            "synonyms": []
+        },
+        {
+            "spelling": "groom",
+            "definition": "care for one's external appearance",
+            "synonyms": []
+        },
+        {
+            "spelling": "gullible",
+            "definition": "naive and easily deceived or tricked",
+            "synonyms": [
+                "fleeceable"
+            ]
+        },
+        {
+            "spelling": "haste",
+            "definition": "the act of moving hurriedly and in a careless manner",
+            "synonyms": [
+                "hurry",
+                "rush"
+            ]
+        },
+        {
+            "spelling": "hectic",
+            "definition": "marked by intense agitation or emotion",
+            "synonyms": []
+        },
+        {
+            "spelling": "hitherto",
+            "definition": "used in negative statement to describe a situation that has existed up to this point or up to the present time",
+            "synonyms": [
+                "so far",
+                "thus far"
+            ]
+        },
+        {
+            "spelling": "inclement",
+            "definition": "used of persons or behavior; showing no clemency or mercy",
+            "synonyms": []
+        },
+        {
+            "spelling": "inclination",
+            "definition": "an attitude of mind especially one that favors one alternative over others",
+            "synonyms": []
+        },
+        {
+            "spelling": "inscribe",
+            "definition": "carve, cut, or etch into a material or surface",
+            "synonyms": [
+                "scratch"
+            ]
+        },
+        {
+            "spelling": "inscrutable",
+            "definition": "of an obscure nature",
+            "synonyms": []
+        },
+        {
+            "spelling": "inured",
+            "definition": "made tough by habitual exposure",
+            "synonyms": []
+        },
+        {
+            "spelling": "invigilate",
+            "definition": "watch over (students taking an exam, to prevent cheating)",
+            "synonyms": []
+        },
+        {
+            "spelling": "irritate",
+            "definition": "cause annoyance in; disturb, especially by minor irritations",
+            "synonyms": []
+        },
+        {
+            "spelling": "itch",
+            "definition": "have a strong desire or urge to do something",
+            "synonyms": []
+        },
+        {
+            "spelling": "kale",
+            "definition": "coarse curly-leafed cabbage",
+            "synonyms": []
+        },
+        {
+            "spelling": "lexicon",
+            "definition": "a language user's knowledge of words",
+            "synonyms": []
+        },
+        {
+            "spelling": "muck",
+            "definition": "any thick, viscous matter",
+            "synonyms": []
+        },
+        {
+            "spelling": "obstruct",
+            "definition": "block passage through",
+            "synonyms": []
+        },
+        {
+            "spelling": "parlance",
+            "definition": "a manner of speaking that is natural to native speakers of a language",
+            "synonyms": []
+        },
+        {
+            "spelling": "plod",
+            "definition": "the act of walking with a slow heavy gait",
+            "synonyms": []
+        },
+        {
+            "spelling": "prodigious",
+            "definition": "far beyond what is usual in magnitude or degree",
+            "synonyms": []
+        },
+        {
+            "spelling": "prodigy",
+            "definition": "a sign of something about to happen",
+            "synonyms": []
+        },
+        {
+            "spelling": "quarrel",
+            "definition": "an angry dispute",
+            "synonyms": []
+        },
+        {
+            "spelling": "refute",
+            "definition": "overthrow by argument, evidence, or proof",
+            "synonyms": []
+        },
+        {
+            "spelling": "reverence",
+            "definition": "an act showing respect (especially a bow or curtsy)",
+            "synonyms": []
+        },
+        {
+            "spelling": "reverently",
+            "definition": "with reverence; in a reverent manner",
+            "synonyms": []
+        },
+        {
+            "spelling": "shrink",
+            "definition": "decrease in size, range, or extent",
+            "synonyms": []
+        },
+        {
+            "spelling": "shrivel",
+            "definition": "decrease in size, range, or extent",
+            "synonyms": []
+        },
+        {
+            "spelling": "sloth",
+            "definition": "apathy and inactivity in the practice of virtue (personified as one of the deadly sins)",
+            "synonyms": []
+        },
+        {
+            "spelling": "squeak",
+            "definition": "make a high-pitched, screeching noise",
+            "synonyms": []
+        },
+        {
+            "spelling": "stare",
+            "definition": "look at with fixed eyes",
+            "synonyms": []
+        },
+        {
+            "spelling": "strive",
+            "definition": "to exert much effort or energy",
+            "synonyms": []
+        },
+        {
+            "spelling": "summon",
+            "definition": "make ready for action or use",
+            "synonyms": []
+        },
+        {
+            "spelling": "vigor",
+            "definition": "active strength of body or mind",
+            "synonyms": []
+        },
+        {
+            "spelling": "virtue",
+            "definition": "any admirable quality or attribute",
+            "synonyms": []
+        },
+        {
+            "spelling": "wharf",
+            "definition": "a platform built out from the shore into the water and supported by piles; provides access to ships and boats",
+            "synonyms": []
+        },
+        {
+            "spelling": "wither",
+            "definition": "lose freshness, vigor, or vitality",
+            "synonyms": []
+        },
+        {
+            "spelling": "wrist",
+            "definition": "a joint between the distal end of the radius and the proximal row of carpal bones",
+            "synonyms": []
+        },
+        {
+            "spelling": "yearning",
+            "definition": "prolonged unfulfilled desire or need",
+            "synonyms": []
+        },
+        {
+            "spelling": "acquisition",
+            "definition": "the cognitive process of acquiring skill or knowledge",
+            "synonyms": [
+                "acquirement",
+                "attainment",
+                "skill"
+            ]
+        },
+        {
             "spelling": "apt",
             "definition": "being of striking appropriateness and pertinence",
             "synonyms": [
@@ -19,11 +494,45 @@
             ]
         },
         {
+            "spelling": "commence",
+            "definition": "set in motion, cause to start",
+            "synonyms": [
+                "embark on",
+                "start",
+                "begin"
+            ]
+        },
+        {
             "spelling": "compulsory",
             "definition": "required by rule",
             "synonyms": [
                 "mandatory",
                 "required"
+            ]
+        },
+        {
+            "spelling": "distemper",
+            "definition": "an angry and disagreeable mood",
+            "synonyms": [
+                "ill humor"
+            ]
+        },
+        {
+            "spelling": "giddiness",
+            "definition": "a reeling sensation; a feeling that you are about to fall",
+            "synonyms": [
+                "silliness",
+                "dizziness",
+                "lightheadedness",
+                "vertigo"
+            ]
+        },
+        {
+            "spelling": "hilarious",
+            "definition": "marked by or causing boisterous merriment or convulsive laughter",
+            "synonyms": [
+                "screaming",
+                "uproarious"
             ]
         },
         {
@@ -68,6 +577,15 @@
             ]
         },
         {
+            "spelling": "scourge",
+            "definition": "a person who inspires fear or dread",
+            "synonyms": [
+                "terror",
+                "flagellate",
+                "threat"
+            ]
+        },
+        {
             "spelling": "sift",
             "definition": "separate by passing through a sieve or other straining device to separate out coarser elements",
             "synonyms": [
@@ -94,6 +612,14 @@
             "spelling": "veracity",
             "definition": "unwillingness to tell lies",
             "synonyms": []
+        },
+        {
+            "spelling": "vertigo",
+            "definition": "a reeling sensation; a feeling that you are about to fall",
+            "synonyms": [
+                "dizziness",
+                "giddiness"
+            ]
         }
     ]
 }
