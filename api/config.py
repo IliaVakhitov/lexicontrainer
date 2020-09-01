@@ -14,7 +14,7 @@ class Config(object):
     """
 
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'f3e687f82be0ecd2f9d83352b7f0b8ff96d954a68cfee5c9'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WORDSAPI_KEY = os.environ.get('WORDSAPI_KEY')
     WORDSAPI_HOST = os.environ.get('WORDSAPI_HOST')

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { Label, Popover, PopoverBody } from 'reactstrap';
+import { Button, Popover, PopoverBody } from 'reactstrap';
 
 import CreatableSelect from 'react-select/creatable';
 
@@ -129,19 +129,19 @@ class Symonyms extends Component {
             Get synonyms from Words API
           </PopoverBody>
         </Popover>
-        <Label 
+        <Button 
           for='synonyms'
-          className='w-100'
-          tag='a' 
+          className='my-2'
+          outline
+          color='dark'
           name={'synonymsText'.concat(this.props.id)}
           id={'synonymsText'.concat(this.props.id)}
           onMouseOver={() => this.showPopover(true)}
           onMouseLeave={() => this.showPopover(false)}
           onClick={this.requestData}
-          style={{ cursor: 'pointer' }}
         >
           Symonyms
-        </Label>
+        </Button>
         <CreatableSelect 
           isClearable
           isMulti

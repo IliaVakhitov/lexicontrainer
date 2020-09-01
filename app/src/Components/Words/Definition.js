@@ -1,6 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { Label, Popover, PopoverBody } from 'reactstrap';
+import { Popover, PopoverBody, Button } from 'reactstrap';
 
 import CreatableSelect from 'react-select/creatable';
 
@@ -143,31 +143,32 @@ class Definition extends Component {
           <PopoverBody>
             Get definition from Words API
           </PopoverBody>
-        </Popover>
-        <Label className='my-2' for='definition'            
-            tag='a' 
-            name={'definitionText'.concat(this.props.id)}
-            id={'definitionText'.concat(this.props.id)}
-            onMouseOver={() => this.showPopover(true)}
-            onMouseLeave={() => this.showPopover(false)}
-            onClick={this.requestData}
-            style={{ cursor: 'pointer' }}
-          >
-            Definition 
-          </Label>
-          <br/>
-          <CreatableSelect  
-            className='w-100'
-            id='definition'            
-            isClearable
-            isDisabled={this.state.requestingData}
-            isLoading={this.state.requestingData}
-            onMenuOpen={this.checkOptions}
-            onChange={this.handleChange} 
-            onCreateOption={this.handleCreate}
-            options={this.state.options}  
-            value={this.state.value}       
-          />
+        </Popover>        
+        <Button
+          name={'definitionText'.concat(this.props.id)}
+          id={'definitionText'.concat(this.props.id)}
+          outline
+          color='dark'
+          className='my-2'
+          onMouseOver={() => this.showPopover(true)}
+          onMouseLeave={() => this.showPopover(false)}
+          onClick={this.requestData}            
+        >
+          Definition
+        </Button>
+        <br/>
+        <CreatableSelect  
+          className='w-100'
+          id='definition'            
+          isClearable
+          isDisabled={this.state.requestingData}
+          isLoading={this.state.requestingData}
+          onMenuOpen={this.checkOptions}
+          onChange={this.handleChange} 
+          onCreateOption={this.handleCreate}
+          options={this.state.options}  
+          value={this.state.value}       
+        />
       </div>             
     );
   }

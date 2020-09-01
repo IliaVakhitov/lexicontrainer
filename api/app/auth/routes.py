@@ -147,5 +147,10 @@ def user():
             }
 
 
+@bp.route('/admin', methods=['POST'])
+def admin():
+    pass
+
+
 logger = logging.getLogger(__name__)
 

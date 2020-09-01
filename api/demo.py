@@ -1,11 +1,10 @@
 """ Create Demo user, Demo dictionary, add words from demo.json """
+
 import json
 from app import db
 from app.models import Word, WordSynonyms, User, Dictionary
 from app import create_app
 from config import Config
-
-
 
 
 def fill_out_demo_data():

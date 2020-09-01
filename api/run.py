@@ -63,18 +63,19 @@ def update_statistic():
 
 
 def save_dictionary():
-    dictionary = Dictionary.query.filter_by(id=2).first()
-    data = {'name':dictionary.dictionary_name}
+    dictionaries = Dictionary.query.filter_by(user_id=1).all()
+    data = {'name':'Dictionary'}
     data['words'] = []
-    for word in dictionary.words.all():
-        data['words'].append(
-            {'spelling': word.spelling,
-             'definition': word.definition,
-             'synonyms': [s for s in word.word_synonyms()]
-            }
-        )
+    for dictionary in dictionaries:
+        for word in dictionary.words.all():
+            data['words'].append(
+                {'spelling': word.spelling,
+                 'definition': word.definition,
+                 'synonyms': [s for s in word.word_synonyms()]
+                }
+            )
 
-    with open('data.json', 'w') as fout:
+    with open('demo.json', 'w') as fout:
         json.dump(data, fout, indent=4)
 
 
@@ -99,7 +100,7 @@ def run_script():
     app = create_app()
 
     with app.app_context():
-        check_game_generator()
+        save_dictionary()
 
 
 if __name__ == '__main__':

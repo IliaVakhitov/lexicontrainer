@@ -165,8 +165,9 @@ class Word(db.Model):
 
         learning_index = self.learning_index
         if learning_index is None:
-            learning_index = LearningIndex(word_id=self.word_id, index=0)
+            learning_index = LearningIndex(word_id=self.id, index=0)
             db.session.add(learning_index)
+            db.session.commit()
         if correct:
             learning_index.index += 10 if learning_index.index <= 90 else 0
         else:
